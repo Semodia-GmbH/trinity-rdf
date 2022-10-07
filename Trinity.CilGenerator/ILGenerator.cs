@@ -28,15 +28,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Mono.Cecil;
-using Mono.Cecil.Cil;
-using Mono.Cecil.Pdb;
-using Mono.Cecil.Mdb;
 using Semiodesk.Trinity.CilGenerator.Extensions;
 using Semiodesk.Trinity.CilGenerator.Tasks;
 using System.Diagnostics;
 using System.IO;
-using ICSharpCode.Decompiler;
+using Mono.Cecil;
 using Semiodesk.Trinity.CilGenerator.Resolver;
 
 namespace Semiodesk.Trinity.CilGenerator

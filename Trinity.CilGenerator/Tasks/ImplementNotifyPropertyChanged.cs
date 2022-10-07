@@ -38,7 +38,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
 {
     public class ImplementNotifyPropertyChangedTask : GeneratorTaskBase
     {
-        #region Memebers
+        #region Members
 
         public bool IsMappedProperty;
 
