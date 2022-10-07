@@ -188,7 +188,7 @@ namespace ICSharpCode.Decompiler.Metadata
 
 		public string GetGenericTypeParameterName(int index)
 		{
-			GenericParameterHandle genericParameter = GetGenericTypeParameterHandleOrNull(index);
+			var genericParameter = GetGenericTypeParameterHandleOrNull(index);
 			if (genericParameter.IsNil)
 				return index.ToString();
 			return module.Metadata.GetString(module.Metadata.GetGenericParameter(genericParameter).Name);
@@ -196,7 +196,7 @@ namespace ICSharpCode.Decompiler.Metadata
 
 		public string GetGenericMethodTypeParameterName(int index)
 		{
-			GenericParameterHandle genericParameter = GetGenericMethodTypeParameterHandleOrNull(index);
+			var genericParameter = GetGenericMethodTypeParameterHandleOrNull(index);
 			if (genericParameter.IsNil)
 				return index.ToString();
 			return module.Metadata.GetString(module.Metadata.GetGenericParameter(genericParameter).Name);

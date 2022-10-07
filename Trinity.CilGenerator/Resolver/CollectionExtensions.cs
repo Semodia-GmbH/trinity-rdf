@@ -20,15 +20,15 @@ namespace ICSharpCode.Decompiler.Util
 
 		public static IEnumerable<T> Slice<T>(this IReadOnlyList<T> input, int offset, int length)
 		{
-			for (int i = offset; i < offset + length; i++) {
+			for (var i = offset; i < offset + length; i++) {
 				yield return input[i];
 			}
 		}
 
 		public static IEnumerable<T> Slice<T>(this IReadOnlyList<T> input, int offset)
 		{
-			int length = input.Count;
-			for (int i = offset; i < length; i++) {
+			var length = input.Count;
+			for (var i = offset; i < length; i++) {
 				yield return input[i];
 			}
 		}
@@ -64,9 +64,9 @@ namespace ICSharpCode.Decompiler.Util
 		
 		public static int MaxOrDefault<T>(this IEnumerable<T> input, Func<T, int> selector, int defaultValue = 0)
 		{
-			int max = defaultValue;
+			var max = defaultValue;
 			foreach (var element in input) {
-				int value = selector(element);
+				var value = selector(element);
 				if (value > max)
 					max = value;
 			}
@@ -76,8 +76,8 @@ namespace ICSharpCode.Decompiler.Util
 		public static int IndexOf<T>(this IReadOnlyList<T> collection, T value)
 		{
 			var comparer = EqualityComparer<T>.Default;
-			int index = 0;
-			foreach (T item in collection) {
+			var index = 0;
+			foreach (var item in collection) {
 				if (comparer.Equals(item, value)) {
 					return index;
 				}
@@ -88,7 +88,7 @@ namespace ICSharpCode.Decompiler.Util
 
 		public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> input)
 		{
-			foreach (T item in input)
+			foreach (var item in input)
 				collection.Add(item);
 		}
 		
@@ -98,8 +98,8 @@ namespace ICSharpCode.Decompiler.Util
 		/// </summary>
 		public static U[] SelectArray<T, U>(this ICollection<T> collection, Func<T, U> func)
 		{
-			U[] result = new U[collection.Count];
-			int index = 0;
+			var result = new U[collection.Count];
+			var index = 0;
 			foreach (var element in collection) {
 				result[index++] = func(element);
 			}
@@ -112,8 +112,8 @@ namespace ICSharpCode.Decompiler.Util
 		/// </summary>
 		public static U[] SelectReadOnlyArray<T, U>(this IReadOnlyCollection<T> collection, Func<T, U> func)
 		{
-			U[] result = new U[collection.Count];
-			int index = 0;
+			var result = new U[collection.Count];
+			var index = 0;
 			foreach (var element in collection) {
 				result[index++] = func(element);
 			}
@@ -126,8 +126,8 @@ namespace ICSharpCode.Decompiler.Util
 		/// </summary>
 		public static U[] SelectArray<T, U>(this List<T> collection, Func<T, U> func)
 		{
-			U[] result = new U[collection.Count];
-			int index = 0;
+			var result = new U[collection.Count];
+			var index = 0;
 			foreach (var element in collection) {
 				result[index++] = func(element);
 			}
@@ -140,8 +140,8 @@ namespace ICSharpCode.Decompiler.Util
 		/// </summary>
 		public static U[] SelectArray<T, U>(this T[] collection, Func<T, U> func)
 		{
-			U[] result = new U[collection.Length];
-			int index = 0;
+			var result = new U[collection.Length];
+			var index = 0;
 			foreach (var element in collection) {
 				result[index++] = func(element);
 			}
@@ -154,7 +154,7 @@ namespace ICSharpCode.Decompiler.Util
 		/// </summary>
 		public static List<U> SelectList<T, U>(this ICollection<T> collection, Func<T, U> func)
 		{
-			List<U> result = new List<U>(collection.Count);
+			var result = new List<U>(collection.Count);
 			foreach (var element in collection) {
 				result.Add(func(element));
 			}
@@ -163,14 +163,14 @@ namespace ICSharpCode.Decompiler.Util
 
 		public static IEnumerable<U> SelectWithIndex<T, U>(this IEnumerable<T> source, Func<int, T, U> func)
 		{
-			int index = 0;
+			var index = 0;
 			foreach (var element in source)
 				yield return func(index++, element);
 		}
 
 		public static IEnumerable<(int, T)> WithIndex<T>(this ICollection<T> source)
 		{
-			int index = 0;
+			var index = 0;
 			foreach (var item in source) {
 				yield return (index, item);
 				index++;
@@ -184,8 +184,8 @@ namespace ICSharpCode.Decompiler.Util
 		{
 			var enumA = input1.GetEnumerator();
 			var enumB = input2.GetEnumerator();
-			bool moreA = enumA.MoveNext();
-			bool moreB = enumB.MoveNext();
+			var moreA = enumA.MoveNext();
+			var moreB = enumB.MoveNext();
 			while (moreA && moreB) {
 				if (comparison(enumA.Current, enumB.Current) <= 0) {
 					yield return enumA.Current;
@@ -229,11 +229,11 @@ namespace ICSharpCode.Decompiler.Util
 			using (var enumerator = source.GetEnumerator()) {
 				if (!enumerator.MoveNext())
 					throw new InvalidOperationException("Sequence contains no elements");
-				T minElement = enumerator.Current;
-				K minKey = keySelector(minElement);
+				var minElement = enumerator.Current;
+				var minKey = keySelector(minElement);
 				while (enumerator.MoveNext()) {
-					T element = enumerator.Current;
-					K key = keySelector(element);
+					var element = enumerator.Current;
+					var key = keySelector(element);
 					if (keyComparer.Compare(key, minKey) < 0) {
 						minElement = element;
 						minKey = key;
@@ -267,11 +267,11 @@ namespace ICSharpCode.Decompiler.Util
 			using (var enumerator = source.GetEnumerator()) {
 				if (!enumerator.MoveNext())
 					throw new InvalidOperationException("Sequence contains no elements");
-				T maxElement = enumerator.Current;
-				K maxKey = keySelector(maxElement);
+				var maxElement = enumerator.Current;
+				var maxKey = keySelector(maxElement);
 				while (enumerator.MoveNext()) {
-					T element = enumerator.Current;
-					K key = keySelector(element);
+					var element = enumerator.Current;
+					var key = keySelector(element);
 					if (keyComparer.Compare(key, maxKey) > 0) {
 						maxElement = element;
 						maxKey = key;

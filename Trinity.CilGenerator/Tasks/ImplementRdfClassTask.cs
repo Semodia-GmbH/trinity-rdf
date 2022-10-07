@@ -55,7 +55,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
         /// <returns><c>true</c> if the task can be executed, <c>false</c> otherwise.</returns>
         public override bool CanExecute(object parameter = null)
         {
-            bool canExecute = Type.TryGetCustomAttribute("RdfClassAttribute").Any() && !Type.Methods.Any( x=> x.Name == "GetTypes");
+            var canExecute = Type.TryGetCustomAttribute("RdfClassAttribute").Any() && !Type.Methods.Any( x=> x.Name == "GetTypes");
             return canExecute;
         }
 
@@ -66,10 +66,10 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
         /// <returns><c>true</c> on success, <c>false</c> otherwise.</returns>
         public override bool Execute(object parameter = null)
         {
-            List<string> uris = new List<string>();
+            var uris = new List<string>();
 
             // Accumulate the annotated RDF classes.
-            foreach (CustomAttribute attribute in Type.TryGetCustomAttribute("RdfClassAttribute"))
+            foreach (var attribute in Type.TryGetCustomAttribute("RdfClassAttribute"))
             {
                 uris.Insert(0, attribute.ConstructorArguments.First().Value.ToString());
             }
@@ -78,7 +78,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
             {
                 if (!Type.Methods.Any(m => m.Name == "GetTypes"))
                 {
-                    string msg = "{0}: Mapped type has no annotated RDF classes and no overridden GetTypes() method.";
+                    var msg = "{0}: Mapped type has no annotated RDF classes and no overridden GetTypes() method.";
 
                     throw new Exception(string.Format(msg, Type.FullName));
                 }
@@ -93,7 +93,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
             // We iterate through the type hierarchy from top to bottom and find the first GetTypes 
             // method. That one serves as a template for the override method of the current type in 
             // which the instructions are being replaced.
-            foreach (TypeDefinition t in types.Union(Type.GetBaseTypes()).Reverse())
+            foreach (var t in types.Union(Type.GetBaseTypes()).Reverse())
             {
                 getTypes = t.TryGetInheritedMethod("GetTypes");
 
@@ -114,7 +114,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
             // The override method must be created in the module where the type is defined.
             getTypes = getTypeBase.GetOverrideMethod(MainModule);
 
-            MethodGeneratorTask generator = new MethodGeneratorTask(getTypes);
+            var generator = new MethodGeneratorTask(getTypes);
             generator.Instructions.AddRange(GenerateGetTypesInstructions(generator.Processor, uris));
 
             if (generator.CanExecute())
@@ -129,7 +129,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
 
             Type.Methods.Add(getTypes);
 
-            foreach (string uri in uris)
+            foreach (var uri in uris)
             {
                 Log.LogMessage("{0} -> <{1}>", Type.FullName, uri);
             }
@@ -153,7 +153,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
             if (ctorref == null) yield break;
 
             // A reference to the imported item type constructor.
-            MethodReference ctor = Generator.Assembly.MainModule.ImportReference(ctorref);
+            var ctor = Generator.Assembly.MainModule.ImportReference(ctorref);
 
             if (ctor == null) yield break;
 
@@ -172,7 +172,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
             // IL_0019: ldloc.0
             // IL_001a: ret
 
-            Instruction ldloc = processor.Create(OpCodes.Ldloc_0);
+            var ldloc = processor.Create(OpCodes.Ldloc_0);
 
             yield return processor.Create(OpCodes.Nop);
 
@@ -182,9 +182,9 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
             yield return processor.Create(OpCodes.Stloc_1);
 
             // Define the array items.
-            for (int i = 0; i < uris.Count; i++)
+            for (var i = 0; i < uris.Count; i++)
             {
-                string uri = uris[i];
+                var uri = uris[i];
 
                 yield return processor.Create(OpCodes.Ldloc_1);
                 yield return processor.CreateLdc_I4(i);

@@ -102,13 +102,13 @@ namespace Semiodesk.Trinity.CilGenerator.Extensions
         {
             TypeDefinition[] types = { type };
 
-            foreach (TypeDefinition t in types.Union(GetBaseTypes(type)))
+            foreach (var t in types.Union(GetBaseTypes(type)))
             {
-                foreach (MethodDefinition m in t.GetConstructors())
+                foreach (var m in t.GetConstructors())
                 {
                     if (m.Parameters.Count != arguments.Count()) continue;
 
-                    bool match = !m.Parameters.Where((t1, i) => !t1.ParameterType.FullName.Equals(arguments[i])).Any();
+                    var match = !m.Parameters.Where((t1, i) => !t1.ParameterType.FullName.Equals(arguments[i])).Any();
 
                     if (match) return m;
                 }
@@ -125,7 +125,7 @@ namespace Semiodesk.Trinity.CilGenerator.Extensions
         /// <returns>A property definition on success, <c>null</c> otherwise.</returns>
         public static PropertyDefinition TryGetProperty(this TypeDefinition type, string name)
         {
-            IEnumerable<PropertyDefinition> properties = GetBaseTypes(type).SelectMany(t => t.Properties);
+            var properties = GetBaseTypes(type).SelectMany(t => t.Properties);
 
             return properties.FirstOrDefault(p => p.Name.Equals(name));
         }
@@ -139,7 +139,7 @@ namespace Semiodesk.Trinity.CilGenerator.Extensions
         /// <returns>A field definition on success, <c>null</c> otherwise.</returns>
         public static FieldDefinition TryGetField(this TypeDefinition type, string name)
         {
-            IEnumerable<FieldDefinition> fields = GetBaseTypes(type).SelectMany(t => t.Fields).Union(type.Fields);
+            var fields = GetBaseTypes(type).SelectMany(t => t.Fields).Union(type.Fields);
             fields = fields.Where(p=>p.Name == name);
 
             return fields.FirstOrDefault();
@@ -178,13 +178,13 @@ namespace Semiodesk.Trinity.CilGenerator.Extensions
         {
             TypeDefinition[] types = { type };
 
-            foreach (TypeDefinition t in types.Union(GetBaseTypes(type)))
+            foreach (var t in types.Union(GetBaseTypes(type)))
             {
-                foreach (MethodDefinition m in t.Methods)
+                foreach (var m in t.Methods)
                 {
                     if (!m.Name.Equals(name) || m.Parameters.Count != arguments.Count()) continue;
 
-                    bool match = !m.Parameters.Where((t1, i) => !t1.ParameterType.FullName.Equals(arguments[i].FullName)).Any();
+                    var match = !m.Parameters.Where((t1, i) => !t1.ParameterType.FullName.Equals(arguments[i].FullName)).Any();
 
                     if (match) return m;
                 }
@@ -202,11 +202,11 @@ namespace Semiodesk.Trinity.CilGenerator.Extensions
         /// <returns>A method definition on success, <c>false</c> otherwise.</returns>
         public static MethodDefinition TryGetInheritedGenericMethod(this TypeDefinition type, string name, params object[] genericArguments)
         {
-            MethodDefinition m = TryGetGenericMethod(type, name, genericArguments);
+            var m = TryGetGenericMethod(type, name, genericArguments);
 
             if (m == null)
             {
-                foreach (TypeDefinition t in GetBaseTypes(type))
+                foreach (var t in GetBaseTypes(type))
                 {
                     m = TryGetGenericMethod(t, name, genericArguments);
 
@@ -226,15 +226,15 @@ namespace Semiodesk.Trinity.CilGenerator.Extensions
         /// <returns>A method definition on success, <c>false</c> otherwise.</returns>
         private static MethodDefinition TryGetGenericMethod(TypeDefinition type, string name, params object[] genericArguments)
         {
-            foreach (MethodDefinition m in type.Methods.Where(m => m.Name == name))
+            foreach (var m in type.Methods.Where(m => m.Name == name))
             {
                 if (m.Parameters.Count != genericArguments.Count()) continue;
 
-                for (int i = 0; i < m.Parameters.Count; i++)
+                for (var i = 0; i < m.Parameters.Count; i++)
                 {
                     if (genericArguments[i] is GenericParameter)
                     {
-                        GenericParameter genericParameter = genericArguments[i] as GenericParameter;
+                        var genericParameter = genericArguments[i] as GenericParameter;
 
                         if (genericParameter.FullName == m.Parameters[i].ParameterType.FullName)
                         {
@@ -244,7 +244,7 @@ namespace Semiodesk.Trinity.CilGenerator.Extensions
                     else
                     {
                         var signatureType = genericArguments[i] as TypeReference;
-                        TypeReference parameterType = m.Parameters[i].ParameterType.GetElementType();
+                        var parameterType = m.Parameters[i].ParameterType.GetElementType();
 
                         if (parameterType != null && signatureType != null && parameterType.FullName.Equals(signatureType.FullName))
                         {
@@ -289,7 +289,7 @@ namespace Semiodesk.Trinity.CilGenerator.Extensions
         public static MethodReference TryGetSetValueMethod(this TypeDefinition type, AssemblyDefinition assembly, TypeReference mappingType, params TypeReference[] genericArguments)
         {
             assembly.MainModule.ImportReference(mappingType);
-            GenericParameter valueType = mappingType.GenericParameters[0];
+            var valueType = mappingType.GenericParameters[0];
 
             if (mappingType == null) return null;
 
@@ -313,7 +313,7 @@ namespace Semiodesk.Trinity.CilGenerator.Extensions
 
             TypeReference mappingType =ILGenerator.PropertyMapping;
             assembly.MainModule.ImportReference(mappingType);
-            GenericParameter valueType = mappingType.GenericParameters[0];
+            var valueType = mappingType.GenericParameters[0];
 
             if (mappingType == null) return null;
 

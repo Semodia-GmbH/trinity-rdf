@@ -169,7 +169,7 @@ namespace LightJson
 				get {
 					var items = new JsonValue[this.jsonArray.Count];
 
-					for (int i = 0; i < this.jsonArray.Count; i += 1) {
+					for (var i = 0; i < this.jsonArray.Count; i += 1) {
 						items[i] = this.jsonArray[i];
 					}
 

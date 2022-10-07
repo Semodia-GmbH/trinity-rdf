@@ -44,14 +44,14 @@ namespace Semiodesk.Trinity.CilGenerator
         [STAThread]
         static int Main(string[] args)
         {
-            string input = "";
-            string output = "";
+            var input = "";
+            var output = "";
 
-            bool help = false;
-            bool writeSymbols = true;
-            bool overwriteInput = false;
+            var help = false;
+            var writeSymbols = true;
+            var overwriteInput = false;
 
-            OptionSet options = new OptionSet()
+            var options = new OptionSet()
             {
                 { "i|input=", "Input assembly.", v => input = v },
                 { "o|output=", "Output assembly.", v => output = v },
@@ -73,7 +73,7 @@ namespace Semiodesk.Trinity.CilGenerator
                         return -1;
                     }
 
-                    ILGenerator generator = new ILGenerator(new ConsoleLogger(), writeSymbols);
+                    var generator = new ILGenerator(new ConsoleLogger(), writeSymbols);
 
                     if (generator.ProcessFile(input, output))
                     {

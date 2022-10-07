@@ -53,26 +53,26 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
 
         public override bool CanExecute(object parameter = null)
         {
-            PropertyDefinition property = parameter as PropertyDefinition;
-            bool canExecute = property != null && property.GetMethod.HasCustomAttribute<CompilerGeneratedAttribute>() && property.SetMethod.HasCustomAttribute<CompilerGeneratedAttribute>();
+            var property = parameter as PropertyDefinition;
+            var canExecute = property != null && property.GetMethod.HasCustomAttribute<CompilerGeneratedAttribute>() && property.SetMethod.HasCustomAttribute<CompilerGeneratedAttribute>();
             return canExecute;
         }
 
         public override bool Execute(object parameter = null)
         {
-            PropertyDefinition property = parameter as PropertyDefinition;
+            var property = parameter as PropertyDefinition;
 
             if (property == null) return false;
 
-            FieldDefinition mappingField = ImplementMappingField(property);
+            var mappingField = ImplementMappingField(property);
 
-            PropertyGeneratorTaskHelper p = new PropertyGeneratorTaskHelper(property, mappingField);
+            var p = new PropertyGeneratorTaskHelper(property, mappingField);
 
             if (p.Property.GetMethod != null)
             {
                 if (p.Property.GetMethod.HasCustomAttribute<CompilerGeneratedAttribute>() || p.Property.GetMethod.IsCompilerControlled)
                 {
-                    MethodGeneratorTask getValueGenerator = GetGetValueGenerator(p);
+                    var getValueGenerator = GetGetValueGenerator(p);
 
                     if (getValueGenerator.CanExecute())
                     {
@@ -80,7 +80,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
                     }
                     else
                     {
-                        string msg = "{0}.{1}: Failed to implement property getter.";
+                        var msg = "{0}.{1}: Failed to implement property getter.";
                         throw new Exception(string.Format(msg, property.DeclaringType.FullName, property.Name));
                     }
                 }
@@ -90,7 +90,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
             {
                 if (p.Property.SetMethod.HasCustomAttribute<CompilerGeneratedAttribute>() || p.Property.SetMethod.IsCompilerControlled)
                 {
-                    MethodGeneratorTask setValueGenerator = GetSetValueGenerator(p);
+                    var setValueGenerator = GetSetValueGenerator(p);
 
                     if (setValueGenerator.CanExecute())
                     {
@@ -98,7 +98,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
                     }
                     else
                     {
-                        string msg = "{0}.{1}: Failed to implement property setter.";
+                        var msg = "{0}.{1}: Failed to implement property setter.";
                         throw new Exception(string.Format(msg, property.DeclaringType.FullName, property.Name));
                     }
                 }
@@ -113,7 +113,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
         internal FieldDefinition ImplementMappingField(PropertyDefinition property)
         {
             // Load the property mapping type.
-            TypeReference mappingType = MainModule.ImportReference(ILGenerator.PropertyMapping);
+            var mappingType = MainModule.ImportReference(ILGenerator.PropertyMapping);
 
             if (mappingType == null)
             {
@@ -121,11 +121,11 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
             }
 
             // Add the property type as generic parameter.
-            GenericInstanceType fieldType = new GenericInstanceType(mappingType);
+            var fieldType = new GenericInstanceType(mappingType);
             fieldType.GenericArguments.Add(property.PropertyType);
 
             // Generate the name of the private backing field.
-            string fieldName = "<" + Char.ToLowerInvariant(property.Name[0]) + property.Name.Substring(1) + ">"+"k__"+"MappingField";
+            var fieldName = "<" + Char.ToLowerInvariant(property.Name[0]) + property.Name.Substring(1) + ">"+"k__"+"MappingField";
 
             var mappingField = Type.TryGetField(fieldName);
 
@@ -136,14 +136,14 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
                 Type.Fields.Add(mappingField);
             }
 
-            FieldReference backingField = property.TryGetBackingField();
+            var backingField = property.TryGetBackingField();
 
             if (backingField != null)
             {
                 Type.Fields.Remove(backingField.Resolve());
             }
 
-            PropertyGeneratorTaskHelper p = new PropertyGeneratorTaskHelper(property, mappingField);
+            var p = new PropertyGeneratorTaskHelper(property, mappingField);
 
             if (!Uri.IsWellFormedUriString(p.Uri, UriKind.Absolute))
             {
@@ -151,16 +151,16 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
             }
 
             // Finally, implement the field initializers in the constructors of the class.
-            foreach (MethodDefinition ctor in Type.GetConstructors())
+            foreach (var ctor in Type.GetConstructors())
             {
                 // Implementing mapping fields in static constructors results in invalid byte code,
                 // since there is no ldarg.0 (this) variable.
                 if (ctor.IsStatic) continue;
 
-                MethodGeneratorTask g = new MethodGeneratorTask(ctor);
+                var g = new MethodGeneratorTask(ctor);
 
-                List<Instruction> Omit = new List<Instruction>();
-                bool alreadyInitialized = false;
+                var Omit = new List<Instruction>();
+                var alreadyInitialized = false;
                 foreach (var x in ctor.Body.Instructions)
                 {
                     if(backingField != null && x.Operand == backingField)
@@ -202,12 +202,12 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
         internal MethodGeneratorTask GetGetValueGenerator(PropertyGeneratorTaskHelper p)
         {
             // Load a reference to the GetValue method for the property mapping.
-            MethodReference getValue = Type.TryGetGetValueMethod(Assembly, p.Property.PropertyType);
+            var getValue = Type.TryGetGetValueMethod(Assembly, p.Property.PropertyType);
 
             if(getValue == null)
                 throw new ArgumentException("{0}: Type has no GetValue() method.", p.Property.DeclaringType.FullName);
 
-            MethodGeneratorTask generator = new MethodGeneratorTask(p.Property.GetMethod);
+            var generator = new MethodGeneratorTask(p.Property.GetMethod);
 
             generator.Instructions.AddRange(GetReturnGetValueInstructions(generator.Processor, p, getValue));
 
@@ -217,12 +217,12 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
         internal MethodGeneratorTask GetSetValueGenerator(PropertyGeneratorTaskHelper p)
         {
             // Load a reference to the SetValue method for the property mapping.
-            MethodReference setValue = Type.TryGetSetValueMethod(Assembly, PropertyMappingType, p.Property.PropertyType);
+            var setValue = Type.TryGetSetValueMethod(Assembly, PropertyMappingType, p.Property.PropertyType);
 
             if(setValue == null)
                 throw new ArgumentException("{0}: Type has no SetValue() method.", p.Property.DeclaringType.FullName);
 
-            MethodGeneratorTask generator = new MethodGeneratorTask(p.Property.SetMethod);
+            var generator = new MethodGeneratorTask(p.Property.SetMethod);
 
             generator.Instructions.AddRange(GetCallSetValueInstructions(generator.Processor, p, setValue));
 
@@ -254,7 +254,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
         {
             processor.Create(OpCodes.Ldloc_0);
 
-            foreach (Instruction i in GetCallGetValueInstructions(processor, p, getValue))
+            foreach (var i in GetCallGetValueInstructions(processor, p, getValue))
             {
                 yield return i;
             }
@@ -277,7 +277,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
 
             if (ctorDef == null) yield break;
 
-            MethodReference ctor = Generator.Assembly.MainModule.ImportReference(ctorDef);
+            var ctor = Generator.Assembly.MainModule.ImportReference(ctorDef);
 
             // Thanks to: http://stackoverflow.com/questions/4968755/mono-cecil-call-generic-base-class-method-from-other-assembly
             if (mappingType.IsGenericInstance)
@@ -295,7 +295,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
             { 
                 if (p.Initializer == null)
                 {
-                    foreach (Instruction i in GetLdX(processor, p.DefaultValue))
+                    foreach (var i in GetLdX(processor, p.DefaultValue))
                     {
                         yield return i;
                     }
@@ -326,7 +326,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
 
         private MethodDefinition GetPropertyMappingConstructorDefinition(TypeReference mappingType, CustomAttributeArgument defaultValue)
         {
-            IEnumerable<MethodDefinition> ctors = mappingType.Resolve().GetConstructors();
+            var ctors = mappingType.Resolve().GetConstructors();
 
             return ctors.FirstOrDefault(
                 m => m.Parameters.Count == 4
@@ -338,7 +338,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
 
         private IEnumerable<Instruction> GetLdX(ILProcessor processor, CustomAttributeArgument defaultValue)
         {
-            MetadataType valueType = defaultValue.Type.MetadataType;
+            var valueType = defaultValue.Type.MetadataType;
 
             if (valueType == MetadataType.String)
             {
@@ -358,7 +358,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
             }
             else if (valueType == MetadataType.Int64)
             {
-                long v = (long)defaultValue.Value;
+                var v = (long)defaultValue.Value;
 
                 if (Int32.MinValue <= v && v <= Int32.MaxValue)
                 {
@@ -372,7 +372,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
             }
             else if (valueType == MetadataType.UInt64)
             {
-                ulong v = (ulong)defaultValue.Value;
+                var v = (ulong)defaultValue.Value;
 
                 if (UInt32.MinValue <= v && v >= UInt32.MaxValue)
                 {

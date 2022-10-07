@@ -96,7 +96,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
         {
             Processor.Body.Instructions.Clear();
 
-            foreach (Instruction i in Instructions)
+            foreach (var i in Instructions)
             {
                 Processor.Append(i);
             }

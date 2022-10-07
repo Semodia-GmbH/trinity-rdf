@@ -96,7 +96,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
             Property = property;
             BackingField = backingField;
 
-            CustomAttribute defaultValue = property.CustomAttributes.FirstOrDefault(a => a.Is(typeof(DefaultValueAttribute)));
+            var defaultValue = property.CustomAttributes.FirstOrDefault(a => a.Is(typeof(DefaultValueAttribute)));
 
             HasDefaultValue = defaultValue != null && defaultValue.HasConstructorArguments;
 

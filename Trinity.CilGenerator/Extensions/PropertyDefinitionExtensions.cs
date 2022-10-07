@@ -46,9 +46,9 @@ namespace Semiodesk.Trinity.CilGenerator.Extensions
         /// <returns>On success, the first attribute constructor argument as a string. An empty string otherwise.</returns>
         public static string TryGetAttributeParameter(this PropertyDefinition property, Type attributeType)
         {
-            string attributeName = attributeType.FullName;
+            var attributeName = attributeType.FullName;
 
-            foreach (CustomAttribute a in property.CustomAttributes.Where(a => a.AttributeType.FullName == attributeName))
+            foreach (var a in property.CustomAttributes.Where(a => a.AttributeType.FullName == attributeName))
             {
                 return a.ConstructorArguments.First().Value.ToString();
             }
@@ -64,7 +64,7 @@ namespace Semiodesk.Trinity.CilGenerator.Extensions
         /// <returns>On success, the first attribute constructor argument as a string. An empty string otherwise.</returns>
         public static string TryGetAttributeParameter(this PropertyDefinition property, string attributeName)
         {
-            foreach (CustomAttribute a in property.CustomAttributes.Where(a => a.AttributeType.Name == attributeName))
+            foreach (var a in property.CustomAttributes.Where(a => a.AttributeType.Name == attributeName))
             {
                 return a.ConstructorArguments.First().Value.ToString();
             }
@@ -80,9 +80,9 @@ namespace Semiodesk.Trinity.CilGenerator.Extensions
         /// <returns>On success, the first attribute constructor argument as a string. An empty string otherwise.</returns>
         public static bool TryGetSecondAttributeParameter(this PropertyDefinition property, Type attributeType, bool fallback)
         {
-            string attributeName = attributeType.FullName;
+            var attributeName = attributeType.FullName;
 
-            foreach (CustomAttribute a in property.CustomAttributes.Where(a => a.AttributeType.FullName == attributeName))
+            foreach (var a in property.CustomAttributes.Where(a => a.AttributeType.FullName == attributeName))
             {
                 if( a.ConstructorArguments.Count >= 2)
                 return (bool)a.ConstructorArguments[1].Value;
@@ -99,7 +99,7 @@ namespace Semiodesk.Trinity.CilGenerator.Extensions
         /// <returns>On success, the first attribute constructor argument as a string. An empty string otherwise.</returns>
         public static bool TryGetSecondAttributeParameter(this PropertyDefinition property, string attributeName, bool fallback)
         {
-            foreach (CustomAttribute a in property.CustomAttributes.Where(a => a.AttributeType.Name == attributeName))
+            foreach (var a in property.CustomAttributes.Where(a => a.AttributeType.Name == attributeName))
             {
                 if (a.ConstructorArguments.Count >= 2)
                     return (bool)a.ConstructorArguments[1].Value;
@@ -115,7 +115,7 @@ namespace Semiodesk.Trinity.CilGenerator.Extensions
         /// <returns>A field reference to the backing field on success, <c>null</c> otherwise.</returns>
         public static FieldReference TryGetBackingField(this PropertyDefinition property)
         {
-            FieldReference result = property.SetMethod.Body.Instructions
+            var result = property.SetMethod.Body.Instructions
               .Where(x => x.OpCode == OpCodes.Stfld)
               .Select(x => x.Operand as FieldReference).FirstOrDefault();
 
