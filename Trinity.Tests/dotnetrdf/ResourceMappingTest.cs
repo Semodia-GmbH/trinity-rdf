@@ -28,13 +28,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Globalization;
 using Semiodesk.Trinity;
-using System.Collections.ObjectModel;
 using System.Reflection;
 using NUnit.Framework;
-using dotNetRDFStore.Test;
 using System.IO;
 using Semiodesk.Trinity.Ontologies;
 using Semiodesk.Trinity.Test;

@@ -26,10 +26,6 @@
 // Copyright (c) Semiodesk GmbH 2015-2019
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Semiodesk.Trinity;
 
 namespace Semiodesk.Trinity.OntologyGenerator
 {

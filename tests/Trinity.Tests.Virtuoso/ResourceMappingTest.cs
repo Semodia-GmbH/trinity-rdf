@@ -28,7 +28,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Collections.ObjectModel;
 using Semiodesk.Trinity.Ontologies;
 using NUnit.Framework;
 using Semiodesk.Trinity.Serialization;

@@ -6,14 +6,16 @@
     <DebugType Condition="'$(TargetFramework)' != '' AND '$(TargetFramework)' != 'netcoreapp1.0'">Full</DebugType>
   </PropertyGroup>
 
-  <UsingTask TaskName="CilGeneratorTask" AssemblyFile="$(MSBuildThisFileDirectory)../tools/cilg.exe" />
+  <UsingTask TaskName="CilGeneratorTask" AssemblyFile="$(MSBuildThisFileDirectory)../tools/cilg.dll" />
 
   <Target Name="CilGeneratorTarget" AfterTargets="Build">
+    <Message Importance="high" Text="Running CilGeneration!"/>
     <CilGeneratorTask TargetFile="$(TargetDir)/$(TargetName)$(TargetExt)" WriteSymbols="$(DebugSymbols)" />
   </Target>
 
 
-  <!-- Todo: We should make the path to the ontologies configurable. -->
+<!--
+  &lt;!&ndash; Todo: We should make the path to the ontologies configurable. &ndash;&gt;
   <PropertyGroup>
     <CoreCompileDependsOn>$(CoreCompileDependsOn);GenerateOntologyTarget</CoreCompileDependsOn>
   </PropertyGroup>
@@ -26,6 +28,7 @@
 	    <Compile Include="Ontologies/Ontologies.g.cs" Exclude="@(Compile)" />
 	  </ItemGroup>
   </Target>
+-->
 
 
 </Project>

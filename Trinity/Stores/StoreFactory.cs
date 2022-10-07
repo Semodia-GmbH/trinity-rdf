@@ -27,15 +27,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Semiodesk.Trinity.Store;
 using System.Configuration;
-using System.Reflection;
 using System.Net;
 #if NETSTANDARD2_0
-using System.Composition.Hosting;
+
 #elif !NET35
 using System.ComponentModel.Composition.Hosting;
 #endif

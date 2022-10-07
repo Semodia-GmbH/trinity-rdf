@@ -25,9 +25,7 @@
 //
 // Copyright (c) Semiodesk GmbH 2015-2019
 
-using System.Linq;
 using NUnit.Framework;
-using Semiodesk.Trinity.Configuration;
 
 namespace Semiodesk.Trinity.Test.Virtuoso
 {

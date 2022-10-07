@@ -32,7 +32,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Semiodesk.Trinity.Test;
 using Semiodesk.Trinity.Tests.dotnetrdf;
 
 namespace dotNetRDFStore.Test

@@ -61,9 +61,9 @@ namespace Semiodesk.Trinity.OntologyGenerator
         {
             Logger = logger;
 
-            bool showHelp = false;
+            var showHelp = false;
 
-            OptionSet optionSet = new OptionSet()
+            var optionSet = new OptionSet()
             {
                 { "c|config=", "Path of the config file.", v =>SetConfig(v)  },
                 { "g|generate=", "Path of the ontologies.cs file to generate.", v =>SetTarget(v)  },
@@ -112,7 +112,7 @@ namespace Semiodesk.Trinity.OntologyGenerator
         [STAThread]
         static int Main(string[] args)
         {
-            Program p = new Program(args, new ConsoleLogger());
+            var p = new Program(args, new ConsoleLogger());
       
             return 0;
         }
@@ -129,20 +129,20 @@ namespace Semiodesk.Trinity.OntologyGenerator
 
             if (!string.IsNullOrEmpty(_generatePath))
             {
-                FileInfo fileInfo = new FileInfo(_generatePath);
+                var fileInfo = new FileInfo(_generatePath);
 
-                using (OntologyGenerator generator = new OntologyGenerator(_configuration.Namespace))
+                using (var generator = new OntologyGenerator(_configuration.Namespace))
                 {
                     generator.Logger = Logger;
 
 
                     foreach (var ontology in _configuration.ListOntologies())
                     {
-                        UriRef t = GetPathFromLocation(ontology.Location);
+                        var t = GetPathFromLocation(ontology.Location);
 
                         if (!generator.ImportOntology(ontology.Uri, t))
                         {
-                            FileInfo ontologyFile = new FileInfo(t.LocalPath);
+                            var ontologyFile = new FileInfo(t.LocalPath);
 
                            
                             Logger.LogWarning(string.Format("Could not read ontology <{0}> from path {1}.", ontology.Uri, ontologyFile.FullName));
@@ -195,7 +195,7 @@ namespace Semiodesk.Trinity.OntologyGenerator
         /// <returns></returns>
         public bool LoadConfigFile()
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(Configuration.Configuration));
+            var serializer = new XmlSerializer(typeof(Configuration.Configuration));
 
             using (var stream = _configFile.OpenRead())
             {
@@ -214,7 +214,7 @@ namespace Semiodesk.Trinity.OntologyGenerator
         {
             if (_configFile.Exists)
             {
-                ExeConfigurationFileMap configMap = new ExeConfigurationFileMap();
+                var configMap = new ExeConfigurationFileMap();
 
                 configMap.ExeConfigFilename = _configFile.FullName;
 
@@ -268,7 +268,7 @@ namespace Semiodesk.Trinity.OntologyGenerator
             UriRef result = null;
             if (!string.IsNullOrEmpty(location))
             {
-                string sourcePath = location;
+                var sourcePath = location;
 
                 if (Path.IsPathRooted(sourcePath))
                 {
@@ -276,7 +276,7 @@ namespace Semiodesk.Trinity.OntologyGenerator
                 }
                 else
                 {
-                    string fullPath = Path.Combine(_sourceDir.FullName, sourcePath);
+                    var fullPath = Path.Combine(_sourceDir.FullName, sourcePath);
                     result = new UriRef(fullPath);
                 }
             }

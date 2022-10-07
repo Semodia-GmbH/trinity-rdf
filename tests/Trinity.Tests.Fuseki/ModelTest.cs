@@ -32,7 +32,6 @@ using System.Text;
 using NUnit.Framework;
 using Semiodesk.Trinity.Ontologies;
 using System.IO;
-using System.Globalization;
 
 namespace Semiodesk.Trinity.Test.Fuseki
 {

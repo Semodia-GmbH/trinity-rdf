@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Reflection;
 using System.Reflection.Metadata;
 using SRM = System.Reflection.Metadata;
-using System.Reflection.PortableExecutable;
 using ICSharpCode.Decompiler.TypeSystem;
-using ICSharpCode.Decompiler.Util;
 using System.Reflection.Metadata.Ecma335;
 using ICSharpCode.Decompiler.Metadata;
 

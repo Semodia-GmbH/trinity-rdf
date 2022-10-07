@@ -25,7 +25,6 @@
 //
 // Copyright (c) Semiodesk GmbH 2015-2019
 
-using Semiodesk.Trinity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +32,6 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
 using Semiodesk.Trinity.CilGenerator.Extensions;
-using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace Semiodesk.Trinity.CilGenerator.Tasks

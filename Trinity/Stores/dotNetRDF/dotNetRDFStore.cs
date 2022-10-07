@@ -36,7 +36,6 @@ using VDS.RDF.Parsing.Handlers;
 using VDS.RDF.Query;
 using VDS.RDF.Query.Inference;
 using VDS.RDF.Update;
-using VDS.RDF.Writing;
 
 namespace Semiodesk.Trinity.Store
 {

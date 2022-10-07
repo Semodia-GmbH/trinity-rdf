@@ -29,7 +29,6 @@ using System;
 using System.Xml.Serialization;
 using System.Xml.Linq;
 using System.Collections.Generic;
-using System.Xml;
 
 namespace Semiodesk.Trinity.Configuration
 {

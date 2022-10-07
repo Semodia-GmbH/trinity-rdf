@@ -23,7 +23,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using ICSharpCode.Decompiler.Util;
 using LightJson.Serialization;
 
 namespace ICSharpCode.Decompiler.Metadata

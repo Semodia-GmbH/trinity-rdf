@@ -27,14 +27,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
 using VDS.RDF.Parsing;
 using VDS.RDF;
 using Semiodesk.Trinity.Extensions;
 using VDS.RDF.Storage;
 using VDS.RDF.Query;
-using VDS.RDF.Update;
 using VDS.RDF.Parsing.Handlers;
 
 namespace Semiodesk.Trinity.Store.Fuseki

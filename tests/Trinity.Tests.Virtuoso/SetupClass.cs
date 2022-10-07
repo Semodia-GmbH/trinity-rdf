@@ -1,5 +1,4 @@
-﻿using Semiodesk.TinyVirtuoso;
-using Semiodesk.Trinity.Store.Virtuoso;
+﻿using Semiodesk.Trinity.Store.Virtuoso;
 using System.Reflection;
 using System.IO;
 using NUnit.Framework;

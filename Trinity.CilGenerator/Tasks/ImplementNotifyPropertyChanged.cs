@@ -26,7 +26,6 @@
 // Copyright (c) Semiodesk GmbH 2015-2019
 
 using Semiodesk.Trinity.CilGenerator.Extensions;
-using Semiodesk.Trinity;
 using System;
 using System.Collections.Generic;
 using System.Linq;

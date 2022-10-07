@@ -26,13 +26,9 @@
 // Copyright (c) Semiodesk GmbH 2015-2019
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Diagnostics;
 using System.IO;
 using Mono.Options;
-using Semiodesk.Trinity.CilGenerator;
 using Semiodesk.Trinity.CilGenerator.Loggers;
 
 namespace Semiodesk.Trinity.CilGenerator
@@ -40,8 +36,6 @@ namespace Semiodesk.Trinity.CilGenerator
     class Program
     {
         #region Methods
-
-        [STAThread]
         static int Main(string[] args)
         {
             var input = "";
