@@ -1,4 +1,4 @@
-// LICENSE:
+﻿// LICENSE:
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -120,6 +120,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
 
         private void LoadType(string name, out TypeReference typeRef)
         {
+            Log.LogWarning("Main Assembly: {0}", Assembly.MainModule.Name);
             Assembly.MainModule.TryGetTypeReference(name, out typeRef);
         }
         #endregion

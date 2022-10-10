@@ -105,7 +105,7 @@ namespace Semiodesk.Trinity
         /// <returns>A SPARQL token.</returns>
         public override IToken GetNextToken()
         {
-            IToken token = base.GetNextToken();
+            var token = base.GetNextToken();
 
             switch (token.TokenType)
             {
@@ -300,7 +300,7 @@ namespace Semiodesk.Trinity
         /// <param name="limit">The number of return values.</param>
         public void SetLimit(int limit)
         {
-            string value = limit.ToString();
+            var value = limit.ToString();
 
             if (_limitValueToken == null)
             {
@@ -309,7 +309,7 @@ namespace Semiodesk.Trinity
             }
             else
             {
-                int i = Tokens.IndexOf(_limitValueToken);
+                var i = Tokens.IndexOf(_limitValueToken);
 
                 _limitValueToken = new PlainLiteralToken(value, -1, -1, -1);
 
@@ -323,7 +323,7 @@ namespace Semiodesk.Trinity
         /// <param name="offset">The number of return values.</param>
         public void SetOffset(int offset)
         {
-            string value = offset.ToString();
+            var value = offset.ToString();
 
             if (_offsetValueToken == null)
             {
@@ -332,7 +332,7 @@ namespace Semiodesk.Trinity
             }
             else
             {
-                int i = Tokens.IndexOf(_offsetValueToken);
+                var i = Tokens.IndexOf(_offsetValueToken);
 
                 _offsetValueToken = new PlainLiteralToken(value, -1, -1, -1);
 
@@ -356,7 +356,7 @@ namespace Semiodesk.Trinity
         public string GetOrderByClause()
         {
             // We want the next token after the last closing curly bracket.
-            int i = Tokens.FindLastIndex(t => t.TokenType == Token.RIGHTCURLYBRACKET) + 1;
+            var i = Tokens.FindLastIndex(t => t.TokenType == Token.RIGHTCURLYBRACKET) + 1;
 
             // If i == 0, then FindLastIndex returned -1;
             if (i == 0)
@@ -364,13 +364,13 @@ namespace Semiodesk.Trinity
                 return "";
             }
 
-            StringBuilder resultBuilder = new StringBuilder();
+            var resultBuilder = new StringBuilder();
 
-            bool orderby = false;
+            var orderby = false;
 
             while (i < Tokens.Count)
             {
-                IToken token = Tokens[i];
+                var token = Tokens[i];
 
                 orderby = token.TokenType == Token.ORDERBY || orderby && token.TokenType == Token.VARIABLE;
 

@@ -52,7 +52,7 @@ namespace Semiodesk.Trinity
         public static string SerializeString(string str)
         {
             // We need to escape specrial characters: http://www.w3.org/TeamSubmission/turtle/#sec-strings
-            string s = str.Replace(@"\", @"\\");
+            var s = str.Replace(@"\", @"\\");
 
             if(s.Contains('\n'))
             {
@@ -104,19 +104,19 @@ namespace Semiodesk.Trinity
                 else if (obj is string[])
                 {
                     // string + language
-                    string[] array = obj as string[];
+                    var array = obj as string[];
                     return SerializeTranslatedString(array[0], array[1]);
                 }
                 else if (obj is Tuple<string, CultureInfo>)
                 {
                     // string + language
-                    Tuple<string, CultureInfo> array = obj as Tuple<string, CultureInfo>;
+                    var array = obj as Tuple<string, CultureInfo>;
                     return SerializeTranslatedString(array.Item1, array.Item2.Name);
                 }
                 else if (obj is Tuple<string, string>)
                 {
                     // string + language
-                    Tuple<string, string> array = obj as Tuple<string, string>;
+                    var array = obj as Tuple<string, string>;
                     return SerializeTranslatedString(array.Item1, array.Item2);
                 }
                 else if (obj is Uri || typeof(Uri).IsSubclassOf(obj.GetType()))
@@ -138,7 +138,7 @@ namespace Semiodesk.Trinity
             }
             catch
             {
-                string msg = string.Format("No serializer availabe for object of type {0}.", obj.GetType());
+                var msg = string.Format("No serializer availabe for object of type {0}.", obj.GetType());
                 throw new ArgumentException(msg);
             }
         }
@@ -178,9 +178,9 @@ namespace Semiodesk.Trinity
                 return string.Empty;
             }
 
-            string subject = SerializeUri(resource.Uri);
+            var subject = SerializeUri(resource.Uri);
 
-            StringBuilder result = new StringBuilder(subject);
+            var result = new StringBuilder(subject);
             result.Append(' ');
 
             foreach (var value in valueList)
@@ -247,7 +247,7 @@ namespace Semiodesk.Trinity
                 return "";
             }
 
-            StringBuilder resultBuilder = new StringBuilder();
+            var resultBuilder = new StringBuilder();
 
             foreach (var model in models)
             {
@@ -267,11 +267,11 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeCount(IModel model, ISparqlQuery query)
         {
-            string variable = "?" + query.GetGlobalScopeVariableNames()[0];
-            string from = GenerateDatasetClause(model);
-            string where = query.GetRootGraphPattern();
+            var variable = "?" + query.GetGlobalScopeVariableNames()[0];
+            var from = GenerateDatasetClause(model);
+            var where = query.GetRootGraphPattern();
 
-            StringBuilder queryBuilder = new StringBuilder();
+            var queryBuilder = new StringBuilder();
 
             queryBuilder.Append("SELECT ( COUNT(DISTINCT ");
             queryBuilder.Append(variable);
@@ -294,14 +294,14 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeFetchUris(IModel model, ISparqlQuery query, int offset = -1, int limit = -1)
         {
-            string variable = "?" + query.GetGlobalScopeVariableNames()[0];
-            string from = GenerateDatasetClause(model);
-            string where = query.GetRootGraphPattern();
-            string orderby = query.GetRootOrderByClause();
+            var variable = "?" + query.GetGlobalScopeVariableNames()[0];
+            var from = GenerateDatasetClause(model);
+            var where = query.GetRootGraphPattern();
+            var orderby = query.GetRootOrderByClause();
 
-            StringBuilder queryBuilder = new StringBuilder();
+            var queryBuilder = new StringBuilder();
             
-            foreach(string prefix in query.GetDeclaredPrefixes())
+            foreach(var prefix in query.GetDeclaredPrefixes())
             {
                 queryBuilder.Append($"PREFIX <{prefix}> ");
             }
@@ -339,11 +339,11 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeOffsetLimit(IModel model, ISparqlQuery query, int offset = -1, int limit = -1)
         {
-            string variable = "?" + query.GetGlobalScopeVariableNames()[0];
-            string from = GenerateDatasetClause(model);
-            string where = query.GetRootGraphPattern();
+            var variable = "?" + query.GetGlobalScopeVariableNames()[0];
+            var from = GenerateDatasetClause(model);
+            var where = query.GetRootGraphPattern();
 
-            StringBuilder resultBuilder = new StringBuilder();
+            var resultBuilder = new StringBuilder();
             resultBuilder.AppendFormat("SELECT {0} ?p ?o {1} WHERE {{ {0} ?p ?o {{", variable, from);
             resultBuilder.AppendFormat("SELECT DISTINCT {0} WHERE {{ {1} }}", variable, where);
 

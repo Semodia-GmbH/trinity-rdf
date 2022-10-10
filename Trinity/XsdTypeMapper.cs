@@ -222,7 +222,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeObject(object obj)
         {
-            Type type = obj.GetType();
+            var type = obj.GetType();
 
             if (Serializers.ContainsKey(type))
             {
@@ -234,7 +234,7 @@ namespace Semiodesk.Trinity
             }
             else
             {
-                string msg = string.Format("No serialiser availabe for object of type {0}.", obj.GetType());
+                var msg = string.Format("No serialiser availabe for object of type {0}.", obj.GetType());
                 throw new ArgumentException(msg);
             }
         }
@@ -276,7 +276,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeUri(object obj)
         {
-            Uri uri = obj as Uri;
+            var uri = obj as Uri;
 
             if (uri != null)
             {
@@ -673,21 +673,21 @@ namespace Semiodesk.Trinity
         {
             object result = node.InnerText;
 
-            XmlAttribute resource = node.Attributes["rdf:resource"];
-            XmlAttribute dataType = node.Attributes["rdf:datatype"];
-            XmlAttribute lang = node.Attributes["xml:lang"];
+            var resource = node.Attributes["rdf:resource"];
+            var dataType = node.Attributes["rdf:datatype"];
+            var lang = node.Attributes["xml:lang"];
 
             if (dataType != null)
             {
                 try
                 {
 
-                    string key = dataType.Value;
+                    var key = dataType.Value;
                     result = Deserializers[key](node.InnerText);
                 }
                 catch
                 {
-                    string msg = string.Format("No converter found for following type: {0}", dataType.Value);
+                    var msg = string.Format("No converter found for following type: {0}", dataType.Value);
                     throw new ArgumentException(msg);
                 }
             }

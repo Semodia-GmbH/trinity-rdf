@@ -63,9 +63,9 @@ namespace Semiodesk.Trinity
             }
             else
             {
-                HashSet<Uri> cache = Cache[mapping];
+                var cache = Cache[mapping];
 
-                foreach (Uri value in values)
+                foreach (var value in values)
                 {
                     cache.Add(value);
                 }
@@ -80,7 +80,7 @@ namespace Semiodesk.Trinity
             }
             else
             {
-                HashSet<Uri> cache = Cache[mapping];
+                var cache = Cache[mapping];
 
                 cache.Add(value);
             }
@@ -99,9 +99,9 @@ namespace Semiodesk.Trinity
                 return;
             }
 
-            Type baseType = (mapping.IsList) ? mapping.GenericType : mapping.DataType;
+            var baseType = (mapping.IsList) ? mapping.GenericType : mapping.DataType;
 
-            HashSet<Uri> cachedUris = Cache[mapping];
+            var cachedUris = Cache[mapping];
 
             if (!mapping.IsList && cachedUris.Count > 1)
             {
@@ -130,7 +130,7 @@ namespace Semiodesk.Trinity
             if (mapping.IsList)
             {
                 // Getting the reference to the mapped list object
-                IList list = mapping.GetValueObject() as IList;
+                var list = mapping.GetValueObject() as IList;
 
                 if (list != null)
                 {

@@ -62,13 +62,13 @@ namespace Semiodesk.Trinity.Query
             // TODO: Move into OnBeforeSelectClauseVisited.
             if (expression is ConstantExpression)
             {
-                ConstantExpression constantExpression = expression as ConstantExpression;
+                var constantExpression = expression as ConstantExpression;
 
-                IQueryable queryable = constantExpression.Value as IQueryable;
+                var queryable = constantExpression.Value as IQueryable;
 
                 if (queryable != null && typeof(Resource).IsAssignableFrom(queryable.ElementType))
                 {
-                    SparqlVariable s = VariableGenerator.GlobalSubject;
+                    var s = VariableGenerator.GlobalSubject;
 
                     SetSubjectVariable(s);
 
@@ -90,12 +90,12 @@ namespace Semiodesk.Trinity.Query
         {
             base.OnBeforeSelectClauseVisited(selector);
 
-            QuerySourceReferenceExpression sourceExpression = selector.TryGetQuerySourceReference();
+            var sourceExpression = selector.TryGetQuerySourceReference();
 
             if (sourceExpression != null)
             {
                 // Register the query source with the global variable for sub-queries.
-                SparqlVariable s = VariableGenerator.TryGetSubjectVariable(sourceExpression) ?? VariableGenerator.GlobalSubject;
+                var s = VariableGenerator.TryGetSubjectVariable(sourceExpression) ?? VariableGenerator.GlobalSubject;
 
                 // Assert the object type.
                 if (sourceExpression.Type.IsSubclassOf(typeof(Resource)))
@@ -105,9 +105,9 @@ namespace Semiodesk.Trinity.Query
 
                 if (selector is MemberExpression)
                 {
-                    MemberExpression memberExpression = selector as MemberExpression;
+                    var memberExpression = selector as MemberExpression;
 
-                    SparqlVariable o = VariableGenerator.CreateObjectVariable(memberExpression);
+                    var o = VariableGenerator.CreateObjectVariable(memberExpression);
 
                     // Select all triples having the resource as subject.
                     SetSubjectVariable(s);
@@ -117,7 +117,7 @@ namespace Semiodesk.Trinity.Query
                     // Scenarios:
                     // - from x in Model.AsQueryable<X>() select x.B
                     // - from x in Model.AsQueryable<X>() where x.A select x.B
-                    string e = memberExpression.ToString();
+                    var e = memberExpression.ToString();
 
                     if (!QueryModel.BodyClauses.OfType<WhereClause>().Any(c => c.Predicate.ToString().Contains(e)))
                     {
@@ -125,14 +125,14 @@ namespace Semiodesk.Trinity.Query
                         QueryModel.BodyClauses.Add(new WhereClause(memberExpression));
 
                         // Since there is no constraint on the member, we also need to select the ones that are not bound.
-                        Type memberType = memberExpression.Member.GetMemberType();
+                        var memberType = memberExpression.Member.GetMemberType();
 
                         // TODO: There might be a different default value on the member using the DefaultValue() attribute.
-                        object defaultValue = TypeHelper.GetDefaultValue(memberType);
+                        var defaultValue = TypeHelper.GetDefaultValue(memberType);
 
                         if(defaultValue != null && memberType != typeof(string))
                         {
-                            ConstantExpression coalescedValue = Expression.Constant(defaultValue);
+                            var coalescedValue = Expression.Constant(defaultValue);
 
                             // Mark the variable to be coalesced with the default value when selected.
                             CoalescedVariables[o] = coalescedValue.AsLiteralExpression();
@@ -156,7 +156,7 @@ namespace Semiodesk.Trinity.Query
             // subject variable, set it from the given selector.
             if(IsRoot && !SelectedVariables.Any())
             {
-                SparqlVariable o = VariableGenerator.TryGetObjectVariable(selector);
+                var o = VariableGenerator.TryGetObjectVariable(selector);
 
                 if (o != null && !IsSelectedVariable(o))
                 {

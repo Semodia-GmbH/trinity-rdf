@@ -64,11 +64,11 @@ namespace Semiodesk.Trinity.Store
         /// <returns></returns>
         public override IStore GetStore(Dictionary<string, string> configurationDictionary)
         {
-            string endpointKey = "endpoint";
+            var endpointKey = "endpoint";
 
             if (configurationDictionary.ContainsKey(endpointKey))
             {
-                Uri endpoint = new Uri(configurationDictionary[endpointKey]);
+                var endpoint = new Uri(configurationDictionary[endpointKey]);
 
                 return new SparqlEndpointStore(endpoint);
             }

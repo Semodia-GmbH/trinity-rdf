@@ -55,9 +55,9 @@ namespace Semiodesk.Trinity.Query
 
             if (selector is QuerySourceReferenceExpression)
             {
-                SparqlVariable s_ = VariableGenerator.GlobalSubject;
-                SparqlVariable p_ = VariableGenerator.GlobalPredicate;
-                SparqlVariable o_ = VariableGenerator.GlobalObject;
+                var s_ = VariableGenerator.GlobalSubject;
+                var p_ = VariableGenerator.GlobalPredicate;
+                var o_ = VariableGenerator.GlobalObject;
 
                 // Select all triples having the resource as subject.
                 SetSubjectVariable(s_);
@@ -67,9 +67,9 @@ namespace Semiodesk.Trinity.Query
                 WhereResource(s_, p_, o_);
 
                 // Constrain the type of resource, if it is a subclass of Resource.
-                QuerySourceReferenceExpression sourceExpression = selector as QuerySourceReferenceExpression;
+                var sourceExpression = selector as QuerySourceReferenceExpression;
 
-                Type type = sourceExpression.ReferencedQuerySource.ItemType;
+                var type = sourceExpression.ReferencedQuerySource.ItemType;
 
                 if (type.IsSubclassOf(typeof(Resource)))
                 {

@@ -35,7 +35,7 @@ namespace Semiodesk.Trinity.Query
     {
         public static SparqlVariable AsSparqlVariable(this ISparqlAggregate aggregate)
         {
-            string variableName = aggregate.Expression.Variables.First();
+            var variableName = aggregate.Expression.Variables.First();
 
             return new SparqlVariable(aggregate.GetProjectedName(variableName), aggregate);
         }

@@ -38,15 +38,15 @@ namespace Semiodesk.Trinity.Query
     {
         public static bool HasTypeConstraintOnExpression(this QueryModel queryModel, Expression expression)
         {
-            foreach (WhereClause clause in queryModel.BodyClauses.OfType<WhereClause>().Where(c => c.Predicate is BinaryExpression))
+            foreach (var clause in queryModel.BodyClauses.OfType<WhereClause>().Where(c => c.Predicate is BinaryExpression))
             {
-                BinaryExpression binary = clause.Predicate as BinaryExpression;
+                var binary = clause.Predicate as BinaryExpression;
 
-                ConstantExpression constant = binary.TryGetExpressionOfType<ConstantExpression>();
+                var constant = binary.TryGetExpressionOfType<ConstantExpression>();
 
                 if (constant != null && constant.Type == typeof(Type))
                 {
-                    MethodCallExpression methodCall = binary.TryGetExpressionOfType<MethodCallExpression>();
+                    var methodCall = binary.TryGetExpressionOfType<MethodCallExpression>();
 
                     return methodCall != null && methodCall.Object.ToString() == expression.ToString();
                 }

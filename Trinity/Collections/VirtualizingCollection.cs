@@ -149,8 +149,8 @@ namespace Semiodesk.Trinity.Collections
             get
             {
                 // determine which page and offset within page
-                int pageIndex = index / PageSize;
-                int pageOffset = index % PageSize;
+                var pageIndex = index / PageSize;
+                var pageOffset = index % PageSize;
 
                 // request primary page
                 RequestPage(pageIndex);
@@ -234,7 +234,7 @@ namespace Semiodesk.Trinity.Collections
         /// <returns></returns>
         public IEnumerator<T> GetEnumerator()
         {
-            for (int i = 0; i < Count; i++)
+            for (var i = 0; i < Count; i++)
             {
                 yield return this[i];
             }
@@ -278,7 +278,7 @@ namespace Semiodesk.Trinity.Collections
         /// <returns></returns>
         public int IndexOf(T item)
         {
-            int index = -1;
+            var index = -1;
 
             foreach (var page in _pages)
             {
@@ -345,8 +345,8 @@ namespace Semiodesk.Trinity.Collections
         /// </summary>
         public void CleanUpPages()
         {
-            List<int> keys = new List<int>(_pageTouchTimes.Keys);
-            foreach (int key in keys)
+            var keys = new List<int>(_pageTouchTimes.Keys);
+            foreach (var key in keys)
             {
                 // page 0 is a special case, since WPF ItemsControl access the first item frequently
                 if (key != 0 && (DateTime.Now - _pageTouchTimes[key]).TotalMilliseconds > PageTimeout)
@@ -415,7 +415,7 @@ namespace Semiodesk.Trinity.Collections
         {
             IList<T> page = new List<T>();
 
-            foreach (T item in _itemsProvider.GetItems(pageIndex * PageSize, PageSize))
+            foreach (var item in _itemsProvider.GetItems(pageIndex * PageSize, PageSize))
             {
                 page.Add(item);
             }

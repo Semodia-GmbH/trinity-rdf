@@ -106,9 +106,9 @@ namespace Semiodesk.Trinity.Configuration.Legacy
         /// <returns></returns>
         public bool ContainsKey(string key)
         {
-            bool result = false;
-            object[] keys = BaseGetAllKeys();
-            foreach (object obj in keys)
+            var result = false;
+            var keys = BaseGetAllKeys();
+            foreach (var obj in keys)
             {
                 if ((string)obj == key)
                 {

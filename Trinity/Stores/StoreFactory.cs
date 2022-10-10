@@ -61,11 +61,11 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static bool TestConnectionString(string connectionString)
         {
-            bool res = false;
+            var res = false;
             var config = ParseConfiguration(connectionString);
             if (config.ContainsKey("provider"))
             {
-                string provider = config["provider"];
+                var provider = config["provider"];
                 res = _storeConfigurations.ContainsKey(provider);
             }
             return res;
@@ -73,7 +73,7 @@ namespace Semiodesk.Trinity
 
         internal static Dictionary<string, string> ParseConfiguration(string configurationString)
         {
-            Regex r = new Regex("(?<name>.*?)=(?<value>.*?)(;|$)");
+            var r = new Regex("(?<name>.*?)=(?<value>.*?)(;|$)");
 
             return r.Matches(configurationString).Cast<Match>().ToDictionary(match => match.Groups["name"].Value, match => match.Groups["value"].Value);
         }
@@ -89,13 +89,13 @@ namespace Semiodesk.Trinity
 
             if (config.ContainsKey("provider"))
             {
-                string provider = config["provider"];
+                var provider = config["provider"];
 
                 if (_storeConfigurations.ContainsKey(provider))
                 {
                     try
                     {
-                        StoreProvider p = _storeConfigurations[provider];
+                        var p = _storeConfigurations[provider];
                         return p.GetStore(config);
                     }
                     catch (Exception e)
@@ -124,7 +124,7 @@ namespace Semiodesk.Trinity
                     continue;
                 }
 
-                string conString = setting.ConnectionString;
+                var conString = setting.ConnectionString;
 
                 if (setting.ProviderName == "Semiodesk.Trinity" && StoreFactory.TestConnectionString(conString))
                 {
@@ -169,7 +169,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static bool LoadProvider(StoreProvider provider)
         {
-            bool result = false;
+            var result = false;
 
             if (!_storeConfigurations.ContainsKey(provider.Name))
             {
@@ -189,7 +189,7 @@ namespace Semiodesk.Trinity
         public static bool LoadProvider<T>() where T : StoreProvider, new()
         {
             var provider = new T();
-            bool result = false;
+            var result = false;
 
             if (!_storeConfigurations.ContainsKey(provider.Name))
             {

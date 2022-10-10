@@ -53,7 +53,7 @@ namespace Semiodesk.Trinity.Query
             if (selector is ConstantExpression)
             {
                 // We can either select a resource as a constant.
-                IQueryable queryable = (selector as ConstantExpression).Value as IQueryable;
+                var queryable = (selector as ConstantExpression).Value as IQueryable;
 
                 return (queryable != null) ? queryable.ElementType : null;
             }
@@ -78,7 +78,7 @@ namespace Semiodesk.Trinity.Query
         {
             base.OnBeforeSelectClauseVisited(selector);
 
-            Type selectedType = TryGetSelectedType(selector);
+            var selectedType = TryGetSelectedType(selector);
 
             if (selectedType == null || !typeof(Resource).IsAssignableFrom(selectedType))
             {
@@ -86,9 +86,9 @@ namespace Semiodesk.Trinity.Query
             }
 
             // 1. We always create an outer query which selects all triples that describe our resources.
-            SparqlVariable s_ = VariableGenerator.GlobalSubject;
-            SparqlVariable p_ = VariableGenerator.GlobalPredicate;
-            SparqlVariable o_ = VariableGenerator.GlobalObject;
+            var s_ = VariableGenerator.GlobalSubject;
+            var p_ = VariableGenerator.GlobalPredicate;
+            var o_ = VariableGenerator.GlobalObject;
 
             VariableGenerator.SetSubjectVariable(selector, s_);
             VariableGenerator.SetPredicateVariable(selector, p_);
@@ -114,7 +114,7 @@ namespace Semiodesk.Trinity.Query
                 // ..which are described in an inner query on which the LIMIT and OFFSET operators are set.
                 // This results in a SELECT query that acts like a DESCRIBE but ist faster on most triple 
                 // stores as the triples can be returend via bindings and must not be parsed.
-                ISparqlQueryGenerator subGenerator = QueryGeneratorTree.CreateSubQueryGenerator(this, selector);
+                var subGenerator = QueryGeneratorTree.CreateSubQueryGenerator(this, selector);
 
                 subGenerator.SetSubjectVariable(s_, true);
                 subGenerator.SetObjectVariable(o_);
@@ -138,7 +138,7 @@ namespace Semiodesk.Trinity.Query
 
             if(selector is MemberExpression)
             {
-                MemberExpression memberExpression = selector as MemberExpression;
+                var memberExpression = selector as MemberExpression;
 
                 BuildMemberAccess(memberExpression);
             }
@@ -176,7 +176,7 @@ namespace Semiodesk.Trinity.Query
             {
                 // Finally, if we have a SKIP or TAKE operator on the root query, set the current 
                 // query generator as a child.
-                ISparqlQueryGenerator subGenerator = QueryGeneratorTree.GetQueryGenerator(selector);
+                var subGenerator = QueryGeneratorTree.GetQueryGenerator(selector);
 
                 Child(subGenerator);
             }

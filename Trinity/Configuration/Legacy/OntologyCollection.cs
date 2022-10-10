@@ -105,11 +105,11 @@ namespace Semiodesk.Trinity.Configuration.Legacy
         /// <returns><c>true</c> if an element with the given key exists, <c>false</c> otherwise.</returns>
         public bool ContainsKey(string key)
         {
-            bool result = false;
+            var result = false;
 
-            object[] keys = BaseGetAllKeys();
+            var keys = BaseGetAllKeys();
 
-            foreach (object obj in keys)
+            foreach (var obj in keys)
             {
                 if ((string)obj == key)
                 {

@@ -43,7 +43,7 @@ namespace Semiodesk.Trinity.Extensions
         /// <param name="namespaces">A namesapce map.</param>
         public static void ImportNamespaces(this INamespaceMapper mapper, INamespaceMap namespaces)
         {
-            foreach (KeyValuePair<string, Uri> n in namespaces)
+            foreach (var n in namespaces)
             {
                 if (mapper.HasNamespace(n.Key))
                 {

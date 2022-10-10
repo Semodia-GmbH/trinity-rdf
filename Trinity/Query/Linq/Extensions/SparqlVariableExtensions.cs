@@ -24,8 +24,8 @@ namespace Semiodesk.Trinity.Query
 
         public static string GetProjectedName(this ISparqlAggregate aggregate, string variableName)
         {
-            string name = variableName;
-            string functor = aggregate.Functor.ToLowerInvariant();
+            var name = variableName;
+            var functor = aggregate.Functor.ToLowerInvariant();
 
             return string.Format("{0}_{1}", name, functor);
         }

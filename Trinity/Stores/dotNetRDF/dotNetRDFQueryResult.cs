@@ -65,7 +65,7 @@ namespace Semiodesk.Trinity.Store
             {
                 // A list of global scope variables without the ?. Used to access the
                 // subject, predicate and object variable in statement providing queries.
-                string[] vars = query.GetGlobalScopeVariableNames();
+                var vars = query.GetGlobalScopeVariableNames();
 
                 s = vars[0];
                 p = vars[1];
@@ -107,9 +107,9 @@ namespace Semiodesk.Trinity.Store
         {
             if (_query.QueryType == SparqlQueryType.Select)
             {
-                foreach (SparqlResult result in _queryResults)
+                foreach (var result in _queryResults)
                 {
-                    BindingSet b = new BindingSet();
+                    var b = new BindingSet();
 
                     foreach (var r in result)
                     {
@@ -169,17 +169,17 @@ namespace Semiodesk.Trinity.Store
 
         private IEnumerable<Resource> GenerateResources(Type type)
         {
-            List<Resource> result = new List<Resource>();
+            var result = new List<Resource>();
 
             if (0 < _tripleProvider.Count)
             {
                 // A dictionary mapping URIs to the generated resource objects.
-                Dictionary<string, Resource> cache = new Dictionary<string, Resource>();
-                Dictionary<string, object> types = FindResourceTypes(_query.IsInferenceEnabled, type);
+                var cache = new Dictionary<string, Resource>();
+                var types = FindResourceTypes(_query.IsInferenceEnabled, type);
 
                 _tripleProvider.Reset();
 
-                foreach (KeyValuePair<string, object> resourceType in types)
+                foreach (var resourceType in types)
                 {
                     if (resourceType.Value is Resource res)
                     {
@@ -192,9 +192,9 @@ namespace Semiodesk.Trinity.Store
 
                 while (_tripleProvider.HasNext)
                 {
-                    INode s = _tripleProvider.S;
-                    Property p = OntologyDiscovery.GetProperty(_tripleProvider.P);
-                    INode o = _tripleProvider.O;
+                    var s = _tripleProvider.S;
+                    var p = OntologyDiscovery.GetProperty(_tripleProvider.P);
+                    var o = _tripleProvider.O;
 
                     _tripleProvider.SetNext();
 
@@ -277,7 +277,7 @@ namespace Semiodesk.Trinity.Store
                         }
                         else
                         {
-                            Resource r = new Resource(uri);
+                            var r = new Resource(uri);
                             r.IsNew = false;
 
                             cache.Add(uri.OriginalString, r);
@@ -304,13 +304,13 @@ namespace Semiodesk.Trinity.Store
         {
             if (p.NodeType == NodeType.Uri)
             {
-                IUriNode uriNode = p as IUriNode;
+                var uriNode = p as IUriNode;
 
                 return uriNode.Uri;
             }
             else if (p.NodeType == NodeType.Literal)
             {
-                ILiteralNode literalNode = p as ILiteralNode;
+                var literalNode = p as ILiteralNode;
 
                 if (literalNode.DataType == null)
                 {
@@ -328,7 +328,7 @@ namespace Semiodesk.Trinity.Store
             }
             else if(p.NodeType == NodeType.Blank)
             {
-                IBlankNode blankNode = p as IBlankNode;
+                var blankNode = p as IBlankNode;
 
                 return new UriRef(blankNode.ToString(), true);
             }
@@ -338,8 +338,8 @@ namespace Semiodesk.Trinity.Store
 
         private Dictionary<string, object> FindResourceTypes(bool inferencingEnabled, Type type) 
         {
-            Dictionary<string, object> result = new Dictionary<string, object>();
-            Dictionary<string, List<Class>> types = new Dictionary<string, List<Class>>();
+            var result = new Dictionary<string, object>();
+            var types = new Dictionary<string, List<Class>>();
 
             INode s;
             string p;
@@ -360,9 +360,9 @@ namespace Semiodesk.Trinity.Store
                 {
                     if( s is IUriNode)
                     {
-                        string suri = ((IUriNode)s).Uri.OriginalString;
+                        var suri = ((IUriNode)s).Uri.OriginalString;
 
-                        string obj = ((IUriNode)o).Uri.OriginalString;
+                        var obj = ((IUriNode)o).Uri.OriginalString;
 
                         if (!types.ContainsKey(suri))
                         {
@@ -382,7 +382,7 @@ namespace Semiodesk.Trinity.Store
             }
             
             // Iterate over all types and find the right class and instatiate it.
-            foreach (string subject in types.Keys)
+            foreach (var subject in types.Keys)
             {
                 IList<Type> classType = MappingDiscovery.GetMatchingTypes(types[subject], type, inferencingEnabled);
 
@@ -391,12 +391,12 @@ namespace Semiodesk.Trinity.Store
 #if DEBUG
                     if (classType.Count > 1)
                     {
-                        string msg = "Info: There is more that one assignable type for <{0}>. It was initialized using the first.";
+                        var msg = "Info: There is more that one assignable type for <{0}>. It was initialized using the first.";
                         Debug.WriteLine(string.Format(msg, subject));
                     }
 #endif
 
-                    object resource = Activator.CreateInstance(classType[0], new Uri(subject));
+                    var resource = Activator.CreateInstance(classType[0], new Uri(subject));
                     if (resource is Resource res)
                     {
                         res.Model = _model;
@@ -408,7 +408,7 @@ namespace Semiodesk.Trinity.Store
 #if DEBUG
                 else if (type != typeof(Resource))
                 {
-                    string msg = "Info: No assignable type found for <{0}>.";
+                    var msg = "Info: No assignable type found for <{0}>.";
 
                     if (inferencingEnabled)
                     {
@@ -425,15 +425,15 @@ namespace Semiodesk.Trinity.Store
 
         public virtual int Count()
         {
-            string countQuery = SparqlSerializer.SerializeCount(_model, _query);
+            var countQuery = SparqlSerializer.SerializeCount(_model, _query);
 
-            SparqlQuery query = new SparqlQuery(countQuery);
+            var query = new SparqlQuery(countQuery);
 
-            object result = _store.ExecuteQuery(query.ToString());
+            var result = _store.ExecuteQuery(query.ToString());
 
             if (result is SparqlResultSet)
             {
-                SparqlResultSet set = result as SparqlResultSet;
+                var set = result as SparqlResultSet;
 
                 if (set.Count > 0 && set[0].Count > 0)
                 {

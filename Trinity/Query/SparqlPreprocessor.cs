@@ -129,17 +129,17 @@ namespace Semiodesk.Trinity
                 return;
             }
 
-            foreach (string prefix in UsedPrefixes)
+            foreach (var prefix in UsedPrefixes)
             {
                 if (OntologyDiscovery.Namespaces.ContainsKey(prefix))
                 {
-                    Uri uri = OntologyDiscovery.Namespaces[prefix];
+                    var uri = OntologyDiscovery.Namespaces[prefix];
 
                     AddPrefix(prefix, uri);
                 }
                 else
                 {
-                    string msg = string.Format("The prefix '{0}' is not registered with any ontology in app.config", prefix);
+                    var msg = string.Format("The prefix '{0}' is not registered with any ontology in app.config", prefix);
 
                     throw new KeyNotFoundException(msg);
                 }
@@ -179,7 +179,7 @@ namespace Semiodesk.Trinity
                 case Token.PREFIX:
                     {
                         // We add the namespace prefix of the qualified name to the set of declared prefixes.
-                        string prefix = token.Value.Split(':').FirstOrDefault();
+                        var prefix = token.Value.Split(':').FirstOrDefault();
 
                         if (!string.IsNullOrEmpty(prefix))
                         {
@@ -209,7 +209,7 @@ namespace Semiodesk.Trinity
         private IToken TryGetQueryParameter()
         {
             // Get the next character.
-            char next = Peek();
+            var next = Peek();
 
             while (Char.IsWhiteSpace(next))
             {
@@ -232,7 +232,7 @@ namespace Semiodesk.Trinity
                 // Add the parameter name to the list of parameters.
                 Parameters.Add(Value);
 
-                int parameterType = CustomToken.PARAMETER;
+                var parameterType = CustomToken.PARAMETER;
 
                 switch (LastTokenType)
                 {
@@ -257,7 +257,7 @@ namespace Semiodesk.Trinity
         private IToken ProcessQName(IToken token)
         {
             // We add the namespace prefix of the qualified name to the set of used prefixes.
-            string prefix = token.Value.Split(':').FirstOrDefault();
+            var prefix = token.Value.Split(':').FirstOrDefault();
 
             if (!string.IsNullOrEmpty(prefix) && !DeclaredPrefixes.Contains(prefix))
             {
@@ -316,7 +316,7 @@ namespace Semiodesk.Trinity
 
         private void AddGraph(Uri uri, IToken token)
         {
-            string u = uri.OriginalString;
+            var u = uri.OriginalString;
 
             if (DefaultGraphs.Contains(u))
             {
@@ -326,7 +326,7 @@ namespace Semiodesk.Trinity
             DefaultGraphs.Add(u);
 
             // Try to append the dataset clause before the outermost WHERE.
-            int i = Tokens.FindIndex(t => t.TokenType == Token.WHERE);
+            var i = Tokens.FindIndex(t => t.TokenType == Token.WHERE);
 
             if (i == -1)
             {
@@ -350,9 +350,9 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public string GetPrefixDeclarations()
         {
-            StringBuilder resultBuilder = new StringBuilder();
+            var resultBuilder = new StringBuilder();
 
-            foreach (IToken token in Tokens)
+            foreach (var token in Tokens)
             {
                 switch(token.TokenType)
                 {
@@ -400,13 +400,13 @@ namespace Semiodesk.Trinity
             {
                 if (ParameterValues.ContainsKey(parameter))
                 {
-                    string g = ParameterValues[parameter];
+                    var g = ParameterValues[parameter];
 
                     DefaultGraphs.Remove(g);
                 }
 
-                string uri = SparqlSerializer.SerializeValue(value);
-                string url = uri.TrimStart('<').TrimEnd('>');
+                var uri = SparqlSerializer.SerializeValue(value);
+                var url = uri.TrimStart('<').TrimEnd('>');
 
                 if (DefaultGraphs.Contains(url))
                 {
@@ -430,14 +430,14 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         protected string Serialize(int outputLevel = 0)
         {
-            StringBuilder outputBuilder = new StringBuilder();
+            var outputBuilder = new StringBuilder();
 
             // The current iteration depth.
-            int level = 0;
+            var level = 0;
 
-            for (int i = 0; i < Tokens.Count; i++)
+            for (var i = 0; i < Tokens.Count; i++)
             {
-                IToken token = Tokens[i];
+                var token = Tokens[i];
 
                 if (token.TokenType == Token.LEFTCURLYBRACKET)
                 {
@@ -474,7 +474,7 @@ namespace Semiodesk.Trinity
                     case Token.LITERAL:
                     case Token.LONGLITERAL:
                         {
-                            IToken next = i < Tokens.Count ? Tokens[i + 1] : null;
+                            var next = i < Tokens.Count ? Tokens[i + 1] : null;
 
                             outputBuilder.Append(SparqlSerializer.SerializeString(token.Value));
 
@@ -500,11 +500,11 @@ namespace Semiodesk.Trinity
                     case CustomToken.PARAMETER:
                     case CustomToken.GRAPHPARAMETER:
                         {
-                            string key = token.Value;
+                            var key = token.Value;
 
                             if (!ParameterValues.ContainsKey(key))
                             {
-                                string msg = string.Format("No value set for query parameter {0}.", key);
+                                var msg = string.Format("No value set for query parameter {0}.", key);
 
                                 throw new KeyNotFoundException(msg);
                             }

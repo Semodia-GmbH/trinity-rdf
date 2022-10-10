@@ -130,29 +130,29 @@ namespace Semiodesk.Trinity.Query
                 }
                 else if (resultOperator is OfTypeResultOperator)
                 {
-                    OfTypeResultOperator ofType = resultOperator as OfTypeResultOperator;
-                    RdfClassAttribute type = ofType.SearchedItemType.TryGetCustomAttribute<RdfClassAttribute>();
+                    var ofType = resultOperator as OfTypeResultOperator;
+                    var type = ofType.SearchedItemType.TryGetCustomAttribute<RdfClassAttribute>();
 
                     if (type == null)
                     {
                         throw new ArgumentException("No RdfClass attrribute declared on type: " + ofType.SearchedItemType);
                     }
 
-                    SparqlVariable s = ObjectVariable;
-                    SparqlVariable p = VariableGenerator.CreatePredicateVariable();
-                    SparqlVariable o = VariableGenerator.CreateObjectVariable();
+                    var s = ObjectVariable;
+                    var p = VariableGenerator.CreatePredicateVariable();
+                    var o = VariableGenerator.CreateObjectVariable();
 
                     WhereResource(s, p, o);
                     WhereResourceOfType(o, ofType.SearchedItemType);
                 }
                 else if (resultOperator is SkipResultOperator)
                 {
-                    SkipResultOperator op = resultOperator as SkipResultOperator;
+                    var op = resultOperator as SkipResultOperator;
                     Offset(int.Parse(op.Count.ToString()));
                 }
                 else if(resultOperator is TakeResultOperator)
                 {
-                    TakeResultOperator op = resultOperator as TakeResultOperator;
+                    var op = resultOperator as TakeResultOperator;
                     Limit(int.Parse(op.Count.ToString()));
                 }
                 else

@@ -46,7 +46,7 @@ namespace Semiodesk.Trinity.Query
         {
             if (index < expression.Arguments.Count)
             {
-                ConstantExpression arg = expression.Arguments[index] as ConstantExpression;
+                var arg = expression.Arguments[index] as ConstantExpression;
 
                 return arg.Value == value;
             }
@@ -65,7 +65,7 @@ namespace Semiodesk.Trinity.Query
         {
             if (index < expression.Arguments.Count)
             {
-                ConstantExpression arg = expression.Arguments[index] as ConstantExpression;
+                var arg = expression.Arguments[index] as ConstantExpression;
 
                 if(arg.Value != null)
                 {
@@ -89,7 +89,7 @@ namespace Semiodesk.Trinity.Query
         /// <returns></returns>
         public static T GetArgumentValue<T>(this MethodCallExpression expression, int index)
         {
-            ConstantExpression arg = expression.Arguments[index] as ConstantExpression;
+            var arg = expression.Arguments[index] as ConstantExpression;
 
             return (T)arg.Value;
         }
@@ -106,7 +106,7 @@ namespace Semiodesk.Trinity.Query
         {
             if (index < expression.Arguments.Count)
             {
-                ConstantExpression arg = expression.Arguments[index] as ConstantExpression;
+                var arg = expression.Arguments[index] as ConstantExpression;
 
                 return (T)arg.Value;
             }
