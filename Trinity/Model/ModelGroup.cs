@@ -369,9 +369,8 @@ namespace Semiodesk.Trinity
         /// <returns>True if the resource is part of the model, False if not.</returns>
         public bool ContainsResource(Uri uri, ITransaction transaction = null)
         {
-            return ExecuteQuery(new SparqlQuery(string.Format(@"ASK {0} {{ {1} ?p ?o . }}",
-                DatasetClause,
-                SparqlSerializer.SerializeUri(uri))), transaction: transaction).GetAnswer();
+            return ExecuteQuery(new SparqlQuery(
+                $@"ASK {DatasetClause} {{ {SparqlSerializer.SerializeUri(uri)} ?p ?o . }}"), transaction: transaction).GetAnswer();
         }
 
         /// <summary>
@@ -509,7 +508,7 @@ namespace Semiodesk.Trinity
                 }
                 else
                 {
-                    var msg = string.Format("The given type {0} does not implement the IResource interface.", type);
+                    var msg = $"The given type {type} does not implement the IResource interface.";
                     throw new ArgumentException(msg);
                 }
             }
@@ -583,7 +582,7 @@ namespace Semiodesk.Trinity
             }
             else
             {
-                var msg = string.Format("Error: The given type {0} does not implement the IResource interface.", type);
+                var msg = $"Error: The given type {type} does not implement the IResource interface.";
                 throw new ArgumentException(msg);
             }
         }

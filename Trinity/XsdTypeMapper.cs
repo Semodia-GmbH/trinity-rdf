@@ -83,7 +83,6 @@ namespace Semiodesk.Trinity
             {typeof(Byte), xsd._byte},
             {typeof(SByte), xsd._sbyte},
             {typeof(Int16), xsd._short},
-            {typeof(Int16), xsd._short},
             {typeof(Int32), xsd._int},
             {typeof(Int64), xsd._long},
             {typeof(UInt16), xsd._ushort},
@@ -91,10 +90,10 @@ namespace Semiodesk.Trinity
             {typeof(UInt64), xsd._ulong},
             {typeof(DateTime), xsd.datetime},
             {typeof(TimeSpan), xsd.duration},
-            {typeof(byte[]), xsd.base64Binary},
-            {typeof(bool), xsd.boolean},
-            {typeof(decimal), xsd._decimal},
-            {typeof(double), xsd._double},
+            {typeof(Byte[]), xsd.base64Binary},
+            {typeof(Boolean), xsd.boolean},
+            {typeof(Decimal), xsd._decimal},
+            {typeof(Double), xsd._double},
             {typeof(float), xsd._float},
             {typeof(Uri), xsd.anyUri},
         };
@@ -116,10 +115,10 @@ namespace Semiodesk.Trinity
             {xsd._ulong.AbsoluteUri, typeof(UInt64)},
             {xsd.datetime.AbsoluteUri,typeof(DateTime) },
             {xsd.duration.AbsoluteUri,typeof(TimeSpan) },
-            {xsd.boolean.AbsoluteUri, typeof(bool)},
-            {xsd.boolean_.AbsoluteUri, typeof(bool)},
-            {xsd._decimal.AbsoluteUri, typeof(decimal)},
-            {xsd._double.AbsoluteUri, typeof(double)},
+            {xsd.boolean.AbsoluteUri, typeof(Boolean)},
+            {xsd.boolean_.AbsoluteUri, typeof(Boolean)},
+            {xsd._decimal.AbsoluteUri, typeof(Decimal)},
+            {xsd._double.AbsoluteUri, typeof(Double)},
             {xsd._float.AbsoluteUri, typeof(float)},
             {xsd.base64Binary.AbsoluteUri, typeof(byte[])},
             {xsd.anyUri.AbsoluteUri, typeof(Uri)},
@@ -140,9 +139,9 @@ namespace Semiodesk.Trinity
             {typeof(UInt64), SerializeUInt64},
             {typeof(DateTime), SerializeDateTime},
             {typeof(TimeSpan), SerializeTimeSpan},
-            {typeof(bool), SerializeBool},
-            {typeof(decimal), SerializeDecimal},
-            {typeof(double), SerializeDouble},
+            {typeof(Boolean), SerializeBool},
+            {typeof(Decimal), SerializeDecimal},
+            {typeof(Double), SerializeDouble},
             {typeof(float), SerializeSingle},
             {typeof(IResource), SerializeIResource},
             {typeof(IModel), SerializeIResource},
@@ -150,7 +149,7 @@ namespace Semiodesk.Trinity
             {typeof(string[]), SerializeStringArray},
             {typeof(Tuple<string, CultureInfo>), SerializeStringCultureInfoTuple},
             {typeof(Uri), SerializeUri},
-            {typeof(byte[]), SerializeByteArray},
+            {typeof(Byte[]), SerializeByteArray},
         };
 
         /// <summary>
@@ -245,7 +244,7 @@ namespace Semiodesk.Trinity
             }
             else
             {
-                var msg = string.Format("No serialiser availabe for object of type {0}.", obj.GetType());
+                var msg = $"No serialiser available be for object of type {obj.GetType()}.";
                 throw new ArgumentException(msg);
             }
         }
@@ -534,14 +533,7 @@ namespace Semiodesk.Trinity
         /// <returns>The value in its correct type.</returns>
         public static object DeserializeString(string str, Uri typeUri)
         {
-            if (Deserializers.ContainsKey(typeUri.AbsoluteUri))
-            {
-                return Deserializers[typeUri.AbsoluteUri](str);
-            }
-            else
-            {
-                return str;
-            }
+            return Deserializers.ContainsKey(typeUri.AbsoluteUri) ? Deserializers[typeUri.AbsoluteUri](str) : str;
         }
 
         /// <summary>
@@ -740,7 +732,7 @@ namespace Semiodesk.Trinity
                 }
                 catch
                 {
-                    var msg = string.Format("No converter found for following type: {0}", dataType.Value);
+                    var msg = $"No converter found for following type: {dataType.Value}";
                     throw new ArgumentException(msg);
                 }
             }

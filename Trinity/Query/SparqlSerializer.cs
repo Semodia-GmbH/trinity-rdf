@@ -56,13 +56,13 @@ namespace Semiodesk.Trinity
 
             if(s.Contains('\n'))
             {
-                return string.Format("'''{0}'''", s);
+                return $"'''{s}'''";
             }
             else
             {
                 s = s.Replace("'", "\\'");
 
-                return string.Format("'{0}'", s);
+                return $"'{s}'";
             }
         }
 
@@ -74,7 +74,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeTranslatedString(string str, string lang)
         {
-            return string.Format("{0}@{1}", SerializeString(str), lang);
+            return $"{SerializeString(str)}@{lang}";
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeTypedLiteral(object obj, Uri typeUri)
         {
-            return string.Format("'{0}'^^<{1}>", XsdTypeMapper.SerializeObject(obj), typeUri);
+            return $"'{XsdTypeMapper.SerializeObject(obj)}'^^<{typeUri}>";
         }
 
         /// <summary>
@@ -138,7 +138,7 @@ namespace Semiodesk.Trinity
             }
             catch
             {
-                var msg = string.Format("No serializer availabe for object of type {0}.", obj.GetType());
+                var msg = $"No serializer availabe for object of type {obj.GetType()}.";
                 throw new ArgumentException(msg);
             }
         }
@@ -150,7 +150,8 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeDateTime(DateTime date)
         {
-            return string.Format("'{0}'^^<http://www.w3.org/2001/XMLSchema#dateTime>", XmlConvert.ToString((DateTime)date, XmlDateTimeSerializationMode.Utc));
+            return
+                $"'{XmlConvert.ToString((DateTime)date, XmlDateTimeSerializationMode.Utc)}'^^<http://www.w3.org/2001/XMLSchema#dateTime>";
         }
 
         /// <summary>

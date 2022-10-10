@@ -139,7 +139,7 @@ namespace Semiodesk.Trinity
                 }
                 else
                 {
-                    var msg = string.Format("The prefix '{0}' is not registered with any ontology in app.config", prefix);
+                    var msg = $"The prefix '{prefix}' is not registered with any ontology in app.config";
 
                     throw new KeyNotFoundException(msg);
                 }
@@ -292,7 +292,7 @@ namespace Semiodesk.Trinity
 
         private void AddPrefix(string prefix, Uri uri)
         {
-            Tokens.Insert(0, new PrefixToken(string.Format("{0}: <{1}>", prefix, uri), -1, -1, -1));
+            Tokens.Insert(0, new PrefixToken($"{prefix}: <{uri}>", -1, -1, -1));
             Tokens.Insert(0, new PrefixDirectiveToken(-1, -1));
         }
 
@@ -340,7 +340,7 @@ namespace Semiodesk.Trinity
                 }
             }
 
-            Tokens.Insert(i, new UriToken(string.Format("<{0}>", uri.OriginalString), -1, -1, -1));
+            Tokens.Insert(i, new UriToken($"<{uri.OriginalString}>", -1, -1, -1));
             Tokens.Insert(i, token);
         }
 
@@ -504,7 +504,7 @@ namespace Semiodesk.Trinity
 
                             if (!ParameterValues.ContainsKey(key))
                             {
-                                var msg = string.Format("No value set for query parameter {0}.", key);
+                                var msg = $"No value set for query parameter {key}.";
 
                                 throw new KeyNotFoundException(msg);
                             }

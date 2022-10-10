@@ -357,7 +357,7 @@ namespace Semiodesk.Trinity
                 typeString = typeof(T).ToString();
             }
 
-            var message = string.Format("Provided argument value was not of type {0}", typeString);
+            var message = $"Provided argument value was not of type {typeString}";
 
             throw new Exception(message);
         }
@@ -397,7 +397,7 @@ namespace Semiodesk.Trinity
                 typeString = typeof(T).ToString();
             }
 
-            var message = string.Format("Provided argument value was not of type {0}", typeString);
+            var message = $"Provided argument value was not of type {typeString}";
             
             throw new Exception(message);
         }

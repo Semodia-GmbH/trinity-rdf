@@ -281,7 +281,7 @@ namespace Semiodesk.Trinity.Query
 
             if (p == null)
             {
-                throw new Exception(string.Format("No RdfPropertyAttribute found for member: {0}", member.Name));
+                throw new Exception($"No RdfPropertyAttribute found for member: {member.Name}");
             }
 
             // Invoke the final user-handled member access triple builder callback.

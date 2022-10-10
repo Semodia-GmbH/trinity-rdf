@@ -327,7 +327,7 @@ namespace Semiodesk.Trinity
             {
                 if (resource.Uri.IsBlankId)
                 {
-                    var queryString = string.Format(@"SELECT BNODE() AS ?x FROM <{0}> WHERE {{}}", modelUri.OriginalString);
+                    var queryString = $@"SELECT BNODE() AS ?x FROM <{modelUri.OriginalString}> WHERE {{}}";
 
                     var result = ExecuteQuery(new SparqlQuery(queryString), transaction);
                     var id = result.GetBindings().First()["x"] as UriRef;
@@ -335,12 +335,10 @@ namespace Semiodesk.Trinity
                     resource.Uri = id;
                 }
 
-                updateString = string.Format(@"
-                    WITH <{0}>
-                    INSERT {{ {1} }} 
-                    WHERE {{}}",
-                modelUri.OriginalString,
-                SparqlSerializer.SerializeResource(resource, ignoreUnmappedProperties));
+                updateString = $@"
+                    WITH <{modelUri.OriginalString}>
+                    INSERT {{ {SparqlSerializer.SerializeResource(resource, ignoreUnmappedProperties)} }} 
+                    WHERE {{}}";
             }
             else
             {

@@ -67,7 +67,7 @@ namespace Semiodesk.Trinity
         {
             get
             {
-                var query = new SparqlQuery(string.Format(@"ASK FROM {0} {{ ?s ?p ?o . }}", SparqlSerializer.SerializeUri(Uri)));
+                var query = new SparqlQuery($@"ASK FROM {SparqlSerializer.SerializeUri(Uri)} {{ ?s ?p ?o . }}");
 
                 return !ExecuteQuery(query).GetAnswer();
             }
@@ -513,7 +513,7 @@ namespace Semiodesk.Trinity
                 }
                 else
                 {
-                    var msg = string.Format("Error: The given type {0} does not implement the IResource interface.", type);
+                    var msg = $"Error: The given type {type} does not implement the IResource interface.";
                     throw new ArgumentException(msg);
                 }
             }
@@ -589,7 +589,7 @@ namespace Semiodesk.Trinity
             }
             else
             {
-                var msg = string.Format("Error: The given type {0} does not implement the IResource interface.", type);
+                var msg = $"Error: The given type {type} does not implement the IResource interface.";
                 throw new ArgumentException(msg);
             }
         }

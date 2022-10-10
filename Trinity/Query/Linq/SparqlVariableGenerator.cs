@@ -108,7 +108,7 @@ namespace Semiodesk.Trinity.Query
         {
             if(!string.IsNullOrEmpty(alias))
             {
-                var sourceKey = string.Format("[{0}]", alias);
+                var sourceKey = $"[{alias}]";
                 var targetKey = GetKey(expression);
 
                 _expressionMappings[sourceKey] = targetKey;

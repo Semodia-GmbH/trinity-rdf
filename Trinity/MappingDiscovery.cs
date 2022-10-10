@@ -161,7 +161,8 @@ namespace Semiodesk.Trinity
             }
             catch (Exception e)
             {
-                throw new Exception(string.Format("Initialisation of mapping class {0} failed. For the reason please consult the inner exception.", _class.ToString()), e);
+                throw new Exception(
+                    $"Initialisation of mapping class {_class.ToString()} failed. For the reason please consult the inner exception.", e);
             }
         }
 
@@ -177,7 +178,8 @@ namespace Semiodesk.Trinity
             }
             catch (Exception e)
             {
-                throw new Exception(string.Format("Initialisation of mapping class {0} failed. For the reason please consult the inner exception.", _class.ToString()), e);
+                throw new Exception(
+                    $"Initialisation of mapping class {_class.ToString()} failed. For the reason please consult the inner exception.", e);
             }
             
             foreach (var x in _class.GetFields())
