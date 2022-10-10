@@ -35,7 +35,7 @@ using System.Xml.Serialization;
 
 namespace Semiodesk.Trinity.OntologyGenerator
 {
-    class Program
+    internal class Program
     {
         #region Members
 
@@ -110,7 +110,7 @@ namespace Semiodesk.Trinity.OntologyGenerator
         #region Methods
 
         [STAThread]
-        static int Main(string[] args)
+        private static int Main(string[] args)
         {
             var p = new Program(args, new ConsoleLogger());
       
@@ -145,7 +145,8 @@ namespace Semiodesk.Trinity.OntologyGenerator
                             var ontologyFile = new FileInfo(t.LocalPath);
 
                            
-                            Logger.LogWarning(string.Format("Could not read ontology <{0}> from path {1}.", ontology.Uri, ontologyFile.FullName));
+                            Logger.LogWarning(
+                                $"Could not read ontology <{ontology.Uri}> from path {ontologyFile.FullName}.");
                         }
 
                         if (!generator.AddOntology(ontology.Uri, null, ontology.Prefix))

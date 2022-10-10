@@ -14,13 +14,12 @@
   </Target>
 
 
-<!--
-  &lt;!&ndash; Todo: We should make the path to the ontologies configurable. &ndash;&gt;
+  <!-- Todo: We should make the path to the ontologies configurable. -->
   <PropertyGroup>
     <CoreCompileDependsOn>$(CoreCompileDependsOn);GenerateOntologyTarget</CoreCompileDependsOn>
   </PropertyGroup>
   
-  <UsingTask TaskName="GenerateOntologyTask" AssemblyFile="$(MSBuildThisFileDirectory)../tools/OntologyGenerator.exe" />
+  <UsingTask TaskName="GenerateOntologyTask" AssemblyFile="$(MSBuildThisFileDirectory)../tools/OntologyGenerator.dll" />
 
   <Target Name="GenerateOntologyTarget">
     <GenerateOntologyTask ProjectPath="$(ProjectDir)/$(ProjectName)$(ProjectExt)" IntermediatePath="$(ProjectDir)/Ontologies/" />
@@ -28,7 +27,6 @@
 	    <Compile Include="Ontologies/Ontologies.g.cs" Exclude="@(Compile)" />
 	  </ItemGroup>
   </Target>
--->
 
 
 </Project>

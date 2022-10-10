@@ -29,13 +29,13 @@ using System;
 
 namespace Semiodesk.Trinity.OntologyGenerator
 {
-    static class nao
+    internal static class nao
     {
         public static Property hasdefaultnamespaceabbreviation = new Property(new Uri("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#hasDefaultNamespaceAbbreviation"));
         public static Property hasdefaultnamespace = new Property(new Uri("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#hasDefaultNamespace"));
     }
 
-    static class dces
+    internal static class dces
     {
         public static Property Title = new Property(new Uri("http://purl.org/dc/elements/1.1/title"));
         public static Property Description = new Property(new Uri("http://purl.org/dc/elements/1.1/description"));

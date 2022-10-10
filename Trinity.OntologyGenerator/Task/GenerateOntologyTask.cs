@@ -88,7 +88,7 @@ namespace Semiodesk.Trinity.OntologyGenerator
 
                     var status = program.Run();
 
-                    OutputFiles = new TaskItem[] { new TaskItem(targetFile) };
+                    OutputFiles = new ITaskItem[] { new TaskItem(targetFile) };
 
                     return status == 0;
                 }
