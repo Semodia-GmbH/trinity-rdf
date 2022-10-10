@@ -27,11 +27,7 @@ namespace LightJson.Serialization
 		/// Gets the position of the scanner within the text.
 		/// </summary>
 		/// <value>The position of the scanner within the text.</value>
-		public TextPosition Position {
-			get {
-				return this.position;
-			}
-		}
+		public TextPosition Position => this.position;
 
 		/// <summary>
 		/// Reads the next character in the stream without changing the current position.

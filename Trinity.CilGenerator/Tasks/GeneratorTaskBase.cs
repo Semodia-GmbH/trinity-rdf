@@ -50,26 +50,17 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
         /// <summary>
         /// Currently modified assembly.
         /// </summary>
-        protected AssemblyDefinition Assembly
-        {
-            get { return Generator.Assembly; }
-        }
+        protected AssemblyDefinition Assembly => Generator.Assembly;
 
         /// <summary>
         /// Main module of the currently modified assembly.
         /// </summary>
-        protected ModuleDefinition MainModule
-        {
-            get { return Generator.Assembly.MainModule; }
-        }
+        protected ModuleDefinition MainModule => Generator.Assembly.MainModule;
 
         /// <summary>
         /// Logger of the CIL generator instance.
         /// </summary>
-        protected ILogger Log
-        {
-            get { return Generator.Log; }
-        }
+        protected ILogger Log => Generator.Log;
 
         protected AssemblyDefinition Trinity;
 

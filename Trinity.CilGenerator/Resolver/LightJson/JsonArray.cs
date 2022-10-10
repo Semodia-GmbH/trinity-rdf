@@ -45,11 +45,7 @@ namespace LightJson
 		/// Gets the number of values in this collection.
 		/// </summary>
 		/// <value>The number of values in this collection.</value>
-		public int Count {
-			get {
-				return this.items.Count;
-			}
-		}
+		public int Count => this.items.Count;
 
 		/// <summary>
 		/// Gets or sets the value at the given index.
@@ -67,9 +63,7 @@ namespace LightJson
 				}
 			}
 
-			set {
-				this.items[index] = value;
-			}
+			set => this.items[index] = value;
 		}
 
 		/// <summary>
