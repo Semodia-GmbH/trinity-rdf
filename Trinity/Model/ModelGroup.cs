@@ -53,7 +53,7 @@ namespace Semiodesk.Trinity
 
         private MethodInfo _getResourceMethod;
 
-        private string _datasetClause = null;
+        private string _datasetClause;
 
         /// <summary>
         /// All unampped properties will be ignored for update and thus deleted. 
@@ -93,7 +93,7 @@ namespace Semiodesk.Trinity
             get
             {
                 var query = new SparqlQuery("ASK " + DatasetClause + " { ?s ?p ?o . }");
-                return !ExecuteQuery(query).GetAnwser();
+                return !ExecuteQuery(query).GetAnswer();
             }
         }
 
@@ -371,7 +371,7 @@ namespace Semiodesk.Trinity
         {
             return ExecuteQuery(new SparqlQuery(string.Format(@"ASK {0} {{ {1} ?p ?o . }}",
                 DatasetClause,
-                SparqlSerializer.SerializeUri(uri))), transaction: transaction).GetAnwser();
+                SparqlSerializer.SerializeUri(uri))), transaction: transaction).GetAnswer();
         }
 
         /// <summary>
@@ -515,7 +515,7 @@ namespace Semiodesk.Trinity
             }
             else
             {
-                var msg = string.Format("No handle to the generic method T GetResource<T>(Uri)");
+                var msg = "No handle to the generic method T GetResource<T>(Uri)";
                 throw new InvalidOperationException(msg);
             }
         }

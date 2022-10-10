@@ -111,14 +111,14 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         private readonly ITripleFormatter _formatter = new VirtuosoFormatter();
 
         private readonly String _dbserver, _dbname, _dbuser, _dbpwd;
-        private readonly int _dbport, _timeout = 0;
+        private readonly int _dbport, _timeout;
 
         /// <summary>
         /// Indicates whether the Database Connection is currently being kept open
         /// </summary>
-        private bool _keepOpen = false;
+        private bool _keepOpen;
 
-        private readonly bool _customConnString = false;
+        private readonly bool _customConnString;
 
         /// <summary>
         /// Creates a Manager for a Virtuoso Native Quad Store

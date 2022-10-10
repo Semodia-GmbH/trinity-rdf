@@ -408,7 +408,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// Returns the bool value from ASK query forms.
         /// </summary>
         /// <returns>True on success, False otherwise.</returns>
-        public bool GetAnwser()
+        public bool GetAnswer()
         {
             using (DataTable queryResults = _store.ExecuteQuery(_store.CreateQuery(_query), _transaction))
             {

@@ -534,17 +534,20 @@ namespace Semiodesk.Trinity
             ExecuteNonQuery(delete, transaction);
         }
 
+        /// <inheritdoc/>
         public virtual void DeleteResource(IResource resource, ITransaction transaction = null)
         {
             DeleteResource(resource.Model.Uri, resource.Uri, transaction);
         }
 
+        /// <inheritdoc/>
         public virtual void DeleteResources(Uri modelUri, IEnumerable<Uri> resources, ITransaction transaction = null)
         {
             foreach (var resource in resources)
                 DeleteResource(modelUri, resource, transaction);
         }
 
+        /// <inheritdoc/>
         public virtual void DeleteResources(IEnumerable<IResource> resources, ITransaction transaction = null)
         {
             foreach (var resource in resources)

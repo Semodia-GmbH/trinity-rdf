@@ -39,15 +39,15 @@ namespace Semiodesk.Trinity.OntologyGenerator
     {
         #region Members
 
-        private int _verbosity = 0;
+        private int _verbosity;
 
-        private IConfiguration _configuration = null;
+        private IConfiguration _configuration;
 
-        private string _generatePath = null;
+        private string _generatePath;
 
-        private string _configPath = null;
+        private string _configPath;
 
-        private FileInfo _configFile = null;
+        private FileInfo _configFile;
 
         private DirectoryInfo _sourceDir;
 

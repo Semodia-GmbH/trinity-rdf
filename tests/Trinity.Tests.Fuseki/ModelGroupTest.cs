@@ -37,9 +37,9 @@ namespace Semiodesk.Trinity.Test.Fuseki
     {
         protected IStore Store;
 
-        protected IModel Model = null;
+        protected IModel Model;
 
-        protected IModel Model2 = null;
+        protected IModel Model2;
 
         [SetUp]
         public void SetUp()

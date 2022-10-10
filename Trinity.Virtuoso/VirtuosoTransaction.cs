@@ -44,7 +44,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         //IModel Model;
         VirtuosoStore RdfStore;
 
-        bool Disposed = false;
+        bool Disposed;
 
         internal VirtuosoTransaction(VirtuosoStore rdfStore)
         {

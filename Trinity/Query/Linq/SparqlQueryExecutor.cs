@@ -98,7 +98,7 @@ namespace Semiodesk.Trinity.Query
                 var query = visitor.GetQuery();
                 var result = Model.ExecuteQuery(query, _inferenceEnabled);
 
-                return new object[] { result.GetAnwser() }.OfType<T>().First();
+                return new object[] { result.GetAnswer() }.OfType<T>().First();
             }
             else if(queryModel.ResultOperators.Any(o => o is CountResultOperator))
             {

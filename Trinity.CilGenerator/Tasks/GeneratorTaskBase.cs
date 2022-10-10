@@ -64,9 +64,9 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
 
         protected AssemblyDefinition Trinity;
 
-        protected TypeReference ClassType = null;
-        protected TypeReference ClassArrayType = null;
-        protected TypeReference PropertyMappingType = null;
+        protected TypeReference ClassType;
+        protected TypeReference ClassArrayType;
+        protected TypeReference PropertyMappingType;
         
 
         #endregion
@@ -120,7 +120,6 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
 
         private void LoadType(string name, out TypeReference typeRef)
         {
-            Log.LogWarning("Main Assembly: {0}", Assembly.MainModule.Name);
             Assembly.MainModule.TryGetTypeReference(name, out typeRef);
         }
         #endregion

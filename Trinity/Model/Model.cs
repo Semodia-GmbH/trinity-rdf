@@ -69,7 +69,7 @@ namespace Semiodesk.Trinity
             {
                 var query = new SparqlQuery(string.Format(@"ASK FROM {0} {{ ?s ?p ?o . }}", SparqlSerializer.SerializeUri(Uri)));
 
-                return !ExecuteQuery(query).GetAnwser();
+                return !ExecuteQuery(query).GetAnswer();
             }
         }
 
@@ -288,16 +288,19 @@ namespace Semiodesk.Trinity
             DeleteResource(resource.Uri);
         }
 
+        /// <inheritdoc/>
         public virtual void DeleteResources(IEnumerable<Uri> resources, ITransaction transaction = null)
         {
             _store.DeleteResources(Uri, resources, transaction);
         }
 
+        /// <inheritdoc/>
         public virtual void DeleteResources(IEnumerable<IResource> resources, ITransaction transaction = null)
         {
             _store.DeleteResources(resources, transaction);
         }
-
+        
+        /// <inheritdoc/>
         public virtual void DeleteResources(ITransaction transaction = null, params IResource[] resources)
         {
             _store.DeleteResources(resources, transaction);
@@ -352,7 +355,7 @@ namespace Semiodesk.Trinity
             query.Bind("@graph", Uri);
             query.Bind("@subject", uri);
 
-            return ExecuteQuery(query, transaction: transaction).GetAnwser();
+            return ExecuteQuery(query, transaction: transaction).GetAnswer();
         }
 
         /// <summary>
@@ -516,7 +519,7 @@ namespace Semiodesk.Trinity
             }
             else
             {
-                var msg = string.Format("Error: No handle to the generic method T GetResource<T>(Uri)");
+                var msg = "Error: No handle to the generic method T GetResource<T>(Uri)";
                 throw new InvalidOperationException(msg);
             }
         }

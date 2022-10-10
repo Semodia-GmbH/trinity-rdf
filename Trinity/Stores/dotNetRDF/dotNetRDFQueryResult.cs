@@ -91,7 +91,8 @@ namespace Semiodesk.Trinity.Store
 
         #region Methods
 
-        public bool GetAnwser()
+        /// <inheritdoc/>
+        public bool GetAnswer()
         {
             if (_query.QueryType == SparqlQueryType.Ask)
             {
@@ -103,6 +104,7 @@ namespace Semiodesk.Trinity.Store
             }
         }
 
+        /// <inheritdoc/>
         public IEnumerable<BindingSet> GetBindings()
         {
             if (_query.QueryType == SparqlQueryType.Select)
@@ -128,16 +130,19 @@ namespace Semiodesk.Trinity.Store
             }
         }
 
+        /// <inheritdoc/>
         public IEnumerable<Resource> GetResources()
         {
             return GetResources<Resource>();
         }
 
+        /// <inheritdoc/>
         public IEnumerable<Resource> GetResources(int offset = -1, int limit = -1)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc/>
         public IEnumerable<Resource> GetResources(Type type)
         {
             if (_query.ProvidesStatements())
@@ -150,6 +155,7 @@ namespace Semiodesk.Trinity.Store
             }
         }
 
+        /// <inheritdoc/>
         public IEnumerable<T> GetResources<T>() where T : Resource
         {
             if(_query.ProvidesStatements())
@@ -162,10 +168,12 @@ namespace Semiodesk.Trinity.Store
             }
         }
 
+        /// <inheritdoc/>
         public IEnumerable<T> GetResources<T>(int offset = -1, int limit = -1) where T : Resource
         {
             throw new NotImplementedException();
         }
+
 
         private IEnumerable<Resource> GenerateResources(Type type)
         {
@@ -423,6 +431,7 @@ namespace Semiodesk.Trinity.Store
             return result;
         }
 
+        /// <inheritdoc/>
         public virtual int Count()
         {
             var countQuery = SparqlSerializer.SerializeCount(_model, _query);
@@ -449,6 +458,7 @@ namespace Semiodesk.Trinity.Store
             return -1;
         }
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             throw new NotImplementedException();

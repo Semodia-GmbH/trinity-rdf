@@ -45,7 +45,7 @@ namespace dotNetRDFStore.Test
     [TestFixture]
     public class ResourceMappingTest
     {
-        public static bool RegisteredOntology = false;
+        public static bool RegisteredOntology;
 
         IStore Store;
         IModel Model;

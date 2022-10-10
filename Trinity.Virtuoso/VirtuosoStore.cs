@@ -86,7 +86,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
 
         private string _defaultInferenceRule = "urn:semiodesk/ruleset";
 
-        private bool _isDisposed = false;
+        private bool _isDisposed;
 
         /// <summary>
         /// This property is being used to identify newly created resources 
