@@ -244,13 +244,13 @@ namespace Semiodesk.Trinity
             }
             else
             {
-                var msg = $"No serialiser available be for object of type {obj.GetType()}.";
+                var msg = $"No serializer available be for object of type {obj.GetType()}.";
                 throw new ArgumentException(msg);
             }
         }
 
         /// <summary>
-        /// Serializes an object forcd to a given type to an XML Schema encoded string.
+        /// Serializes an object force to a given type to an XML Schema encoded string.
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="type"></param>

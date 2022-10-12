@@ -140,21 +140,13 @@ namespace Semiodesk.Trinity.Query
 
                     if (hasAggregate && !v.IsAggregate)
                     {
-#if !NET35
                         SelectBuilder.GroupBy(v.Name);
-#else
-                        QueryBuilder.GroupBy(v.Name);
-#endif
                     }
                 }
 
                 if (hasAggregate && !IsRoot)
                 {
-#if !NET35
                     SelectBuilder.Distinct();
-#else
-                        QueryBuilder.Distinct();
-#endif
                 }
             }
         }

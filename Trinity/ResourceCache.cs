@@ -139,7 +139,7 @@ namespace Semiodesk.Trinity
                     if (list.Contains(resource))
                         list.Remove(resource);
 
-                    // Add ther resource to the mapped list
+                    // Add their resource to the mapped list
                     list.Add(resource);
                 }
             }

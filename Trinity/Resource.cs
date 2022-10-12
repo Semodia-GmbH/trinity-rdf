@@ -35,14 +35,11 @@ using System.Linq;
 using System.Collections;
 using Newtonsoft.Json;
 using System.Runtime.Serialization;
-#if NET35
-using Semiodesk.Trinity.Utility;
-#endif
 
 namespace Semiodesk.Trinity
 {
     /// <summary>
-    /// This class repesents a RDF resource. 
+    /// This class represents a RDF resource. 
     /// </summary>
     public class Resource : IResource
     {
@@ -931,7 +928,7 @@ namespace Semiodesk.Trinity
 
         /// <summary>
         /// Lists all values associated with one property.
-        /// This inclues the mapped values as well.
+        /// This includes the mapped values as well.
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>

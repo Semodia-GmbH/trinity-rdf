@@ -52,7 +52,7 @@ namespace Semiodesk.Trinity
         #region Methods
 
         /// <summary>
-        /// Determines wheter the URIs of the compared objects are equal.
+        /// Determines whether the URIs of the compared objects are equal.
         /// </summary>
         /// <param name="other">The object to be compared.</param>
         /// <returns><c>true</c> if the URIs of the compared objects are equal, <c>false</c> otherwise.</returns>

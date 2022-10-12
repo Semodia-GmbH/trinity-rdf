@@ -32,11 +32,6 @@ using System.Text.RegularExpressions;
 using Semiodesk.Trinity.Store;
 using System.Configuration;
 using System.Net;
-#if NETSTANDARD2_0
-
-#elif !NET35
-using System.ComponentModel.Composition.Hosting;
-#endif
 
 namespace Semiodesk.Trinity
 {

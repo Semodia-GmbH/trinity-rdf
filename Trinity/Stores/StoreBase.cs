@@ -444,7 +444,6 @@ namespace Semiodesk.Trinity
                         break;
                     }
 
-#if !NET35
                 case RdfSerializationFormat.JsonLd:
                     {
                         var w = new JsonLdWriter();
@@ -452,15 +451,12 @@ namespace Semiodesk.Trinity
                         sgWriter.Save(graph, writer, leaveOpen);
                         break;
                     }
-#endif
                 case RdfSerializationFormat.N3:
                     {
                         var w = new Notation3Writer();
                         w.Save(graph, writer, leaveOpen);
                         break;
                     }
-
-#if !NET35
                 case RdfSerializationFormat.NQuads:
                     {
                         var w = new NQuadsWriter();
@@ -468,7 +464,6 @@ namespace Semiodesk.Trinity
                         sgWriter.Save(graph, writer, leaveOpen);
                         break;
                     }
-#endif
                 case RdfSerializationFormat.NTriples:
                     {
                         var w = new NTriplesWriter();
