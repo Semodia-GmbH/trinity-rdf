@@ -36,9 +36,6 @@ using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using VDS.RDF.Query;
 using VDS.RDF.Query.Builder;
-#if NET35
-using Semiodesk.Trinity.Utility;
-#endif
 
 namespace Semiodesk.Trinity.Query
 {

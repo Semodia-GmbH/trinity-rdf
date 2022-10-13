@@ -36,7 +36,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void TestInitialize()
         {
-            string connectionString = SetupClass.ConnectionString;
+            var connectionString = SetupClass.ConnectionString;
 
             var store = StoreFactory.CreateStore(string.Format("{0};rule=urn:semiodesk/test/ruleset", connectionString));
             store.InitializeFromConfiguration();
