@@ -64,7 +64,7 @@ namespace Semiodesk.Trinity
         /// Returns the bool value from ASK query forms.
         /// </summary>
         /// <returns>True on success, False otherwise.</returns>
-        bool GetAnwser();
+        bool GetAnswer();
 
         /// <summary>
         /// Returns marshalled Resource objects returned from DESCRIBE, CONSTRUCT 

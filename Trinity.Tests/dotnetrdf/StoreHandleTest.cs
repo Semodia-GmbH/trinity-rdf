@@ -28,10 +28,6 @@
 using NUnit.Framework;
 using Semiodesk.Trinity;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace dotNetRDFStore.Test
 {

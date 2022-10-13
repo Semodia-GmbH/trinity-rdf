@@ -116,12 +116,12 @@ namespace Semiodesk.Trinity.Test.Fuseki
             SparqlQuery query = new SparqlQuery("ASK WHERE { ?s nco:fullname 'Hans Wurscht' . }");
             ISparqlQueryResult result = Model.ExecuteQuery(query);
 
-            Assert.AreEqual(true, result.GetAnwser());
+            Assert.AreEqual(true, result.GetAnswer());
 
             query = new SparqlQuery("ASK WHERE { ?s nco:fullname 'Hans Meier' . }");
             result = Model.ExecuteQuery(query);
 
-            Assert.AreEqual(false, result.GetAnwser());
+            Assert.AreEqual(false, result.GetAnswer());
         }
 
         [Test]
@@ -284,10 +284,10 @@ namespace Semiodesk.Trinity.Test.Fuseki
             query = new SparqlQuery("ASK WHERE { <http://example.org/Hans> a nco:Role . }");
 
             result = Model.ExecuteQuery(query);
-            Assert.IsFalse(result.GetAnwser());
+            Assert.IsFalse(result.GetAnswer());
 
             result = Model.ExecuteQuery(query, true);
-            Assert.IsTrue(result.GetAnwser());
+            Assert.IsTrue(result.GetAnswer());
 
             // This fact is not explicitly stated.
             query = new SparqlQuery("SELECT ?url WHERE { ?x nco:url ?url . }");
@@ -301,10 +301,10 @@ namespace Semiodesk.Trinity.Test.Fuseki
             query = new SparqlQuery("ASK WHERE { <http://example.org/Hans> nco:hasContactMedium <http://example.org/Hans/phoneNumber#0> . }");
 
             result = Model.ExecuteQuery(query);
-            Assert.IsFalse(result.GetAnwser());
+            Assert.IsFalse(result.GetAnswer());
 
             result = Model.ExecuteQuery(query, true);
-            Assert.IsTrue(result.GetAnwser());
+            Assert.IsTrue(result.GetAnswer());
 
             query = new SparqlQuery("DESCRIBE ?element WHERE { ?element nco:hasContactMedium <http://example.org/Hans/phoneNumber#0> . }");
 

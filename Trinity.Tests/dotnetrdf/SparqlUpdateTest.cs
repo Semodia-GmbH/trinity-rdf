@@ -36,7 +36,7 @@ namespace Semiodesk.Trinity.Test
     {
         private IStore _store;
 
-        private IModel _model = null;
+        private IModel _model;
 
         [SetUp]
         public void SetUp()
@@ -96,7 +96,7 @@ namespace Semiodesk.Trinity.Test
 
             ISparqlQueryResult result = _model.ExecuteQuery(query);
 
-            Assert.AreEqual(true, result.GetAnwser());
+            Assert.AreEqual(true, result.GetAnswer());
 
             /// TEST WITH LANGUAGE TAG
             /// 
@@ -108,7 +108,7 @@ namespace Semiodesk.Trinity.Test
 
             result = _model.ExecuteQuery(query);
 
-            Assert.AreEqual(true, result.GetAnwser());
+            Assert.AreEqual(true, result.GetAnswer());
         }
 
         [Test]
@@ -131,12 +131,12 @@ namespace Semiodesk.Trinity.Test
             SparqlQuery query = new SparqlQuery(@"
                 ASK WHERE { ?s dc:title 'This is an example title' . }");
 
-            Assert.AreEqual(false, _model.ExecuteQuery(query).GetAnwser());
+            Assert.AreEqual(false, _model.ExecuteQuery(query).GetAnswer());
 
             query = new SparqlQuery(@"
                 ASK WHERE { ?s dc:title 'This is an example title too' . }");
 
-            Assert.AreEqual(true, _model.ExecuteQuery(query).GetAnwser());
+            Assert.AreEqual(true, _model.ExecuteQuery(query).GetAnswer());
         }
 
         [Test]
@@ -151,12 +151,12 @@ namespace Semiodesk.Trinity.Test
             SparqlQuery query = new SparqlQuery(@"
                 ASK WHERE { ?s dc:title 'This is an example title' . }");
 
-            Assert.AreEqual(true, _model.ExecuteQuery(query).GetAnwser());
+            Assert.AreEqual(true, _model.ExecuteQuery(query).GetAnswer());
 
             query = new SparqlQuery(@"
                 ASK WHERE { ?s dc:title 'This is an example title2' . }");
 
-            Assert.AreEqual(true, _model.ExecuteQuery(query).GetAnwser());
+            Assert.AreEqual(true, _model.ExecuteQuery(query).GetAnswer());
         }
 
 
@@ -176,7 +176,7 @@ namespace Semiodesk.Trinity.Test
             SparqlQuery query = new SparqlQuery(@"
                 ASK WHERE { ?s dc:title 'This is an example title' . }");
 
-            Assert.AreEqual(false, _model.ExecuteQuery(query).GetAnwser());
+            Assert.AreEqual(false, _model.ExecuteQuery(query).GetAnswer());
         }
 
         [Test]
@@ -205,7 +205,7 @@ namespace Semiodesk.Trinity.Test
 
             SparqlQuery query = new SparqlQuery(@"ASK WHERE { ?s dc:title 'This is an example title' . }");
 
-            Assert.AreEqual(false, _model.ExecuteQuery(query).GetAnwser());
+            Assert.AreEqual(false, _model.ExecuteQuery(query).GetAnswer());
         }
 
         [Test]

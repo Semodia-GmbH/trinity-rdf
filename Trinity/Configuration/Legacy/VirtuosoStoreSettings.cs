@@ -60,7 +60,7 @@ namespace Semiodesk.Trinity.Configuration.Legacy
         {
             get 
             {
-                StringBuilder content = new StringBuilder();
+                var content = new StringBuilder();
                 content.Append("<rulesets>");
                 foreach (var set in RuleSets)
                 {

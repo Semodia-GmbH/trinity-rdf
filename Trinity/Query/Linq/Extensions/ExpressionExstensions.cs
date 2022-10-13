@@ -26,8 +26,6 @@
 // Copyright (c) Semiodesk GmbH 2015-2019
 
 using Remotion.Linq.Clauses.Expressions;
-using System;
-using System.Diagnostics;
 using System.Linq.Expressions;
 
 namespace Semiodesk.Trinity.Query
@@ -38,19 +36,19 @@ namespace Semiodesk.Trinity.Query
         {
             if (expression is QuerySourceReferenceExpression)
             {
-                QuerySourceReferenceExpression sourceExpression = expression as QuerySourceReferenceExpression;
+                var sourceExpression = expression as QuerySourceReferenceExpression;
 
                 return sourceExpression;
             }
             else if (expression is MemberExpression)
             {
-                MemberExpression memberExpression = expression as MemberExpression;
+                var memberExpression = expression as MemberExpression;
 
                 return TryGetQuerySourceReference(memberExpression.Expression);
             }
             else if (expression is SubQueryExpression)
             {
-                SubQueryExpression subQueryExpression = expression as SubQueryExpression;
+                var subQueryExpression = expression as SubQueryExpression;
 
                 return TryGetQuerySourceReference(subQueryExpression.QueryModel.MainFromClause.FromExpression);
             }
@@ -74,7 +72,7 @@ namespace Semiodesk.Trinity.Query
                 }
                 else
                 {
-                    QuerySourceReferenceExpression sourceExpression = expression.TryGetQuerySourceReference();
+                    var sourceExpression = expression.TryGetQuerySourceReference();
 
                     if (sourceExpression != null && sourceExpression != expression)
                     {
@@ -88,7 +86,7 @@ namespace Semiodesk.Trinity.Query
 
         public static string GetKey(this Expression expression)
         {
-            string key = expression.ToString().Trim();
+            var key = expression.ToString().Trim();
 
             if (key.EndsWith(".Uri"))
             {

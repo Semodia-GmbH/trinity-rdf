@@ -17,7 +17,6 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace ICSharpCode.Decompiler.TypeSystem
@@ -46,7 +45,7 @@ namespace ICSharpCode.Decompiler.TypeSystem
 
         public TopLevelTypeName(string reflectionName)
         {
-            int pos = reflectionName.LastIndexOf('.');
+            var pos = reflectionName.LastIndexOf('.');
             if (pos < 0)
             {
                 namespaceName = string.Empty;
@@ -60,26 +59,17 @@ namespace ICSharpCode.Decompiler.TypeSystem
             name = SRMExtensions.SplitTypeParameterCountFromReflectionName(name, out typeParameterCount);
         }
 
-        public string Namespace
-        {
-            get { return namespaceName; }
-        }
+        public string Namespace => namespaceName;
 
-        public string Name
-        {
-            get { return name; }
-        }
+        public string Name => name;
 
-        public int TypeParameterCount
-        {
-            get { return typeParameterCount; }
-        }
+        public int TypeParameterCount => typeParameterCount;
 
         public string ReflectionName
         {
             get
             {
-                StringBuilder b = new StringBuilder();
+                var b = new StringBuilder();
                 if (!string.IsNullOrEmpty(namespaceName))
                 {
                     b.Append(namespaceName);

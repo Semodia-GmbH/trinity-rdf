@@ -26,17 +26,12 @@
 // Copyright (c) Semiodesk GmbH 2015-2019
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using Mono.Cecil;
-using Mono.Cecil.Cil;
-using Mono.Cecil.Pdb;
-using Mono.Cecil.Mdb;
 using Semiodesk.Trinity.CilGenerator.Extensions;
 using Semiodesk.Trinity.CilGenerator.Tasks;
 using System.Diagnostics;
 using System.IO;
-using ICSharpCode.Decompiler;
+using Mono.Cecil;
 using Semiodesk.Trinity.CilGenerator.Resolver;
 
 namespace Semiodesk.Trinity.CilGenerator
@@ -84,14 +79,14 @@ namespace Semiodesk.Trinity.CilGenerator
 
         public bool ProcessFile(string sourceFile, string targetFile = "")
         {
-            bool result = false;
+            var result = false;
 
             if (string.IsNullOrEmpty(targetFile))
             {
                 targetFile = sourceFile;
             }
 
-            Stopwatch stopwatch = new Stopwatch();
+            var stopwatch = new Stopwatch();
             stopwatch.Start();
 
             try
@@ -119,22 +114,22 @@ namespace Semiodesk.Trinity.CilGenerator
 
                     Log.LogMessage("------ Begin Task: ImplementRdfMapping [{0}]", Assembly.Name);
 
-                    bool assemblyModified = false;
+                    var assemblyModified = false;
 
                     // Iterate over all types in the main assembly.
-                    foreach (TypeDefinition type in Assembly.MainModule.Types)
+                    foreach (var type in Assembly.MainModule.Types)
                     {
                         // In the following we need to seperate between properties which have the following attribute combinations:
                         //  - PropertyAttribute with PropertyChangedAttribute
                         //  - PropertyAttribute without PropertyChangedAttribute
                         //  - PropertyChangedAttribute only
-                        HashSet<PropertyDefinition> mapping = type.GetPropertiesWithAttribute("RdfPropertyAttribute").ToHashSet();
-                        HashSet<PropertyDefinition> notifying = type.GetPropertiesWithAttribute("NotifyPropertyChangedAttribute").ToHashSet();
+                        var mapping = type.GetPropertiesWithAttribute("RdfPropertyAttribute").ToHashSet();
+                        var notifying = type.GetPropertiesWithAttribute("NotifyPropertyChangedAttribute").ToHashSet();
 
                         // Implement the GetTypes()-method for the given type.
                         if (mapping.Any() || type.TryGetCustomAttribute("RdfClassAttribute").Any())
                         {
-                            ImplementRdfClassTask implementClass = new ImplementRdfClassTask(this, type);
+                            var implementClass = new ImplementRdfClassTask(this, type);
                             if (implementClass.CanExecute())
                             {
                                 // RDF types _must_ be implemented for classes with mapped properties.
@@ -147,7 +142,7 @@ namespace Semiodesk.Trinity.CilGenerator
                         {
                             var implementProperty = new ImplementRdfPropertyTask(this, type);
 
-                            foreach (PropertyDefinition p in mapping.Except(notifying).Where(implementProperty.CanExecute))
+                            foreach (var p in mapping.Except(notifying).Where(implementProperty.CanExecute))
                             {
                                 assemblyModified = implementProperty.Execute(p);
                             }
@@ -158,7 +153,7 @@ namespace Semiodesk.Trinity.CilGenerator
                         {
                             var implementPropertyChanged = new ImplementNotifyPropertyChangedTask(this, type);
 
-                            foreach (PropertyDefinition p in notifying.Where(implementPropertyChanged.CanExecute))
+                            foreach (var p in notifying.Where(implementPropertyChanged.CanExecute))
                             {
                                 implementPropertyChanged.IsMappedProperty = mapping.Contains(p);
 
@@ -171,8 +166,8 @@ namespace Semiodesk.Trinity.CilGenerator
                     {
                         var param = new WriterParameters { WriteSymbols = WriteSymbols };
 
-                        FileInfo sourceDll = new FileInfo(sourceFile);
-                        FileInfo targetDll = new FileInfo(targetFile);
+                        var sourceDll = new FileInfo(sourceFile);
+                        var targetDll = new FileInfo(targetFile);
 
                         if (sourceDll.FullName != targetDll.FullName)
                         {

@@ -28,13 +28,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Globalization;
 using Semiodesk.Trinity;
-using System.Collections.ObjectModel;
 using System.Reflection;
 using NUnit.Framework;
-using dotNetRDFStore.Test;
 using System.IO;
 using Semiodesk.Trinity.Ontologies;
 using Semiodesk.Trinity.Test;
@@ -49,7 +45,7 @@ namespace dotNetRDFStore.Test
     [TestFixture]
     public class ResourceMappingTest
     {
-        public static bool RegisteredOntology = false;
+        public static bool RegisteredOntology;
 
         IStore Store;
         IModel Model;

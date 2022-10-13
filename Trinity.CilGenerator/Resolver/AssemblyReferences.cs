@@ -17,14 +17,12 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Metadata;
 using System.Security.Cryptography;
 using System.Text;
-using ICSharpCode.Decompiler.Util;
 
 namespace ICSharpCode.Decompiler.Metadata
 {
@@ -88,7 +86,7 @@ namespace ICSharpCode.Decompiler.Metadata
 
 				var pk_token = PublicKeyToken;
 				if (pk_token != null && pk_token.Length > 0) {
-					for (int i = 0; i < pk_token.Length; i++) {
+					for (var i = 0; i < pk_token.Length; i++) {
 						builder.Append(pk_token[i].ToString("x2"));
 					}
 				} else
@@ -122,7 +120,7 @@ namespace ICSharpCode.Decompiler.Metadata
 
 			var name = new AssemblyNameReference();
 			var tokens = fullName.Split(',');
-			for (int i = 0; i < tokens.Length; i++) {
+			for (var i = 0; i < tokens.Length; i++) {
 				var token = tokens[i].Trim();
 
 				if (i == 0) {
@@ -147,7 +145,7 @@ namespace ICSharpCode.Decompiler.Metadata
 							break;
 
 						name.PublicKeyToken = new byte[pk_token.Length / 2];
-						for (int j = 0; j < name.PublicKeyToken.Length; j++)
+						for (var j = 0; j < name.PublicKeyToken.Length; j++)
 							name.PublicKeyToken[j] = Byte.Parse(pk_token.Substring(j * 2, 2), System.Globalization.NumberStyles.HexNumber);
 
 						break;

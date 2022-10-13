@@ -27,10 +27,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
-using Semiodesk.Trinity;
 using Semiodesk.Trinity.Configuration;
 
 namespace Semiodesk.Trinity.Store.Virtuoso

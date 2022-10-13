@@ -77,7 +77,7 @@ namespace Semiodesk.Trinity.Query
         /// <returns><c>true</c> if the member can be represented by a URI, <c>false</c> otherwise.</returns>
         public static bool IsUriType(this MemberInfo member)
         {
-            PropertyInfo property = member as PropertyInfo;
+            var property = member as PropertyInfo;
 
             if(property != null)
             {
@@ -96,7 +96,7 @@ namespace Semiodesk.Trinity.Query
         /// <returns><c>true</c> if the class member is a built-in call, <c>false</c> otherwise.</returns>
         public static bool IsBuiltInCall(this MemberInfo member)
         {
-            HashSet<Type> systemTypes = new HashSet<Type>()
+            var systemTypes = new HashSet<Type>()
             {
                 typeof(DateTime),
                 typeof(String)

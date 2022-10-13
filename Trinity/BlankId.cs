@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Semiodesk.Trinity
+﻿namespace Semiodesk.Trinity
 {
     /// <summary>
     /// A blank node identifier.

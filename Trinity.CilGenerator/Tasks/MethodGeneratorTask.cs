@@ -27,10 +27,8 @@
 
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Semiodesk.Trinity.CilGenerator.Tasks
 {
@@ -96,7 +94,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
         {
             Processor.Body.Instructions.Clear();
 
-            foreach (Instruction i in Instructions)
+            foreach (var i in Instructions)
             {
                 Processor.Append(i);
             }

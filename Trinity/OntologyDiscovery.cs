@@ -96,7 +96,7 @@ namespace Semiodesk.Trinity
         /// </summary>
         public static void RegisterCallingAssembly()
         {
-            Assembly a = Assembly.GetCallingAssembly();
+            var a = Assembly.GetCallingAssembly();
 
             AddAssembly(a);
         }
@@ -107,17 +107,17 @@ namespace Semiodesk.Trinity
         /// <param name="ontologies">An enumeration of ontologies.</param>
         private static void AddOntologies(IEnumerable<Ontology> ontologies)
         {
-            foreach (Ontology ontology in ontologies)
+            foreach (var ontology in ontologies)
             {
                 // The namespace URI of the ontology.
                 Uri uri = null;
 
                 // The registered prefix of the ontology.
-                string prefix = string.Empty;
+                var prefix = string.Empty;
 
-                FieldInfo[] fields = ontology.GetType().GetFields(BindingFlags.Static | BindingFlags.Public);
+                var fields = ontology.GetType().GetFields(BindingFlags.Static | BindingFlags.Public);
 
-                foreach (FieldInfo field in fields)
+                foreach (var field in fields)
                 {
                     // Register the Ontology prefix and name with the NamespaceManager.
                     if (field.Name == "Prefix")
@@ -131,7 +131,7 @@ namespace Semiodesk.Trinity
 
                     if (field.FieldType == typeof(Class))
                     {
-                        Class c = field.GetValue(ontology) as Class;
+                        var c = field.GetValue(ontology) as Class;
 
                         if (Classes.ContainsKey(c.Uri.OriginalString))
                             continue;
@@ -140,7 +140,7 @@ namespace Semiodesk.Trinity
                     }
                     else if (field.FieldType == typeof(Property))
                     {
-                        Property p = field.GetValue(ontology) as Property;
+                        var p = field.GetValue(ontology) as Property;
 
                         if (Properties.ContainsKey(p.Uri.OriginalString))
                             continue;

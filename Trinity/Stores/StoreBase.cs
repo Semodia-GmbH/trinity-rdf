@@ -246,7 +246,7 @@ namespace Semiodesk.Trinity
                 srcDir = new DirectoryInfo(sourceDir);
             }
 
-            StoreUpdater updater = new StoreUpdater(this, srcDir);
+            var updater = new StoreUpdater(this, srcDir);
 
             updater.UpdateOntologies(configuration.ListOntologies());
         }
@@ -284,7 +284,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public virtual IModelGroup CreateModelGroup(params Uri[] models)
         {
-            List<IModel> result = new List<IModel>();
+            var result = new List<IModel>();
 
             foreach (var model in models)
             {
@@ -301,7 +301,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public virtual IModelGroup CreateModelGroup(params IModel[] models)
         {
-            List<IModel> result = new List<IModel>();
+            var result = new List<IModel>();
 
             foreach (var model in models)
             {
@@ -327,7 +327,7 @@ namespace Semiodesk.Trinity
             {
                 if (resource.Uri.IsBlankId)
                 {
-                    string queryString = string.Format(@"SELECT BNODE() AS ?x FROM <{0}> WHERE {{}}", modelUri.OriginalString);
+                    var queryString = string.Format(@"SELECT BNODE() AS ?x FROM <{0}> WHERE {{}}", modelUri.OriginalString);
 
                     var result = ExecuteQuery(new SparqlQuery(queryString), transaction);
                     var id = result.GetBindings().First()["x"] as UriRef;
@@ -369,12 +369,12 @@ namespace Semiodesk.Trinity
         /// <param name="ignoreUnmappedProperties">Set this to true to update only mapped properties.</param>
         public virtual void UpdateResources(IEnumerable<Resource> resources, Uri modelUri, ITransaction transaction = null, bool ignoreUnmappedProperties = false)
         {
-            string WITH = $"{SparqlSerializer.SerializeUri(modelUri)} ";
-            StringBuilder INSERT = new StringBuilder();
-            StringBuilder DELETE = new StringBuilder();
-            StringBuilder OPTIONAL = new StringBuilder();
+            var WITH = $"{SparqlSerializer.SerializeUri(modelUri)} ";
+            var INSERT = new StringBuilder();
+            var DELETE = new StringBuilder();
+            var OPTIONAL = new StringBuilder();
 
-            int count = 0;
+            var count = 0;
             foreach (var res in resources)
             {
                 DELETE.Append($" {SparqlSerializer.SerializeUri(res.Uri)} ?p{count} ?o{count}. ");
@@ -382,8 +382,8 @@ namespace Semiodesk.Trinity
                 INSERT.Append($" {SparqlSerializer.SerializeResource(res, ignoreUnmappedProperties)} ");
                 count++;
             }
-            string updateString = $"WITH {WITH} DELETE {{ {DELETE} }} INSERT {{ {INSERT} }} WHERE {{ OPTIONAL {{ {OPTIONAL} }} }}";
-            SparqlUpdate update = new SparqlUpdate(updateString);
+            var updateString = $"WITH {WITH} DELETE {{ {DELETE} }} INSERT {{ {INSERT} }} WHERE {{ OPTIONAL {{ {OPTIONAL} }} }}";
+            var update = new SparqlUpdate(updateString);
 
             ExecuteNonQuery(update, transaction);
 
@@ -396,7 +396,7 @@ namespace Semiodesk.Trinity
 
         public void Write(Stream stream, IGraph graph, RdfSerializationFormat format, bool leaveOpen)
         {
-            StreamWriter writer = new StreamWriter(stream);
+            var writer = new StreamWriter(stream);
             
             switch (format)
             {
@@ -509,7 +509,7 @@ namespace Semiodesk.Trinity
 
         public void Write(Stream stream, IGraph graph, IRdfWriter formatWriter, bool leaveOpen)
         {
-            StreamWriter streamWriter = new StreamWriter(stream);
+            var streamWriter = new StreamWriter(stream);
 
             formatWriter.Save(graph, streamWriter, leaveOpen);
 
@@ -524,7 +524,7 @@ namespace Semiodesk.Trinity
             // NOTE: Regrettably, dotNetRDF does not support the full SPARQL 1.1 update syntax. To be precise,
             // it does not support FILTERs or OPTIONAL in Modify clauses.
 
-            SparqlUpdate delete = new SparqlUpdate(@"
+            var delete = new SparqlUpdate(@"
                 DELETE WHERE { GRAPH @graph { @subject ?p ?o . } }; 
                 DELETE WHERE { GRAPH @graph { ?s ?p @object . } }");
             delete.Bind("@graph", modelUri);
@@ -534,17 +534,20 @@ namespace Semiodesk.Trinity
             ExecuteNonQuery(delete, transaction);
         }
 
+        /// <inheritdoc/>
         public virtual void DeleteResource(IResource resource, ITransaction transaction = null)
         {
             DeleteResource(resource.Model.Uri, resource.Uri, transaction);
         }
 
+        /// <inheritdoc/>
         public virtual void DeleteResources(Uri modelUri, IEnumerable<Uri> resources, ITransaction transaction = null)
         {
             foreach (var resource in resources)
                 DeleteResource(modelUri, resource, transaction);
         }
 
+        /// <inheritdoc/>
         public virtual void DeleteResources(IEnumerable<IResource> resources, ITransaction transaction = null)
         {
             foreach (var resource in resources)

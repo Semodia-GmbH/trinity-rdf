@@ -36,7 +36,6 @@ using VDS.RDF.Parsing.Handlers;
 using VDS.RDF.Query;
 using VDS.RDF.Query.Inference;
 using VDS.RDF.Update;
-using VDS.RDF.Writing;
 
 namespace Semiodesk.Trinity.Store
 {
@@ -78,12 +77,12 @@ namespace Semiodesk.Trinity.Store
                 _reasoner = new RdfsReasoner();
                 _store.AddInferenceEngine(_reasoner);
 
-                foreach (string s in schemes)
+                foreach (var s in schemes)
                 {
                     var directory = new FileInfo(Assembly.GetExecutingAssembly().Location).Directory;
                     var file = new FileInfo(Path.Combine(directory.FullName, s));
 
-                    IGraph schemaGraph = LoadSchema(file.FullName);
+                    var schemaGraph = LoadSchema(file.FullName);
 
                     _store.Add(schemaGraph);
                     _reasoner.Initialise(schemaGraph);
@@ -101,9 +100,9 @@ namespace Semiodesk.Trinity.Store
 
             graph.LoadFromFile(schema);
 
-            string queryString = "SELECT ?s WHERE { ?s a <http://www.w3.org/2002/07/owl#Ontology>. }";
+            var queryString = "SELECT ?s WHERE { ?s a <http://www.w3.org/2002/07/owl#Ontology>. }";
 
-            SparqlResultSet result = (SparqlResultSet)graph.ExecuteQuery(queryString);
+            var result = (SparqlResultSet)graph.ExecuteQuery(queryString);
 
             graph.BaseUri = (result[0]["s"] as UriNode).Uri;
 
@@ -141,11 +140,11 @@ namespace Semiodesk.Trinity.Store
         /// <param name="transaction">An associated transaction</param>
         public override void ExecuteNonQuery(ISparqlUpdate query, ITransaction transaction = null)
         {
-            string q = query.ToString();
+            var q = query.ToString();
 
             Log?.Invoke(q);
 
-            SparqlUpdateCommandSet cmds = _parser.ParseFromString(q);
+            var cmds = _parser.ParseFromString(q);
 
             _updateProcessor.ProcessCommandSet(cmds);
         }
@@ -158,9 +157,9 @@ namespace Semiodesk.Trinity.Store
         /// <returns></returns>
         public override ISparqlQueryResult ExecuteQuery(ISparqlQuery query, ITransaction transaction = null)
         {
-            string q = query.ToString();
+            var q = query.ToString();
 
-            object results = ExecuteQuery(q);
+            var results = ExecuteQuery(q);
 
             if (results is IGraph)
             {
@@ -183,7 +182,7 @@ namespace Semiodesk.Trinity.Store
         {
             Log?.Invoke(query);
 
-            SparqlQueryParser parser = new SparqlQueryParser();
+            var parser = new SparqlQueryParser();
 
             var q = parser.ParseFromString(query);
 
@@ -268,7 +267,7 @@ namespace Semiodesk.Trinity.Store
         /// <returns></returns>
         public override Uri Read(string content, Uri graphUri, RdfSerializationFormat format, bool update)
         {
-            using (StringReader reader = new StringReader(content))
+            using (var reader = new StringReader(content))
             {
                 IGraph graph = new Graph();
 
@@ -349,7 +348,7 @@ namespace Semiodesk.Trinity.Store
                 {
                     if (format == RdfSerializationFormat.Trig)
                     {
-                        TripleStore s = new TripleStore();
+                        var s = new TripleStore();
                         s.LoadFromFile(path, new TriGParser());
 
                         foreach (Graph g in s.Graphs)
@@ -408,7 +407,7 @@ namespace Semiodesk.Trinity.Store
         {
             if (_store.HasGraph(graphUri))
             {
-                IGraph graph = _store.Graphs[graphUri];
+                var graph = _store.Graphs[graphUri];
 
                 if (namespaces != null)
                 {
@@ -436,7 +435,7 @@ namespace Semiodesk.Trinity.Store
         {
             if (_store.HasGraph(graphUri))
             {
-                IGraph graph = _store.Graphs[graphUri];
+                var graph = _store.Graphs[graphUri];
 
                 Write(stream, graph, formatWriter, leaveOpen);
             }
@@ -459,7 +458,7 @@ namespace Semiodesk.Trinity.Store
         /// <returns></returns>
         public override IModelGroup CreateModelGroup(params Uri[] models)
         {
-            List<IModel> modelList = new List<IModel>();
+            var modelList = new List<IModel>();
 
             foreach (var x in models)
             {
@@ -476,7 +475,7 @@ namespace Semiodesk.Trinity.Store
         /// <returns></returns>
         public new IModelGroup CreateModelGroup(params IModel[] models)
         {
-            List<IModel> modelList = new List<IModel>();
+            var modelList = new List<IModel>();
 
             // This approach might seem a bit redundant, but we want to make sure to get the model from the right store.
             foreach (var x in models)

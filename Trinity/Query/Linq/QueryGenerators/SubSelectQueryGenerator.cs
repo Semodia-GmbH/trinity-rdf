@@ -54,18 +54,18 @@ namespace Semiodesk.Trinity.Query
 
             if(expression is MemberExpression)
             {
-                QuerySourceReferenceExpression sourceExpression = expression.TryGetQuerySourceReference();
+                var sourceExpression = expression.TryGetQuerySourceReference();
 
                 s = VariableGenerator.TryGetSubjectVariable(sourceExpression) ?? VariableGenerator.TryGetObjectVariable(sourceExpression);
                 o = VariableGenerator.CreateObjectVariable(expression);
 
                 // The from clause is parsed first when handling a query. This allows us to detect if the
                 // query source is a subquery and proceed with implementing it _before_ hanlding its results.
-                MemberExpression memberExpression = expression as MemberExpression;
+                var memberExpression = expression as MemberExpression;
 
                 if (s.IsGlobal())
                 {
-                    Type type = memberExpression.Member.DeclaringType;
+                    var type = memberExpression.Member.DeclaringType;
 
                     if(type.IsSubclassOf(typeof(Resource)))
                     {
@@ -77,7 +77,7 @@ namespace Semiodesk.Trinity.Query
                 // expressions optional in order to also allow to count zero occurences.
                 if (QueryModel.HasNumericResultOperator())
                 {
-                    GraphPatternBuilder optionalBuilder = new GraphPatternBuilder(GraphPatternType.Optional);
+                    var optionalBuilder = new GraphPatternBuilder(GraphPatternType.Optional);
 
                     Child(optionalBuilder);
                     

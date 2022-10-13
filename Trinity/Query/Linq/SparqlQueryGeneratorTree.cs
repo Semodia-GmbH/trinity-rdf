@@ -25,8 +25,6 @@
 //
 // Copyright (c) Semiodesk GmbH 2015-2019
 
-using Remotion.Linq;
-using Remotion.Linq.Clauses.Expressions;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -78,7 +76,7 @@ namespace Semiodesk.Trinity.Query
 
             if (_generatorTree.ContainsKey(generator))
             {
-                foreach (ISparqlQueryGenerator g in _generatorTree[generator])
+                foreach (var g in _generatorTree[generator])
                 {
                     Bind(g);
                 }
@@ -124,7 +122,7 @@ namespace Semiodesk.Trinity.Query
 
         public void RegisterQueryExpression(ISparqlQueryGenerator generator, Expression expression)
         {
-            string key = GetKey(expression);
+            var key = GetKey(expression);
 
             if (!_expressionGenerators.ContainsKey(key))
             {
@@ -134,14 +132,14 @@ namespace Semiodesk.Trinity.Query
 
         public bool HasQueryGenerator(Expression expression)
         {
-            string key = GetKey(expression);
+            var key = GetKey(expression);
 
             return _expressionGenerators.ContainsKey(key);
         }
 
         public ISparqlQueryGenerator GetQueryGenerator(Expression expression)
         {
-            string key = GetKey(expression);
+            var key = GetKey(expression);
 
             return _expressionGenerators[key];
         }

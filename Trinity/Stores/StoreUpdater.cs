@@ -73,9 +73,9 @@ namespace Semiodesk.Trinity
             {
                 if (!string.IsNullOrEmpty(onto.Location))
                 {
-                    Uri path = GetPathFromLocation(onto.Location);
+                    var path = GetPathFromLocation(onto.Location);
 
-                    RdfSerializationFormat format = GetSerializationFormatFromUri(path);
+                    var format = GetSerializationFormatFromUri(path);
 
                     _store.Read(onto.Uri, path, format, false);
                 }
@@ -101,7 +101,7 @@ namespace Semiodesk.Trinity
             }
             else
             {
-                string fullPath = Path.Combine(_sourceDirectory.FullName, location);
+                var fullPath = Path.Combine(_sourceDirectory.FullName, location);
                 result = new Uri(fullPath);
             }
 

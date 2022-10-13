@@ -52,8 +52,8 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
                 return false;
             }
 
-            MsBuildLogger log = new MsBuildLogger(Log);
-            ILGenerator generator = new ILGenerator(log, WriteSymbols);
+            var log = new MsBuildLogger(Log);
+            var generator = new ILGenerator(log, WriteSymbols);
 
             return generator.ProcessFile(TargetFile);
         }

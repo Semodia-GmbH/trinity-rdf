@@ -1,6 +1,4 @@
-﻿using Semiodesk.TinyVirtuoso;
-
-using System.Reflection;
+﻿using System.Reflection;
 using System.IO;
 using NUnit.Framework;
 

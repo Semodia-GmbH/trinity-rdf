@@ -53,7 +53,7 @@ namespace Semiodesk.Trinity
 
         private MethodInfo _getResourceMethod;
 
-        private string _datasetClause = null;
+        private string _datasetClause;
 
         /// <summary>
         /// All unampped properties will be ignored for update and thus deleted. 
@@ -92,8 +92,8 @@ namespace Semiodesk.Trinity
         {
             get
             {
-                SparqlQuery query = new SparqlQuery("ASK " + DatasetClause + " { ?s ?p ?o . }");
-                return !ExecuteQuery(query).GetAnwser();
+                var query = new SparqlQuery("ASK " + DatasetClause + " { ?s ?p ?o . }");
+                return !ExecuteQuery(query).GetAnswer();
             }
         }
 
@@ -117,7 +117,7 @@ namespace Semiodesk.Trinity
 
             UpdateDatasetClause();
 
-            foreach (MethodInfo methodInfo in GetType().GetMethods())
+            foreach (var methodInfo in GetType().GetMethods())
             {
                 if (methodInfo.Name == "GetResource" && methodInfo.IsGenericMethod)
                 {
@@ -371,7 +371,7 @@ namespace Semiodesk.Trinity
         {
             return ExecuteQuery(new SparqlQuery(string.Format(@"ASK {0} {{ {1} ?p ?o . }}",
                 DatasetClause,
-                SparqlSerializer.SerializeUri(uri))), transaction: transaction).GetAnwser();
+                SparqlSerializer.SerializeUri(uri))), transaction: transaction).GetAnswer();
         }
 
         /// <summary>
@@ -411,13 +411,13 @@ namespace Semiodesk.Trinity
             ISparqlQuery query = new SparqlQuery("SELECT DISTINCT ?s ?p ?o " + DatasetClause + " WHERE { ?s ?p ?o. FILTER (?s = @subject) }");
             query.Bind("@subject", uri);
 
-            ISparqlQueryResult result = ExecuteQuery(query, transaction: transaction);
+            var result = ExecuteQuery(query, transaction: transaction);
 
             IList resources = result.GetResources().ToList();
 
             if (resources.Count > 0)
             {
-                Resource r = resources[0] as Resource;
+                var r = resources[0] as Resource;
                 r.IsNew = false;
                 r.IsReadOnly = true;
                 r.IsSynchronized = true;
@@ -453,13 +453,13 @@ namespace Semiodesk.Trinity
             ISparqlQuery query = new SparqlQuery("SELECT DISTINCT ?s ?p ?o " + DatasetClause + " WHERE { ?s ?p ?o. FILTER (?s = @subject) }");
             query.Bind("@subject", uri);
 
-            ISparqlQueryResult result = ExecuteQuery(query, transaction: transaction);
+            var result = ExecuteQuery(query, transaction: transaction);
 
             IList resources = result.GetResources<T>().ToList();
 
             if (resources.Count > 0)
             {
-                T r = resources[0] as T;
+                var r = resources[0] as T;
                 r.IsNew = false;
                 r.IsSynchronized = true;
                 r.IsReadOnly = true;
@@ -497,9 +497,9 @@ namespace Semiodesk.Trinity
             {
                 if (typeof(IResource).IsAssignableFrom(type))
                 {
-                    MethodInfo getResource = _getResourceMethod.MakeGenericMethod(type);
+                    var getResource = _getResourceMethod.MakeGenericMethod(type);
 
-                    Resource r = getResource.Invoke(this, new object[] { uri, transaction }) as Resource;
+                    var r = getResource.Invoke(this, new object[] { uri, transaction }) as Resource;
                     r.IsNew = false;
                     r.IsReadOnly = true;
                     r.IsSynchronized = true;
@@ -509,13 +509,13 @@ namespace Semiodesk.Trinity
                 }
                 else
                 {
-                    string msg = string.Format("The given type {0} does not implement the IResource interface.", type);
+                    var msg = string.Format("The given type {0} does not implement the IResource interface.", type);
                     throw new ArgumentException(msg);
                 }
             }
             else
             {
-                string msg = string.Format("No handle to the generic method T GetResource<T>(Uri)");
+                var msg = "No handle to the generic method T GetResource<T>(Uri)";
                 throw new InvalidOperationException(msg);
             }
         }
@@ -529,11 +529,11 @@ namespace Semiodesk.Trinity
         /// <returns>An enumeration of resources that match the given query.</returns>
         public IEnumerable<Resource> GetResources(ISparqlQuery query, bool inferenceEnabled = false, ITransaction transaction = null)
         {
-            IEnumerable<Resource> result = ExecuteQuery(query, inferenceEnabled, transaction).GetResources<Resource>();
+            var result = ExecuteQuery(query, inferenceEnabled, transaction).GetResources<Resource>();
 
             if (result != null)
             {
-                foreach (Resource r in result)
+                foreach (var r in result)
                 {
                     r.SetModel(this);
                     r.IsNew = false;
@@ -556,17 +556,17 @@ namespace Semiodesk.Trinity
         {
             if (typeof(IResource).IsAssignableFrom(type))
             {
-                StringBuilder queryString = new StringBuilder();
+                var queryString = new StringBuilder();
                 queryString.Append("SELECT ?s ?p ?o WHERE { ?s ?p ?o. FILTER ( ");
                 queryString.Append(string.Join("||", from s in uris select $"?s = <{s}>"));
                 queryString.Append(")}");
                 var query = new SparqlQuery(queryString.ToString());
 
-                ISparqlQueryResult result = ExecuteQuery(query, transaction: transaction);
+                var result = ExecuteQuery(query, transaction: transaction);
 
-                IEnumerable<Resource> resources = result.GetResources(type);
+                var resources = result.GetResources(type);
 
-                foreach (Resource r in resources)
+                foreach (var r in resources)
                 {
                     // NOTE: This safeguard is required because of a bug in ExecuteQuery where 
                     // it returns null objects when a rdf:type triple is missing..
@@ -583,7 +583,7 @@ namespace Semiodesk.Trinity
             }
             else
             {
-                string msg = string.Format("Error: The given type {0} does not implement the IResource interface.", type);
+                var msg = string.Format("Error: The given type {0} does not implement the IResource interface.", type);
                 throw new ArgumentException(msg);
             }
         }
@@ -597,14 +597,14 @@ namespace Semiodesk.Trinity
         /// <returns>An enumeration of resources that match the given query.</returns>
         public IEnumerable<T> GetResources<T>(ISparqlQuery query, bool inferenceEnabled = false, ITransaction transaction = null) where T : Resource
         {
-            IEnumerable<T> result = ExecuteQuery(query, inferenceEnabled, transaction).GetResources<T>();
+            var result = ExecuteQuery(query, inferenceEnabled, transaction).GetResources<T>();
 
             // TODO: Could be done in the SparqlQueryResult for increased performance.
             if (result != null)
             {
                 foreach (object r in result)
                 {
-                    T t = r as T;
+                    var t = r as T;
 
                     // NOTE: This safeguard is required because of a bug in ExecuteQuery where 
                     // it returns null objects when a rdf:type triple is missing..
@@ -638,9 +638,9 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public IQueryable<T> AsQueryable<T>(bool inferenceEnabled = false) where T : Resource
         {
-            SparqlQueryExecutor executor = new SparqlQueryExecutor(this, inferenceEnabled);
+            var executor = new SparqlQueryExecutor(this, inferenceEnabled);
 
-            QueryParser queryParser = QueryParser.CreateDefault();
+            var queryParser = QueryParser.CreateDefault();
 
             return new SparqlQueryable<T>(queryParser, executor);
         }

@@ -46,7 +46,7 @@ namespace Semiodesk.Trinity.Configuration
             if (configFile == null)
             {
                 // Loading legacy settings
-                TrinitySettings settings = (TrinitySettings)ConfigurationManager.GetSection("TrinitySettings");
+                var settings = (TrinitySettings)ConfigurationManager.GetSection("TrinitySettings");
 
                 if (settings != null)
                 {
@@ -64,11 +64,11 @@ namespace Semiodesk.Trinity.Configuration
                 throw new FileNotFoundException(configFile.FullName);
             }
 
-            XmlSerializer serializer = new XmlSerializer(typeof(Configuration));
+            var serializer = new XmlSerializer(typeof(Configuration));
 
             using (var stream = configFile.OpenRead())
             {
-                Configuration result = (Configuration)serializer.Deserialize(stream);
+                var result = (Configuration)serializer.Deserialize(stream);
 
                 return result;
             }

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Text;
 using Microsoft.Build.Framework;
 
 namespace Semiodesk.Trinity.OntologyGenerator
@@ -13,7 +10,8 @@ namespace Semiodesk.Trinity.OntologyGenerator
     public class TaskLogger : ILogger
     {
         #region Members
-        IBuildEngine _buildEngine;
+
+        private IBuildEngine _buildEngine;
         #endregion
 
         #region Constructor

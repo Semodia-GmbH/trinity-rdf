@@ -25,7 +25,6 @@
 //
 // Copyright (c) Semiodesk GmbH 2015-2019
 
-using Remotion.Linq.Clauses.Expressions;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -79,7 +78,7 @@ namespace Semiodesk.Trinity.Query
 
         private string GetNextAvailableVariableName(string name)
         {
-            int n = 0;
+            var n = 0;
 
             if (VariableCounters.ContainsKey(name))
             {
@@ -95,7 +94,7 @@ namespace Semiodesk.Trinity.Query
         {
             //return expression.ToString().Trim();
 
-            string key = expression.ToString().Trim();
+            var key = expression.ToString().Trim();
 
             if (key.EndsWith(".Uri"))
             {
@@ -109,8 +108,8 @@ namespace Semiodesk.Trinity.Query
         {
             if(!string.IsNullOrEmpty(alias))
             {
-                string sourceKey = string.Format("[{0}]", alias);
-                string targetKey = GetKey(expression);
+                var sourceKey = string.Format("[{0}]", alias);
+                var targetKey = GetKey(expression);
 
                 _expressionMappings[sourceKey] = targetKey;
 
@@ -147,9 +146,9 @@ namespace Semiodesk.Trinity.Query
 
         private SparqlVariable TryGetVariable(Dictionary<string, SparqlVariable> source, params Expression[] expressions)
         {
-            foreach(Expression expression in expressions)
+            foreach(var expression in expressions)
             {
-                string primaryKey = GetKey(expression);
+                var primaryKey = GetKey(expression);
 
                 if (source.ContainsKey(primaryKey))
                 {
@@ -157,7 +156,7 @@ namespace Semiodesk.Trinity.Query
                 }
                 else if(_expressionMappings.ContainsKey(primaryKey))
                 {
-                    string mappedKey = _expressionMappings[primaryKey];
+                    var mappedKey = _expressionMappings[primaryKey];
 
                     if(source.ContainsKey(mappedKey))
                     {
@@ -201,7 +200,7 @@ namespace Semiodesk.Trinity.Query
 
         public void SetSubjectVariable(Expression expression, SparqlVariable s)
         {
-            string key = GetKey(expression);
+            var key = GetKey(expression);
 
             if (!_subjectVariables.ContainsKey(key) || _subjectVariables[key] != s)
             {
@@ -211,7 +210,7 @@ namespace Semiodesk.Trinity.Query
 
         public void SetPredicateVariable(Expression expression, SparqlVariable p)
         {
-            string key = GetKey(expression);
+            var key = GetKey(expression);
 
             if (!_predicateVariables.ContainsKey(key) || _predicateVariables[key] != p)
             {
@@ -221,7 +220,7 @@ namespace Semiodesk.Trinity.Query
 
         public void SetObjectVariable(Expression expression, SparqlVariable o)
         {
-            string key = GetKey(expression);
+            var key = GetKey(expression);
 
             if(!_objectVariables.ContainsKey(key))
             {
@@ -231,7 +230,7 @@ namespace Semiodesk.Trinity.Query
 
         public SparqlVariable CreateSubjectVariable(Expression expression)
         {
-            SparqlVariable s = new SparqlVariable(GetNextAvailableVariableName("s"));
+            var s = new SparqlVariable(GetNextAvailableVariableName("s"));
 
             SetSubjectVariable(expression, s);
 
@@ -252,7 +251,7 @@ namespace Semiodesk.Trinity.Query
 
         public SparqlVariable CreateObjectVariable(Expression expression)
         {
-            SparqlVariable o = new SparqlVariable(GetNextAvailableVariableName("o"));
+            var o = new SparqlVariable(GetNextAvailableVariableName("o"));
 
             SetObjectVariable(expression, o);
 

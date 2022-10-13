@@ -41,12 +41,12 @@ namespace Semiodesk.Trinity
         public Class(Uri uri) : base(uri) {}
 
         /// <summary>
-        /// Constrctor
+        /// Constructor
         /// </summary>
         public Class(UriRef uri) : base(uri)  {}
 
         /// <summary>
-        /// Constrctor
+        /// Constructor
         /// </summary>
         public Class(string uriString) : base(uriString) { }
 

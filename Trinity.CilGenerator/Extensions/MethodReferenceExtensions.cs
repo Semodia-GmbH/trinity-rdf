@@ -27,7 +27,6 @@
 
 
 using Mono.Cecil;
-using System.Linq;
 
 namespace Semiodesk.Trinity.CilGenerator.Extensions
 {

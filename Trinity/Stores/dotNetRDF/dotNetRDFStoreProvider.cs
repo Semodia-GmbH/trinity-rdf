@@ -63,7 +63,7 @@ namespace Semiodesk.Trinity.Store
         /// <returns></returns>
         public override IStore GetStore(Dictionary<string, string> configurationDictionary)
         {
-            string schemaKey = "schema";
+            var schemaKey = "schema";
             string[] schema = null;
 
             if (configurationDictionary.ContainsKey(schemaKey))

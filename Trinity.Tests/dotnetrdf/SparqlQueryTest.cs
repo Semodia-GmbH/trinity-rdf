@@ -40,7 +40,7 @@ namespace Semiodesk.Trinity.Test
     {
         protected IStore Store;
 
-        protected IModel Model = null;
+        protected IModel Model;
 
         [SetUp]
         public void SetUp()
@@ -114,12 +114,12 @@ namespace Semiodesk.Trinity.Test
             SparqlQuery query = new SparqlQuery("ASK { ?s nco:fullname 'Hans Wurscht' . }");
             ISparqlQueryResult result = Model.ExecuteQuery(query);
 
-            Assert.AreEqual(true, result.GetAnwser());
+            Assert.AreEqual(true, result.GetAnswer());
 
             query = new SparqlQuery("ASK { ?s nco:fullname 'Hans Meier' . }");
             result = Model.ExecuteQuery(query);
 
-            Assert.AreEqual(false, result.GetAnwser());
+            Assert.AreEqual(false, result.GetAnswer());
         }
 
         [Test]
@@ -242,13 +242,13 @@ namespace Semiodesk.Trinity.Test
             query = new SparqlQuery("ASK WHERE { <http://www.example.org/Hans> a test:Animal . }");
 
             result = model.ExecuteQuery(query);
-            Assert.IsFalse(result.GetAnwser());
+            Assert.IsFalse(result.GetAnswer());
 
             result = model.ExecuteQuery(query, true);
-            Assert.IsTrue(result.GetAnwser());
+            Assert.IsTrue(result.GetAnswer());
 
             result = model.ExecuteQuery(query);
-            Assert.IsFalse(result.GetAnwser());
+            Assert.IsFalse(result.GetAnswer());
 
             // This fact is not explicitly stated.
             query = new SparqlQuery("SELECT ?food WHERE { ?s test:consumes ?food . }");

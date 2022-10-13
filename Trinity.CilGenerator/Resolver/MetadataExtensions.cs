@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using SRM = System.Reflection.Metadata;
 using System.Reflection.Metadata;
-using System.Reflection.Metadata.Ecma335;
-using System.Reflection.PortableExecutable;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
-using ICSharpCode.Decompiler.TypeSystem;
 using ICSharpCode.Decompiler.Util;
 
 namespace ICSharpCode.Decompiler.Metadata
@@ -42,7 +36,7 @@ namespace ICSharpCode.Decompiler.Metadata
 		{
 			// Calculate public key token:
 			// 1. hash the public key using the appropriate algorithm.
-			byte[] publicKeyTokenBytes = reader.GetHashAlgorithm().ComputeHash(reader.GetBlobBytes(blob));
+			var publicKeyTokenBytes = reader.GetHashAlgorithm().ComputeHash(reader.GetBlobBytes(blob));
 			// 2. take the last 8 bytes
 			// 3. according to Cecil we need to reverse them, other sources did not mention this.
 			return publicKeyTokenBytes.TakeLast(8).Reverse().ToHexString(8);
@@ -53,7 +47,7 @@ namespace ICSharpCode.Decompiler.Metadata
 			if (!reader.IsAssembly)
 				return string.Empty;
 			var asm = reader.GetAssemblyDefinition();
-			string publicKey = "null";
+			var publicKey = "null";
 			if (!asm.PublicKey.IsNil) {
 				// AssemblyFlags.PublicKey does not apply to assembly definitions
 				publicKey = CalculatePublicKeyToken(asm.PublicKey, reader);
@@ -66,7 +60,7 @@ namespace ICSharpCode.Decompiler.Metadata
 
 		public static string GetFullAssemblyName(this SRM.AssemblyReference reference, MetadataReader reader)
 		{
-			string publicKey = "null";
+			var publicKey = "null";
 			if (!reference.PublicKeyOrToken.IsNil) {
 				if ((reference.Flags & AssemblyFlags.PublicKey) != 0) {
 					publicKey = CalculatePublicKeyToken(reference.PublicKeyOrToken, reader);
@@ -74,7 +68,7 @@ namespace ICSharpCode.Decompiler.Metadata
 					publicKey = reader.GetBlobBytes(reference.PublicKeyOrToken).ToHexString(8);
 				}
 			}
-			string properties = "";
+			var properties = "";
 			if ((reference.Flags & AssemblyFlags.Retargetable) != 0)
 				properties = ", Retargetable=true";
 			return $"{reader.GetString(reference.Name)}, " +
@@ -85,7 +79,7 @@ namespace ICSharpCode.Decompiler.Metadata
 
 		static string ToHexString(this IEnumerable<byte> bytes, int estimatedLength)
 		{
-			StringBuilder sb = new StringBuilder(estimatedLength * 2);
+			var sb = new StringBuilder(estimatedLength * 2);
 			foreach (var b in bytes)
 				sb.AppendFormat("{0:x2}", b);
 			return sb.ToString();

@@ -60,14 +60,14 @@ namespace Semiodesk.Trinity.CilGenerator.Extensions
             if (method == null) throw new ArgumentException("method");
             if (method.GenericParameters.Count != genericArguments.Length) throw new ArgumentException("genericArguments");
 
-            GenericInstanceMethod instance = new GenericInstanceMethod(method);
+            var instance = new GenericInstanceMethod(method);
 
-            foreach (GenericParameter parameter in method.GenericParameters)
+            foreach (var parameter in method.GenericParameters)
             {
                 instance.GenericParameters.Add(new GenericParameter(parameter.Name, method));
             }
 
-            foreach (TypeReference argument in genericArguments)
+            foreach (var argument in genericArguments)
             {
                 instance.GenericArguments.Add(argument);
             }

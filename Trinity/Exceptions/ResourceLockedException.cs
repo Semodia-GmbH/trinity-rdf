@@ -41,7 +41,7 @@ namespace Semiodesk.Trinity
         /// </summary>
         /// <param name="inner">Inner exception.</param>
         public ResourceLockedException(Exception inner)
-            : base(string.Format("One or more resources you tried to access was locked. Either try using transactions or try to repeat the action after reloading your resources."), inner)
+            : base("One or more resources you tried to access was locked. Either try using transactions or try to repeat the action after reloading your resources.", inner)
         {}
 
         #endregion

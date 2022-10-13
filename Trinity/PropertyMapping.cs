@@ -187,7 +187,7 @@ namespace Semiodesk.Trinity
 #if DEBUG
 
             // Test if the given type is valid
-            HashSet<Type> allowed = new HashSet<Type>{ typeof(string), 
+            var allowed = new HashSet<Type>{ typeof(string), 
                                                  typeof(bool),typeof(bool?), 
                                                  typeof(float), typeof(float?), 
                                                  typeof(double), typeof(double?),
@@ -294,7 +294,7 @@ namespace Semiodesk.Trinity
             {
                 if (_value is IList list)
                 {
-                    Type t = value.GetType();
+                    var t = value.GetType();
 
                     if (t == _genericType || _genericType.IsAssignableFrom(t))
                     {
@@ -321,7 +321,7 @@ namespace Semiodesk.Trinity
             }
             else
             {
-                Type t = value.GetType();
+                var t = value.GetType();
 
                 if (t == _dataType || _dataType.IsAssignableFrom(t))
                 {
@@ -357,7 +357,7 @@ namespace Semiodesk.Trinity
                 typeString = typeof(T).ToString();
             }
 
-            string message = string.Format("Provided argument value was not of type {0}", typeString);
+            var message = string.Format("Provided argument value was not of type {0}", typeString);
 
             throw new Exception(message);
         }
@@ -397,7 +397,7 @@ namespace Semiodesk.Trinity
                 typeString = typeof(T).ToString();
             }
 
-            string message = string.Format("Provided argument value was not of type {0}", typeString);
+            var message = string.Format("Provided argument value was not of type {0}", typeString);
             
             throw new Exception(message);
         }
@@ -431,9 +431,9 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         IList ToLanguageList()
         {
-            List<Tuple<string, string>> result = new List<Tuple<string, string>>();
+            var result = new List<Tuple<string, string>>();
 
-            foreach (string v in _value as IList<string>)
+            foreach (var v in _value as IList<string>)
             {
                 result.Add(new Tuple<string, string>(v, Language));
             }
@@ -448,7 +448,7 @@ namespace Semiodesk.Trinity
         /// <returns>True if the type is compatible</returns>
         bool IPropertyMapping.IsTypeCompatible(Type type)
         {
-            Type mappingType = _dataType;
+            var mappingType = _dataType;
 
             if (_isList)
             {
@@ -544,11 +544,11 @@ namespace Semiodesk.Trinity
 
             if (_value != null && _isList)
             {
-                IList collection = (IList)_value;
+                var collection = (IList)_value;
 
                 collection.Clear();
 
-                IList otherCollection = (IList) other.GetValueObject();
+                var otherCollection = (IList) other.GetValueObject();
 
                 foreach (var v in otherCollection)
                 {

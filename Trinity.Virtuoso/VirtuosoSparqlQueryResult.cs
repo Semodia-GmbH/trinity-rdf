@@ -31,7 +31,6 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using OpenLink.Data.Virtuoso;
-using System.Globalization;
 using System.Diagnostics;
 #if NET35
 using Semiodesk.Trinity.Utility;
@@ -409,7 +408,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// Returns the bool value from ASK query forms.
         /// </summary>
         /// <returns>True on success, False otherwise.</returns>
-        public bool GetAnwser()
+        public bool GetAnswer()
         {
             using (DataTable queryResults = _store.ExecuteQuery(_store.CreateQuery(_query), _transaction))
             {

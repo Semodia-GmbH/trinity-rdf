@@ -36,7 +36,7 @@ namespace Semiodesk.Trinity.Query
     {
         public static RdfPropertyAttribute TryGetRdfPropertyAttribute(this MemberExpression expression)
         {
-            Type attributeType = typeof(RdfPropertyAttribute);
+            var attributeType = typeof(RdfPropertyAttribute);
 
             MemberInfo member;
 

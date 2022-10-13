@@ -77,23 +77,23 @@ namespace Semiodesk.Trinity.Serialization
         /// <returns></returns>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            JObject resourceJson = JObject.Load(reader);
-            JObject modelJson = resourceJson["Model"].Value<JObject>();
+            var resourceJson = JObject.Load(reader);
+            var modelJson = resourceJson["Model"].Value<JObject>();
 
             if (modelJson == null)
             {
                 return null;
             }
 
-            Uri modelUri = new Uri(modelJson["Uri"].Value<string>());
-            Uri resourceUri = new Uri(resourceJson["Uri"].Value<string>());
+            var modelUri = new Uri(modelJson["Uri"].Value<string>());
+            var resourceUri = new Uri(resourceJson["Uri"].Value<string>());
 
-            IModel model = _store.GetModel(modelUri);
+            var model = _store.GetModel(modelUri);
 
             // We could load the resource from the model here, however this would
             // initialize all the list-type properties of the resource. This is a problem
             // since the JSON serializer does not clear the lists and simply adds the new values.
-            Resource resource = model.GetResource<Resource>(resourceUri);
+            var resource = model.GetResource<Resource>(resourceUri);
 
             if (resource == null)
             {

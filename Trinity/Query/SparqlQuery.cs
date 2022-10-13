@@ -82,9 +82,9 @@ namespace Semiodesk.Trinity
 
                     if (value is IModelGroup)
                     {
-                        IModelGroup group = value as IModelGroup;
+                        var group = value as IModelGroup;
 
-                        foreach (IModel m in group)
+                        foreach (var m in group)
                         {
                             _preprocessor.AddDefaultGraph(m.Uri);
                         }

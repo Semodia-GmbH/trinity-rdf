@@ -26,8 +26,6 @@
 // Copyright (c) Semiodesk GmbH 2015-2019
 
 using Mono.Cecil;
-using System;
-using System.Linq;
 
 namespace Semiodesk.Trinity.CilGenerator.Tasks
 {
@@ -52,32 +50,23 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
         /// <summary>
         /// Currently modified assembly.
         /// </summary>
-        protected AssemblyDefinition Assembly
-        {
-            get { return Generator.Assembly; }
-        }
+        protected AssemblyDefinition Assembly => Generator.Assembly;
 
         /// <summary>
         /// Main module of the currently modified assembly.
         /// </summary>
-        protected ModuleDefinition MainModule
-        {
-            get { return Generator.Assembly.MainModule; }
-        }
+        protected ModuleDefinition MainModule => Generator.Assembly.MainModule;
 
         /// <summary>
         /// Logger of the CIL generator instance.
         /// </summary>
-        protected ILogger Log
-        {
-            get { return Generator.Log; }
-        }
+        protected ILogger Log => Generator.Log;
 
         protected AssemblyDefinition Trinity;
 
-        protected TypeReference ClassType = null;
-        protected TypeReference ClassArrayType = null;
-        protected TypeReference PropertyMappingType = null;
+        protected TypeReference ClassType;
+        protected TypeReference ClassArrayType;
+        protected TypeReference PropertyMappingType;
         
 
         #endregion
@@ -124,13 +113,9 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
         protected virtual void LoadTrinityTypes()
         {
             LoadType("Semiodesk.Trinity.Class", out ClassType);
-            //ClassType = ILGenerator.RdfClass;
             ClassArrayType= new ArrayType(ClassType);
-
             PropertyMappingType = ILGenerator.PropertyMapping;
             
-
-
         }
 
         private void LoadType(string name, out TypeReference typeRef)

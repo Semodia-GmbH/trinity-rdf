@@ -27,11 +27,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net;
-using System.Collections.Specialized;
-using System.Web;
 using VDS.RDF.Query;
 using System.IO;
 using VDS.RDF.Parsing;
@@ -87,7 +83,7 @@ namespace Semiodesk.Trinity.Store
 
         public IModelGroup CreateModelGroup(params Uri[] models)
         {
-            List<IModel> modelList = new List<IModel>();
+            var modelList = new List<IModel>();
 
             foreach (var x in models)
             {
@@ -99,7 +95,7 @@ namespace Semiodesk.Trinity.Store
 
         public IModelGroup CreateModelGroup(params IModel[] models)
         {
-            List<IModel> modelList = new List<IModel>();
+            var modelList = new List<IModel>();
 
             // This approach might seem a bit redundant, but we want to make sure to get the model from the right store.
             foreach (var x in models)
@@ -162,11 +158,11 @@ namespace Semiodesk.Trinity.Store
 
         public ISparqlQueryResult ExecuteQuery(ISparqlQuery query, ITransaction transaction = null)
         {
-            string q = query.ToString();
+            var q = query.ToString();
 
             Log?.Invoke(q);
 
-            SparqlQueryParser p = new SparqlQueryParser();
+            var p = new SparqlQueryParser();
 
             var x = p.ParseFromString(q);
             x.ClearNamedGraphs();
