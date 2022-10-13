@@ -59,6 +59,8 @@ namespace Semiodesk.Trinity
             public static Uri base64Binary = new Uri(ns, "#base64Binary");
             public static Uri boolean_ = new Uri(ns, "#boolean_");
             public static Uri boolean = new Uri(ns, "#boolean");
+            public static Uri _byte = new Uri(ns, "#byte");
+            public static Uri _sbyte = new Uri(ns, "#unsignedByte");
             public static Uri _double = new Uri(ns, "#double");
             public static Uri _float = new Uri(ns, "#float");
             public static Uri _short = new Uri(ns, "#short");
@@ -78,6 +80,9 @@ namespace Semiodesk.Trinity
         /// </summary>
         protected static Dictionary<Type, Uri> NativeToXsd = new Dictionary<Type, Uri>()
         {
+            {typeof(Byte), xsd._byte},
+            {typeof(SByte), xsd._sbyte},
+            {typeof(Int16), xsd._short},
             {typeof(Int16), xsd._short},
             {typeof(Int32), xsd._int},
             {typeof(Int64), xsd._long},
@@ -101,6 +106,8 @@ namespace Semiodesk.Trinity
         {
             
             {xsd.nonNegativeInteger.AbsoluteUri, typeof(UInt64)},
+            {xsd._byte.AbsoluteUri, typeof(Byte)},
+            {xsd._sbyte.AbsoluteUri, typeof(SByte)},
             {xsd._short.AbsoluteUri, typeof(Int16)},
             {xsd._int.AbsoluteUri, typeof(Int32)},
             {xsd._long.AbsoluteUri, typeof(Int64)},
@@ -123,6 +130,8 @@ namespace Semiodesk.Trinity
         /// </summary>
         protected static Dictionary<Type, ObjectSerializationDelegate> Serializers = new Dictionary<Type, ObjectSerializationDelegate>()
         {
+            {typeof(Byte), SerializeByte},
+            {typeof(SByte), SerializeSByte},
             {typeof(Int16), SerializeInt16},
             {typeof(Int32), SerializeInt32},
             {typeof(Int64), SerializeInt64},
@@ -149,6 +158,8 @@ namespace Semiodesk.Trinity
         /// </summary>
         static Dictionary<string, ObjectDeserializationDelegate> Deserializers = new Dictionary<string, ObjectDeserializationDelegate>()
         {
+            {xsd._byte.AbsoluteUri, DeserializeByte},
+            {xsd._sbyte.AbsoluteUri, DeserializeSByte},
             {xsd._short.AbsoluteUri, DeserializeInt16},
             {xsd._int.AbsoluteUri, DeserializeInt32},
             {xsd._long.AbsoluteUri, DeserializeInt64},
@@ -261,7 +272,7 @@ namespace Semiodesk.Trinity
             if (obj is IResource resource)
             {
                 // The .NET Uri class makes the host lower case, this is a problem for OpenLink Virtuoso
-                return resource.Uri.OriginalString.ToString();
+                return resource.Uri.OriginalString;
             }
             else
             {
@@ -295,7 +306,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeString(object obj)
         {
-            return "\"" + obj.ToString() + "\"";
+            return "\"" + obj + "\"";
         }
 
         /// <summary>
@@ -341,7 +352,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeDateTime(object obj)
         {
-            return XmlConvert.ToString((DateTime)obj, XmlDateTimeSerializationMode.Utc).ToString();
+            return XmlConvert.ToString((DateTime)obj, XmlDateTimeSerializationMode.Utc);
         }
 
         /// <summary>
@@ -351,7 +362,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeTimeSpan(object obj)
         {
-            return XmlConvert.ToString((TimeSpan)obj).ToString();
+            return XmlConvert.ToString((TimeSpan)obj);
         }
 
 
@@ -380,8 +391,29 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeBool(object obj)
         {
-            return XmlConvert.ToString((bool)obj).ToString();
+            return XmlConvert.ToString((bool)obj);
         }
+
+        /// <summary>
+        /// Serialize an Byte
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static string SerializeByte(object obj)
+        {
+            return XmlConvert.ToString((byte)obj);
+        }
+        
+        /// <summary>
+        /// Serialize an SByte
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static string SerializeSByte(object obj)
+        {
+            return XmlConvert.ToString((sbyte)obj);
+        }
+
 
         /// <summary>
         /// Serialize an Int16
@@ -390,7 +422,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeInt16(object obj)
         {
-            return XmlConvert.ToString((Int16)obj).ToString();
+            return XmlConvert.ToString((Int16)obj);
         }
 
         /// <summary>
@@ -400,7 +432,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeInt32(object obj)
         {
-            return XmlConvert.ToString((Int32)obj).ToString();
+            return XmlConvert.ToString((Int32)obj);
         }
 
         /// <summary>
@@ -410,7 +442,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeInt64(object obj)
         {
-            return XmlConvert.ToString((Int64)obj).ToString();
+            return XmlConvert.ToString((Int64)obj);
         }
 
         /// <summary>
@@ -420,7 +452,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeUInt16(object obj)
         {
-            return XmlConvert.ToString((UInt16)obj).ToString();
+            return XmlConvert.ToString((UInt16)obj);
         }
 
         /// <summary>
@@ -430,7 +462,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeUInt32(object obj)
         {
-            return XmlConvert.ToString((UInt32)obj).ToString();
+            return XmlConvert.ToString((UInt32)obj);
         }
 
         /// <summary>
@@ -440,7 +472,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeUInt64(object obj)
         {
-            return XmlConvert.ToString((UInt64)obj).ToString();
+            return XmlConvert.ToString((UInt64)obj);
         }
 
         /// <summary>
@@ -450,7 +482,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeDecimal(object obj)
         {
-            return XmlConvert.ToString((Decimal)obj).ToString();
+            return XmlConvert.ToString((Decimal)obj);
         }
 
         /// <summary>
@@ -460,7 +492,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeDouble(object obj)
         {
-            return XmlConvert.ToString((double)obj).ToString();
+            return XmlConvert.ToString((double)obj);
         }
 
         /// <summary>
@@ -470,7 +502,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeSingle(object obj)
         {
-            return XmlConvert.ToString((float)obj).ToString();
+            return XmlConvert.ToString((float)obj);
         }
 
         #endregion
@@ -511,6 +543,27 @@ namespace Semiodesk.Trinity
                 return str;
             }
         }
+
+        /// <summary>
+        /// Deserialize an byte from a string.
+        /// </summary>
+        /// <param name="str">The serialized byte</param>
+        /// <returns>A byte</returns>
+        public static object DeserializeByte(string str)
+        {
+            return XmlConvert.ToByte(str);
+        }
+        
+        /// <summary>
+        /// Deserialize an sbyte from a string.
+        /// </summary>
+        /// <param name="str">The serialized sbyte</param>
+        /// <returns>A sbyte</returns>
+        public static object DeserializeSByte(string str)
+        {
+            return XmlConvert.ToSByte(str);
+        }
+        
 
         /// <summary>
         /// Deserialize an int16 from a string.
