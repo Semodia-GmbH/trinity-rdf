@@ -26,6 +26,7 @@
 // Copyright (c) Semiodesk GmbH 2015-2019
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -97,61 +98,48 @@ namespace Semiodesk.Trinity
         {
             try
             {
-                if (obj is string)
+                switch (obj)
                 {
-                    return SerializeString(obj as string);
-                }
-                else if (obj is string[])
-                {
+                    case string s:
+                        return SerializeString(s);
                     // string + language
-                    var array = obj as string[];
-                    return SerializeTranslatedString(array[0], array[1]);
-                }
-                else if (obj is Tuple<string, CultureInfo>)
-                {
+                    case string[] strings:
+                        return SerializeTranslatedString(strings[0], strings[1]);
                     // string + language
-                    var array = obj as Tuple<string, CultureInfo>;
-                    return SerializeTranslatedString(array.Item1, array.Item2.Name);
-                }
-                else if (obj is Tuple<string, string>)
-                {
+                    case Tuple<string, CultureInfo> tuple:
+                        return SerializeTranslatedString(tuple.Item1, tuple.Item2.Name);
                     // string + language
-                    var array = obj as Tuple<string, string>;
-                    return SerializeTranslatedString(array.Item1, array.Item2);
-                }
-                else if (obj is Uri || typeof(Uri).IsSubclassOf(obj.GetType()))
-                {
-                    return SerializeUri(obj as Uri);
-                }
-                else if (obj.GetType().GetInterface("IResource") != null)
-                {
-                    return SerializeUri((obj as IResource).Uri);
-                }
-                else if (obj.GetType().GetInterface("IModel") != null)
-                {
-                    return SerializeUri((obj as IModel).Uri);
-                }
-                else
-                {
-                    return SerializeTypedLiteral(obj, XsdTypeMapper.GetXsdTypeUri(obj.GetType()));
+                    case Tuple<string, string> array:
+                        return SerializeTranslatedString(array.Item1, array.Item2);
+                    // list of strings + language
+                    case IEnumerable<Tuple<string, CultureInfo>> translatedString:
+                        return SerializeTranslatedString(translatedString);
+                    case Uri uri:
+                        return SerializeUri(uri);
+                    case IResource resource:
+                        return SerializeUri(resource.Uri);
+                    case IModel model:
+                        return SerializeUri(model.Uri);
+                    default:
+                        return SerializeTypedLiteral(obj, XsdTypeMapper.GetXsdTypeUri(obj.GetType()));
                 }
             }
             catch
             {
-                var msg = $"No serializer availabe for object of type {obj.GetType()}.";
+                var msg = $"No serializer available for object of type {obj.GetType()}.";
                 throw new ArgumentException(msg);
             }
         }
 
-        /// <summary>
-        /// Serializes a DateTime object.
-        /// </summary>
-        /// <param name="date">A date time object.</param>
-        /// <returns></returns>
-        public static string SerializeDateTime(DateTime date)
+        private static string SerializeTranslatedString(IEnumerable<Tuple<string, CultureInfo>> translatedString)
         {
-            return
-                $"'{XmlConvert.ToString((DateTime)date, XmlDateTimeSerializationMode.Utc)}'^^<http://www.w3.org/2001/XMLSchema#dateTime>";
+            var result = new StringBuilder();
+            foreach (var (translation, culture) in translatedString)
+            {
+                result.Append(SerializeTranslatedString(translation, culture.Name)).Append(" ");
+            }
+
+            return result.ToString();
         }
 
         /// <summary>
@@ -206,17 +194,15 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string GenerateDatasetClause(IModel model)
         {
-            if (model == null)
+            switch (model)
             {
-                return "";
+                case null:
+                    return "";
+                case IModelGroup group:
+                    return GenerateDatasetClause(group);
+                default:
+                    return $"FROM {SerializeUri(model.Uri)} ";
             }
-
-            if (model is IModelGroup)
-            {
-                return GenerateDatasetClause(model as IModelGroup);
-            }
-
-            return "FROM " + SerializeUri(model.Uri) + " ";
         }
 
         /// <summary>
@@ -226,9 +212,9 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string GenerateDatasetClause(IModelGroup modelGroup)
         {
-            if (modelGroup is ModelGroup)
+            if (modelGroup is ModelGroup group)
             {
-                return (modelGroup as ModelGroup).DatasetClause;
+                return group.DatasetClause;
             }
             else
             {
