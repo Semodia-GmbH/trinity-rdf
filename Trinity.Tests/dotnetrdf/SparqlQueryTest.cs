@@ -68,33 +68,33 @@ namespace Semiodesk.Trinity.Test
 
             Model.Clear();
 
-            IResource resource0 = Model.CreateResource(new Uri("http://example.org/Hans"));
+            var resource0 = Model.CreateResource(new Uri("http://example.org/Hans"));
             resource0.AddProperty(rdf.type, nco.PersonContact);
             resource0.AddProperty(nco.fullname, "Hans Wurscht");
             resource0.AddProperty(nco.birthDate, DateTime.Now);
             resource0.AddProperty(nco.blogUrl, "http://blog.com/Hans");
             resource0.Commit();
 
-            IResource resource1 = Model.CreateResource(new Uri("http://example.org/Task"));
+            var resource1 = Model.CreateResource(new Uri("http://example.org/Task"));
             resource1.AddProperty(rdf.type, tmo.Task);
             resource1.AddProperty(tmo.taskName, "Eine Aufgabe.");
             resource1.AddProperty(nco.creator, resource0);
             resource1.Commit();
 
-            IResource resource2 = Model.CreateResource(new Uri("http://example.org/Doc#1"));
+            var resource2 = Model.CreateResource(new Uri("http://example.org/Doc#1"));
             resource2.AddProperty(rdf.type, nfo.Document);
             resource2.AddProperty(dc.date, DateTime.Today);
             resource2.AddProperty(nco.creator, resource0);
             resource2.Commit();
 
             // NOTE: The different name influences the ordering of the resource in query results.
-            IResource resource3 = Model.CreateResource(new Uri("http://example.org/Boc#2"));
+            var resource3 = Model.CreateResource(new Uri("http://example.org/Boc#2"));
             resource3.AddProperty(rdf.type, nfo.Document);
             resource3.AddProperty(dc.date, DateTime.Today.AddHours(1));
             resource3.AddProperty(nco.creator, resource0);
             resource3.Commit();
 
-            IResource resource4 = Model.CreateResource(new Uri("http://example.org/Doc#3"));
+            var resource4 = Model.CreateResource(new Uri("http://example.org/Doc#3"));
             resource4.AddProperty(rdf.type, nfo.Document);
             resource4.AddProperty(dc.date, DateTime.Today.AddHours(2));
             resource4.AddProperty(nco.creator, resource0);
@@ -111,8 +111,8 @@ namespace Semiodesk.Trinity.Test
         public void TestAsk()
         {
             // Checking the model using ASK queries.
-            SparqlQuery query = new SparqlQuery("ASK { ?s nco:fullname 'Hans Wurscht' . }");
-            ISparqlQueryResult result = Model.ExecuteQuery(query);
+            var query = new SparqlQuery("ASK { ?s nco:fullname 'Hans Wurscht' . }");
+            var result = Model.ExecuteQuery(query);
 
             Assert.AreEqual(true, result.GetAnswer());
 
@@ -126,8 +126,8 @@ namespace Semiodesk.Trinity.Test
         public void TestSelect()
         {
             // Retrieving bound variables using the SELECT query form.
-            SparqlQuery query = new SparqlQuery("SELECT ?name ?birthday WHERE { ?x nco:fullname ?name. ?x nco:birthDate ?birthday. }");
-            ISparqlQueryResult result = Model.ExecuteQuery(query);
+            var query = new SparqlQuery("SELECT ?name ?birthday WHERE { ?x nco:fullname ?name. ?x nco:birthDate ?birthday. }");
+            var result = Model.ExecuteQuery(query);
 
             Assert.AreEqual(1, result.GetBindings().Count());
 
@@ -150,11 +150,11 @@ namespace Semiodesk.Trinity.Test
             Assert.AreEqual(5, result.GetResources().Count());
 
             // Check that resource creation is done correctly for Resources containing dashes.
-            IResource r0 = Model.CreateResource(new Uri("http://example.org/Something#0"));
+            var r0 = Model.CreateResource(new Uri("http://example.org/Something#0"));
             r0.AddProperty(new Property(new Uri("http://example.org/fullName")), "Something");
             r0.Commit();
 
-            IResource r1 = Model.CreateResource(new Uri("http://example.org/Something#1"));
+            var r1 = Model.CreateResource(new Uri("http://example.org/Something#1"));
             r1.AddProperty(new Property(new Uri("http://example.org/fullName")), "Anotherthing");
             r1.Commit();
 
@@ -167,8 +167,8 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestDescribe()
         {
-            SparqlQuery query = new SparqlQuery("DESCRIBE <http://example.org/Hans>");
-            ISparqlQueryResult result = Model.ExecuteQuery(query);
+            var query = new SparqlQuery("DESCRIBE <http://example.org/Hans>");
+            var result = Model.ExecuteQuery(query);
 
             IList resources = result.GetResources().ToList();
             Assert.AreEqual(1, resources.Count);
@@ -196,7 +196,7 @@ namespace Semiodesk.Trinity.Test
             }
 
             // Assert.Inconclusive("Blank nodes are currently problematic.");
-            SparqlQuery query = new SparqlQuery(@"
+            var query = new SparqlQuery(@"
                 CONSTRUCT
                 {
                     ?x  vcard:N _:v .
@@ -226,10 +226,10 @@ namespace Semiodesk.Trinity.Test
 
             var model = Store.CreateModel(new Uri("http://example.org/TestModel"));
 
-            Class horse = new Class(new Uri("http://www.semiodesk.com/ontologies/test#Horse"));
-            Property eats = new Property(new Uri("http://www.semiodesk.com/ontologies/test#eats"));
+            var horse = new Class(new Uri("http://www.semiodesk.com/ontologies/test#Horse"));
+            var eats = new Property(new Uri("http://www.semiodesk.com/ontologies/test#eats"));
 
-            IResource r = model.CreateResource(new Uri("http://www.example.org/Hans"));
+            var r = model.CreateResource(new Uri("http://www.example.org/Hans"));
 
             r.AddProperty(rdf.type, horse);
             r.AddProperty(eats, "Straw");
@@ -268,7 +268,7 @@ namespace Semiodesk.Trinity.Test
             Assert.AreEqual(true, Model.ContainsResource(new Uri("http://example.org/Hans")));
             Assert.AreEqual(false, Model.ContainsResource(new Uri("http://example.org/Peter")));
 
-            IResource hans = Model.GetResource(new Uri("http://example.org/Hans"));
+            var hans = Model.GetResource(new Uri("http://example.org/Hans"));
             Assert.Throws<ResourceNotFoundException>(delegate { Model.GetResource(new Uri("http://example.org/Peter")); });
 
             hans = Model.GetResource(new Uri("http://example.org/Hans"), typeof(Resource)) as IResource;
@@ -278,7 +278,7 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestUriEscaping()
         {
-            Uri uri = new Uri("file:///F:/test/02%20-%20Take%20Me%20Somewhere%20Nice.mp3");
+            var uri = new Uri("file:///F:/test/02%20-%20Take%20Me%20Somewhere%20Nice.mp3");
 
             var x = Model.CreateResource(uri);
             var nameProperty = new Property(new Uri("ex:name"));
@@ -294,8 +294,8 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestSelectCount()
         {
-            SparqlQuery query = new SparqlQuery("SELECT COUNT(?s) AS ?count WHERE { ?s rdf:type nfo:Document. }");
-            ISparqlQueryResult result = Model.ExecuteQuery(query);
+            var query = new SparqlQuery("SELECT COUNT(?s) AS ?count WHERE { ?s rdf:type nfo:Document. }");
+            var result = Model.ExecuteQuery(query);
 
             var bindings = result.GetBindings();
             Assert.AreEqual(1, bindings.Count());
@@ -305,8 +305,8 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestCount()
         {
-            SparqlQuery query = new SparqlQuery("SELECT ?s ?p ?o WHERE { ?s rdf:type nfo:Document. ?s ?p ?o. }");
-            ISparqlQueryResult result = Model.ExecuteQuery(query);
+            var query = new SparqlQuery("SELECT ?s ?p ?o WHERE { ?s rdf:type nfo:Document. ?s ?p ?o. }");
+            var result = Model.ExecuteQuery(query);
 
             Assert.AreEqual(3, result.Count());
 
@@ -320,7 +320,7 @@ namespace Semiodesk.Trinity.Test
         public void TestSetModel()
         {
             // Testing SetModel with a SparqlQuery that uses the query parser, this should succeed
-            SparqlQuery query = new SparqlQuery("SELECT COUNT(?s) AS ?count WHERE { ?s ?p ?o . }");
+            var query = new SparqlQuery("SELECT COUNT(?s) AS ?count WHERE { ?s ?p ?o . }");
 
             Assert.IsNull(query.Model);
             Assert.IsFalse(query.ToString().Contains("FROM"));
@@ -334,35 +334,35 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestComplexQuery()
         {
-            string queryString = "SELECT ?s0 ?p0 ?o0 " +
-                 "WHERE " +
-                 "{{ " +
-                    "?s0 ?p0 ?o0 . " +
-                    "{{ " +
-                     "  SELECT DISTINCT ?s0 " +
-                       "WHERE " +
-                       "{{ " +
-                         " ?s ?p ?o." +
-                          "?s <{0}> <{1}> ." +
-                          "{{" +
-                           "  ?s ?p1 ?o1 ." +
-                             "FILTER ISLITERAL(?o1) . FILTER REGEX(STR(?o1), \"\", \"i\") ." +
-                          "}}" +
-                          "UNION" +
-                          "{{" +
-                             "?s ?p1 ?s1 ." +
-                             "?s1 ?p2 ?o2 ." +
-                             "FILTER ISLITERAL(?o2) . FILTER REGEX(STR(?o2), \"\", \"i\") ." +
-                          "}}" +
-                       "}}" +
-                       "ORDER BY ?o" +
-                    "}}" +
-                 "}}";
+            var queryString = "SELECT ?s0 ?p0 ?o0 " +
+                              "WHERE " +
+                              "{{ " +
+                              "?s0 ?p0 ?o0 . " +
+                              "{{ " +
+                              "  SELECT DISTINCT ?s0 " +
+                              "WHERE " +
+                              "{{ " +
+                              " ?s ?p ?o." +
+                              "?s <{0}> <{1}> ." +
+                              "{{" +
+                              "  ?s ?p1 ?o1 ." +
+                              "FILTER ISLITERAL(?o1) . FILTER REGEX(STR(?o1), \"\", \"i\") ." +
+                              "}}" +
+                              "UNION" +
+                              "{{" +
+                              "?s ?p1 ?s1 ." +
+                              "?s1 ?p2 ?o2 ." +
+                              "FILTER ISLITERAL(?o2) . FILTER REGEX(STR(?o2), \"\", \"i\") ." +
+                              "}}" +
+                              "}}" +
+                              "ORDER BY ?o" +
+                              "}}" +
+                              "}}";
 
-            string q = string.Format(queryString, rdf.type.Uri.OriginalString, tmo.Task.Uri.OriginalString);
-            SparqlQuery query = new SparqlQuery(q);
+            var q = string.Format(queryString, rdf.type.Uri.OriginalString, tmo.Task.Uri.OriginalString);
+            var query = new SparqlQuery(q);
 
-            MethodInfo method = query.GetType().GetMethod("SetLimit", BindingFlags.NonPublic | BindingFlags.Instance);
+            var method = query.GetType().GetMethod("SetLimit", BindingFlags.NonPublic | BindingFlags.Instance);
             method.Invoke(query, new object[] { 10 });
 
             var x = Model.ExecuteQuery(query);
@@ -372,7 +372,7 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestIsOrdered()
         {
-            ISparqlQuery query = new SparqlQuery(@"
+            var query = new SparqlQuery(@"
                 SELECT ?s0 ?p0 ?o0
                 WHERE
                 {
@@ -450,7 +450,7 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestFromGraphBehaviour()
         {
-            SparqlQuery query = new SparqlQuery(@"
+            var query = new SparqlQuery(@"
             PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
             PREFIX music: <http://stardog.com/tutorial/>
             SELECT ?member ?member_name

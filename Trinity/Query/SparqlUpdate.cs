@@ -78,10 +78,10 @@ namespace Semiodesk.Trinity
         }
 
         /// <summary>
-        /// Set the value for a query parameter which is preceeded by '@'.
+        /// Set the value for a query parameter which is preceded by '@'.
         /// </summary>
         /// <param name="parameter">The parameter name including the '@'.</param>
-        /// <param name="value">The paramter value.</param>
+        /// <param name="value">The parameter value.</param>
         public ISparqlUpdate Bind(string parameter, object value)
         {
             if (Preprocessor == null)

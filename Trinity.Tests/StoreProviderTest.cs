@@ -37,7 +37,7 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void ParseConfigurationTest()
         {
-            Dictionary<string, string> result = StoreFactory.ParseConfiguration("provider=virtuoso");
+            var result = StoreFactory.ParseConfiguration("provider=virtuoso");
             Assert.AreEqual("virtuoso", result["provider"]);
 
             result = StoreFactory.ParseConfiguration("provider=virtuoso;host=localhost;port=1111;uid=dba;pw=dba");
@@ -55,7 +55,7 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void DotNetRDFConfigTest()
         {
-          dotNetRDFStoreProvider p = new dotNetRDFStoreProvider();
+          var p = new dotNetRDFStoreProvider();
 
           p.GetStore(StoreFactory.ParseConfiguration("provider=dotnetrdf;schema=Models/rdf-schema.rdf,Models/rdf-syntax.rdf"));
         }

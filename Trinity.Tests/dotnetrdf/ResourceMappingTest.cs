@@ -58,7 +58,7 @@ namespace dotNetRDFStore.Test
 
             Store = StoreFactory.CreateStore("provider=dotnetrdf");
 
-            Uri testModel = new Uri("ex:Test");
+            var testModel = new Uri("ex:Test");
             Model = Store.CreateModel(testModel);
         }
 
@@ -80,14 +80,14 @@ namespace dotNetRDFStore.Test
         // This test does not run, but it needs to.
         public void AddUnmappedType()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
 
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            Uri t2Uri = new Uri("semio:test:testInstance2");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t2Uri = new Uri("semio:test:testInstance2");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
-            IResource r = m.CreateResource(t2Uri);
+            var r = m.CreateResource(t2Uri);
             r.AddProperty(rdf.type, TestOntology.TestClass2);
 
             t1.AddProperty(TestOntology.uniqueResourceTest, r);
@@ -103,11 +103,11 @@ namespace dotNetRDFStore.Test
         public void RemoveTypeTest()
         {
             Assert.Inconclusive("This test poses an interesting problem. If we remove the type of a mapped resource, how should we handle that.");
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
 
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
             t1.RemoveProperty(rdf.type, TestOntology.TestClass);
 
@@ -120,26 +120,26 @@ namespace dotNetRDFStore.Test
         [Test]
         public void AddRemoveIntegerTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
 
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
             // Add value using the mapping interface
-            int value = 1;
+            var value = 1;
             t1.uniqueIntTest = value;
 
             t1.Commit();
 
-            MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
             Assert.AreEqual(value, t_actual.uniqueIntTest);
 
 
             // Test if property is present
-            IEnumerable<Property> l = t_actual.ListProperties();
+            var l = t_actual.ListProperties();
             Assert.True(l.Contains(TestOntology.uniqueIntTest));
             Assert.AreEqual(2, l.Count());
 
@@ -166,24 +166,24 @@ namespace dotNetRDFStore.Test
         [Test]
         public void AddRemoveIntegerListTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
             // Add value using the mapping interface
-            int value = 2;
+            var value = 2;
             t1.intTest.Add(value);
 
             t1.Commit();
 
-            MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
             Assert.AreEqual(1, t_actual.intTest.Count());
             Assert.AreEqual(value, t_actual.intTest[0]);
 
             // Test if property is present
-            IEnumerable<Property> l = t_actual.ListProperties();
+            var l = t_actual.ListProperties();
             Assert.True(l.Contains(TestOntology.intTest));
             Assert.AreEqual(2, l.Count());
 
@@ -192,7 +192,7 @@ namespace dotNetRDFStore.Test
             Assert.AreEqual(value, t_actual.ListValues(TestOntology.intTest).First());
 
             // Add another value
-            int value2 = -18583;
+            var value2 = -18583;
             t1.intTest.Add(value2);
             t1.Commit();
             t_actual = m.GetResource<MappingTestClass>(t1Uri);
@@ -251,10 +251,10 @@ namespace dotNetRDFStore.Test
         //[Test]
         public void AddRemoveUnsignedIntegerTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
             // Add value using the mapping interface
             uint uValue = 1;
@@ -262,7 +262,7 @@ namespace dotNetRDFStore.Test
 
             t1.Commit();
 
-            MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
             Assert.AreEqual(uValue, t_actual.uniqueUintTest);
@@ -296,17 +296,17 @@ namespace dotNetRDFStore.Test
         //[Test]
         public void AddRemoveUnsignedIntegerListTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
             // Add value using the mapping interface
             uint uValue = 2;
             t1.uintTest.Add(uValue);
 
             t1.Commit();
-            MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
             Assert.AreEqual(1, t_actual.uintTest.Count());
@@ -343,18 +343,18 @@ namespace dotNetRDFStore.Test
         [Test]
         public void AddRemoveStringTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
 
             // Add value using the mapping interface
-            string strValue = "Hallo Welt!";
+            var strValue = "Hallo Welt!";
             t1.uniqueStringTest = strValue;
             t1.Commit();
 
-            MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
             Assert.AreEqual(strValue, t_actual.uniqueStringTest);
@@ -398,10 +398,10 @@ namespace dotNetRDFStore.Test
         [Test]
         public void AddRemoveLocalizedStringTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
             t1.AddProperty(TestOntology.uniqueStringTest, "Hallo Welt", "de");
             t1.Commit();
@@ -415,18 +415,18 @@ namespace dotNetRDFStore.Test
         [Test]
         public void AddRemoveStringListTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
             // Add value using the mapping interface
-            string strValue = "（╯°□°）╯︵ ┻━┻";
+            var strValue = "（╯°□°）╯︵ ┻━┻";
             t1.stringTest.Add(strValue);
 
             t1.Commit();
 
-            MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
             Assert.AreEqual(1, t_actual.stringTest.Count());
@@ -477,19 +477,19 @@ namespace dotNetRDFStore.Test
         [Test]
         public void AddRemoveBoolTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
 
             // Add value using the mapping interface
-            bool bValue = true;
+            var bValue = true;
             t1.uniqueBoolTest = bValue;
 
             t1.Commit();
 
-            MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
             Assert.AreEqual(bValue, t_actual.uniqueBoolTest);
@@ -523,18 +523,18 @@ namespace dotNetRDFStore.Test
         [Test]
         public void AddRemoveBoolListTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
 
             // Add value using the mapping interface
-            bool value = true;
+            var value = true;
             t1.boolTest.Add(value);
 
             t1.Commit();
-            MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
             Assert.AreEqual(1, t_actual.boolTest.Count());
@@ -576,18 +576,18 @@ namespace dotNetRDFStore.Test
         [Test]
         public void AddRemoveDateTimeTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
 
             // Add value using the mapping interface
-            DateTime Value = new DateTime(2012, 8, 15, 12, 3, 55, DateTimeKind.Local);
+            var Value = new DateTime(2012, 8, 15, 12, 3, 55, DateTimeKind.Local);
             t1.uniqueDateTimeTest = Value;
             t1.Commit();
 
-            MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
             Assert.AreEqual(Value.ToUniversalTime(), t_actual.uniqueDateTimeTest.ToUniversalTime());
@@ -600,7 +600,7 @@ namespace dotNetRDFStore.Test
 
             // Test if ListValues works
             Assert.AreEqual(typeof(DateTime), t_actual.ListValues(TestOntology.uniqueDatetimeTest).First().GetType());
-            DateTime time = (DateTime)t_actual.ListValues(TestOntology.uniqueDatetimeTest).First();
+            var time = (DateTime)t_actual.ListValues(TestOntology.uniqueDatetimeTest).First();
             Assert.AreEqual(Value.ToUniversalTime(), time.ToUniversalTime());
 
             // Remove with RemoveProperty
@@ -617,7 +617,7 @@ namespace dotNetRDFStore.Test
             Assert.AreEqual(0, t_actual.ListValues(TestOntology.uniqueDatetimeTest).Count());
 
 
-            DateTime t = new DateTime();
+            var t = new DateTime();
             Assert.IsTrue(DateTime.TryParse("2013-01-21T16:27:23.000Z", out t));
 
             t1.uniqueDateTimeTest = t;
@@ -632,34 +632,34 @@ namespace dotNetRDFStore.Test
         [Test]
         public void TimeZoneTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
 
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            DateTime t = new DateTime();
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t = new DateTime();
             Assert.IsTrue(DateTime.TryParse("2013-01-21T16:27:23.000Z", out t));
 
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
             t1.uniqueDateTimeTest = t;
             t1.Commit();
 
-            MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<MappingTestClass>(t1Uri);
         }
 
         [Test]
         public void AddRemoveDateTimeListTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
 
             // Add value using the mapping interface
-            DateTime value = new DateTime(2012, 8, 15, 12, 3, 55, DateTimeKind.Local);
+            var value = new DateTime(2012, 8, 15, 12, 3, 55, DateTimeKind.Local);
             t1.dateTimeTest.Add(value);
             t1.Commit();
-            MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
             Assert.AreEqual(1, t1.dateTimeTest.Count());
@@ -673,7 +673,7 @@ namespace dotNetRDFStore.Test
 
             // Test if ListValues works
             Assert.AreEqual(typeof(DateTime), t_actual.ListValues(TestOntology.datetimeTest).First().GetType());
-            DateTime time = (DateTime)t_actual.ListValues(TestOntology.datetimeTest).First();
+            var time = (DateTime)t_actual.ListValues(TestOntology.datetimeTest).First();
             Assert.AreEqual(value.ToUniversalTime(), time.ToUniversalTime());
 
             // Remove value from mapped list
@@ -700,18 +700,18 @@ namespace dotNetRDFStore.Test
         [Test]
         public void AddRemoveTimeSpanTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
 
             // Add value using the mapping interface
-            TimeSpan Value = TimeSpan.FromSeconds(200);
+            var Value = TimeSpan.FromSeconds(200);
             t1.uniqueTimeSpanTest = Value;
             t1.Commit();
 
-            MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
             Assert.AreEqual(Value.TotalSeconds, t_actual.uniqueTimeSpanTest.TotalSeconds);
@@ -724,7 +724,7 @@ namespace dotNetRDFStore.Test
 
             // Test if ListValues works
             Assert.AreEqual(typeof(TimeSpan), t_actual.ListValues(TestOntology.uniqueTimespanTest).First().GetType());
-            TimeSpan time = (TimeSpan)t_actual.ListValues(TestOntology.uniqueTimespanTest).First();
+            var time = (TimeSpan)t_actual.ListValues(TestOntology.uniqueTimespanTest).First();
             Assert.AreEqual(Value.TotalSeconds, time.TotalSeconds);
 
             // Remove with RemoveProperty
@@ -752,17 +752,17 @@ namespace dotNetRDFStore.Test
         [Test]
         public void AddRemoveTimeSpanListTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
 
             // Add value using the mapping interface
-            TimeSpan value = TimeSpan.FromSeconds(100);
+            var value = TimeSpan.FromSeconds(100);
             t1.timeSpanTest.Add(value);
             t1.Commit();
-            MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
             Assert.AreEqual(1, t1.timeSpanTest.Count());
@@ -776,7 +776,7 @@ namespace dotNetRDFStore.Test
 
             // Test if ListValues works
             Assert.AreEqual(typeof(TimeSpan), t_actual.ListValues(TestOntology.timespanTest).First().GetType());
-            TimeSpan time = (TimeSpan)t_actual.ListValues(TestOntology.timespanTest).First();
+            var time = (TimeSpan)t_actual.ListValues(TestOntology.timespanTest).First();
             Assert.AreEqual(value.TotalSeconds, time.TotalSeconds);
 
             // Remove value from mapped list
@@ -799,17 +799,17 @@ namespace dotNetRDFStore.Test
         [Test]
         public void AddRemoveResourceTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
-            Uri testClass2Uri = new Uri("semio:test:testInstance2");
-            MappingTestClass2 t2 = new MappingTestClass2(testClass2Uri);
+            var testClass2Uri = new Uri("semio:test:testInstance2");
+            var t2 = new MappingTestClass2(testClass2Uri);
 
             t1.uniqueResourceTest = t2;
             t1.Commit();
-            MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
 
             Assert.AreEqual(t2, t_actual.uniqueResourceTest);
@@ -853,19 +853,19 @@ namespace dotNetRDFStore.Test
         [Test]
         public void MappedResourceValueTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
-            Uri testClass2Uri = new Uri("semio:test:testInstance2");
-            MappingTestClass2 t2 = m.CreateResource<MappingTestClass2>(testClass2Uri);
+            var testClass2Uri = new Uri("semio:test:testInstance2");
+            var t2 = m.CreateResource<MappingTestClass2>(testClass2Uri);
             t2.uniqueStringTest = "TestString";
             t2.Commit();
 
             t1.uniqueResourceTest = t2;
             t1.Commit();
-            MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<MappingTestClass>(t1Uri);
             Assert.AreEqual("TestString", t_actual.uniqueResourceTest.uniqueStringTest);
 
         }
@@ -874,17 +874,17 @@ namespace dotNetRDFStore.Test
         [Test]
         public void AddRemoveResourceListTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
 
             // Add value using the mapping interface
-            MappingTestClass2 t2 = new MappingTestClass2(new Uri("semio:test:testInstance2"));
+            var t2 = new MappingTestClass2(new Uri("semio:test:testInstance2"));
             t1.resourceTest.Add(t2);
             t1.Commit();
-            MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             Assert.AreEqual(1, t_actual.resourceTest.Count);
             Assert.AreEqual(t2, t_actual.resourceTest[0]);
@@ -924,19 +924,19 @@ namespace dotNetRDFStore.Test
         public void LazyLoadResourceTest()
         {
             MappingDiscovery.RegisterCallingAssembly();
-            IModel model = GetModel();
+            var model = GetModel();
             model.Clear();
 
-            Uri testRes1 = new Uri("semio:test:testInstance");
-            Uri testRes2 = new Uri("semio:test:testInstance2");
-            MappingTestClass t1 = model.CreateResource<MappingTestClass>(testRes1);
-            MappingTestClass2 t2 = model.CreateResource<MappingTestClass2>(new Uri("semio:test:testInstance2"));
+            var testRes1 = new Uri("semio:test:testInstance");
+            var testRes2 = new Uri("semio:test:testInstance2");
+            var t1 = model.CreateResource<MappingTestClass>(testRes1);
+            var t2 = model.CreateResource<MappingTestClass2>(new Uri("semio:test:testInstance2"));
 
             t1.uniqueResourceTest = t2;
             // TODO: Debug messsage, because t2 was not commited
             t1.Commit();
 
-            MappingTestClass p1 = model.GetResource<MappingTestClass>(testRes1);
+            var p1 = model.GetResource<MappingTestClass>(testRes1);
             //Assert.AreEqual(null, p1.uniqueResourceTest);
 
             var v = p1.ListValues(TestOntology.uniqueResourceTest);
@@ -956,7 +956,7 @@ namespace dotNetRDFStore.Test
 
             IResource tr1 = model.GetResource(testRes1, t1.GetType()) as Resource;
             Assert.AreEqual(typeof(MappingTestClass), tr1.GetType());
-            MappingTestClass2 p2 = model.GetResource<MappingTestClass2>(testRes2);
+            var p2 = model.GetResource<MappingTestClass2>(testRes2);
 
             Assert.AreEqual(t2, p1.uniqueResourceTest);
 
@@ -967,7 +967,7 @@ namespace dotNetRDFStore.Test
         [Test]
         public void IterateOverEmptyModel()
         {
-            IStore store = StoreFactory.CreateMemoryStore();
+            var store = StoreFactory.CreateMemoryStore();
             var modelUri = new Uri("urn:modom:default");
 
             var model = store.GetModel(modelUri);
@@ -987,7 +987,7 @@ namespace dotNetRDFStore.Test
                 writer.Write(s);
                 writer.Flush();
                 stream.Position = 0;
-                IStore store = StoreFactory.CreateMemoryStore();
+                var store = StoreFactory.CreateMemoryStore();
                 var modelUri = new Uri("urn:modom:default");
                 store.Read(stream, modelUri, RdfSerializationFormat.JsonLd, true);
 
@@ -1009,7 +1009,7 @@ namespace dotNetRDFStore.Test
                 writer.Write(s);
                 writer.Flush();
                 stream.Position = 0;
-                IStore store = StoreFactory.CreateMemoryStore();
+                var store = StoreFactory.CreateMemoryStore();
                 var modelUri = new Uri("urn:modom:default");
                 store.Read(stream, modelUri, RdfSerializationFormat.JsonLd, true);
 
@@ -1022,30 +1022,30 @@ namespace dotNetRDFStore.Test
         [Test]
         public void MappingTypeTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass2 t1 = m.CreateResource<MappingTestClass2>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass2>(t1Uri);
             t1.uniqueStringTest = "testing 1";
             t1.Commit();
 
-            Uri t2Uri = new Uri("semio:test:testInstance2");
-            MappingTestClass3 t2 = m.CreateResource<MappingTestClass3>(t2Uri);
+            var t2Uri = new Uri("semio:test:testInstance2");
+            var t2 = m.CreateResource<MappingTestClass3>(t2Uri);
             t2.uniqueStringTest = "testing 2";
             t2.Commit();
 
-            Uri t3Uri = new Uri("semio:test:testInstance3");
-            MappingTestClass4 t3 = m.CreateResource<MappingTestClass4>(t3Uri);
+            var t3Uri = new Uri("semio:test:testInstance3");
+            var t3 = m.CreateResource<MappingTestClass4>(t3Uri);
             t3.uniqueStringTest = "testing 3";
             t3.Commit();
 
-            Resource r1 = m.GetResource<Resource>(t1Uri);
+            var r1 = m.GetResource<Resource>(t1Uri);
             Assert.AreEqual(t1, r1);
 
-            Resource r2 = m.GetResource<Resource>(t2Uri);
+            var r2 = m.GetResource<Resource>(t2Uri);
             Assert.AreEqual(t2, r2);
 
-            Resource r3 = m.GetResource<Resource>(t3Uri);
+            var r3 = m.GetResource<Resource>(t3Uri);
             Assert.AreEqual(t3, r3);
         }
 
@@ -1053,13 +1053,13 @@ namespace dotNetRDFStore.Test
         [Test]
         public void RollbackTest()
         {
-            IModel m = GetModel();
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var m = GetModel();
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
 
             // Add value using the mapping interface
-            string strValue = "Hallo Welt!";
+            var strValue = "Hallo Welt!";
             t1.uniqueStringTest = strValue;
             t1.Commit();
 
@@ -1070,7 +1070,7 @@ namespace dotNetRDFStore.Test
 
             Assert.AreEqual(strValue, t1.uniqueStringTest);
 
-            MappingTestClass newRef = m.GetResource<MappingTestClass>(t1Uri);
+            var newRef = m.GetResource<MappingTestClass>(t1Uri);
             newRef.stringTest.Add("Hi");
             newRef.stringTest.Add("Blub");
             newRef.Commit();
@@ -1083,8 +1083,8 @@ namespace dotNetRDFStore.Test
             Assert.IsTrue(t1.stringTest.Contains("Blub"));
 
 
-            Uri t2Uri = new Uri("semio:test:testInstance2");
-            MappingTestClass2 p = m.CreateResource<MappingTestClass2>(t2Uri);
+            var t2Uri = new Uri("semio:test:testInstance2");
+            var p = m.CreateResource<MappingTestClass2>(t2Uri);
             p.uniqueStringTest = "blub";
             p.Commit();
 
@@ -1104,17 +1104,17 @@ namespace dotNetRDFStore.Test
         [Test]
         public void RollbackMappedResourcesTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
 
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            SingleResourceMappingTestClass t1 = m.CreateResource<SingleResourceMappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<SingleResourceMappingTestClass>(t1Uri);
             t1.Commit();
 
             Assert.IsTrue(t1.ResourceTest.Count == 0);
 
-            Uri t2Uri = new Uri("semio:test:testInstance2");
-            SingleMappingTestClass t2 = m.CreateResource<SingleMappingTestClass>(t2Uri);
+            var t2Uri = new Uri("semio:test:testInstance2");
+            var t2 = m.CreateResource<SingleMappingTestClass>(t2Uri);
             t2.stringTest.Add("blub");
             t2.Commit();
 
@@ -1131,14 +1131,14 @@ namespace dotNetRDFStore.Test
         [Test]
         public void ListValuesTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
 
             // Add value using the mapping interface
-            string strValue = "Hallo Welt!";
+            var strValue = "Hallo Welt!";
             t1.uniqueStringTest = strValue;
             t1.Commit();
 
@@ -1148,7 +1148,7 @@ namespace dotNetRDFStore.Test
 
             var x = t1.ListValues(TestOntology.stringTest);
 
-            MappingTestClass actual = m.GetResource<MappingTestClass>(t1.Uri);
+            var actual = m.GetResource<MappingTestClass>(t1.Uri);
             var x2 = actual.ListValues(TestOntology.stringTest);
 
             var res1 = x.ToList();
@@ -1163,12 +1163,12 @@ namespace dotNetRDFStore.Test
         [Test]
         public void KeepListsAfterRollbackTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
 
-            Uri t1Uri = new Uri("semio:test:testInstance8");
+            var t1Uri = new Uri("semio:test:testInstance8");
 
-            SingleMappingTestClass t1 = m.CreateResource<SingleMappingTestClass>(t1Uri);
+            var t1 = m.CreateResource<SingleMappingTestClass>(t1Uri);
             t1.AddProperty(TestOntology.uniqueStringTest, "Hello");
 
             t1.Commit();
@@ -1181,7 +1181,7 @@ namespace dotNetRDFStore.Test
             Assert.AreEqual(2, x.Count);
             t1.Commit();
 
-            SingleMappingTestClass t2 = m.GetResource<SingleMappingTestClass>(t1Uri);
+            var t2 = m.GetResource<SingleMappingTestClass>(t1Uri);
 
             var x2 = t2.ListValues(TestOntology.stringTest).ToList();
 
@@ -1194,8 +1194,8 @@ namespace dotNetRDFStore.Test
         [Test]
         public void TestEquality()
         {
-            Resource c1 = new Resource(new Uri("http://www.semanticdesktop.org/ontologies/2007/04/02/ncal#cancelledStatus"));
-            Resource c2 = new Resource(new Uri("http://www.semanticdesktop.org/ontologies/2007/04/02/ncal#cancelledStatus"));
+            var c1 = new Resource(new Uri("http://www.semanticdesktop.org/ontologies/2007/04/02/ncal#cancelledStatus"));
+            var c2 = new Resource(new Uri("http://www.semanticdesktop.org/ontologies/2007/04/02/ncal#cancelledStatus"));
 
             Assert.IsTrue(c1.Equals(c2));
             Assert.IsFalse(c1 == c2);

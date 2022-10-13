@@ -37,7 +37,7 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestAppConfig()
         {
-            IConfiguration config = ConfigurationLoader.LoadConfiguration(null);
+            var config = ConfigurationLoader.LoadConfiguration(null);
 
             Assert.AreEqual("Semiodesk.Trinity.Test", config.Namespace);
 

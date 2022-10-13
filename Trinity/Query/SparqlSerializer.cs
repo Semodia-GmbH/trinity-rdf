@@ -31,10 +31,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Globalization;
-using System.Xml;
-#if NET35
-using Semiodesk.Trinity.Utility;
-#endif
+
 
 namespace Semiodesk.Trinity
 {
@@ -90,7 +87,7 @@ namespace Semiodesk.Trinity
         }
 
         /// <summary>
-        /// Serializes a value depdening on its type.
+        /// Serializes a value depending on its type.
         /// </summary>
         /// <param name="obj">An object.</param>
         /// <returns></returns>
@@ -133,12 +130,17 @@ namespace Semiodesk.Trinity
 
         private static string SerializeTranslatedString(IEnumerable<Tuple<string, CultureInfo>> translatedString)
         {
+            if (!translatedString.Any()) return string.Empty;
+            
             var result = new StringBuilder();
+            var count = translatedString.Count();
             foreach (var (translation, culture) in translatedString)
             {
-                result.Append(SerializeTranslatedString(translation, culture.Name)).Append(" ");
+                count--;
+                result.Append(SerializeTranslatedString(translation, culture.Name));
+                if (count > 0) result.Append(", ");
             }
-
+            
             return result.ToString();
         }
 
@@ -174,12 +176,15 @@ namespace Semiodesk.Trinity
 
             foreach (var value in valueList)
             {
-                if (value.Item2 == null)
+                switch (value.Item2)
                 {
-                    continue;
+                    case null:
+                    case IEnumerable list when !list.GetEnumerator().MoveNext():
+                        continue;
+                    default:
+                        result.AppendFormat("{0} {1}; ", SerializeUri(value.Item1.Uri), SerializeValue(value.Item2));
+                        break;
                 }
-
-                result.AppendFormat("{0} {1}; ", SerializeUri(value.Item1.Uri), SerializeValue(value.Item2));
             }
 
             result[result.Length - 2] = '.';

@@ -132,13 +132,13 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void Equal()
         {
-            Resource t1 = new Resource(new Uri("http://test.com"));
-            Resource t1a = new Resource(new Uri("http://test.com"));
-            Uri u1 = new Uri("http://test.com");
-            Resource t2 = new Resource(new Uri("http://test.com#frag"));
-            Uri u2 = new Uri("http://test.com#frag");
-            Resource t3 = new Resource(new Uri("http://test.com#frag2"));
-            Uri u3 = new Uri("http://test.com#frag2");
+            var t1 = new Resource(new Uri("http://test.com"));
+            var t1a = new Resource(new Uri("http://test.com"));
+            var u1 = new Uri("http://test.com");
+            var t2 = new Resource(new Uri("http://test.com#frag"));
+            var u2 = new Uri("http://test.com#frag");
+            var t3 = new Resource(new Uri("http://test.com#frag2"));
+            var u3 = new Uri("http://test.com#frag2");
 
             Assert.AreEqual(t1, t1a);
             Assert.AreNotEqual(t1, t2);
@@ -152,20 +152,20 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void Property()
         {
-            Property myProperty = new Property(new Uri("ex:myProperty"));
-            Property myPropertyCopy = new Property(new Uri("ex:myProperty"));
-            Resource t1 = new Resource(new Uri("ex:myResource"));
-            Resource t2 = new Resource(new Uri("ex:mySecondResource"));
-            string sValue = "test";
-            int iValue = 123;
-            int iNegValue = -123;
-            float fValue = (float)2.0234;
-            float fNegValue = (float)-2.123;
-            double dValue = 3.123;
-            double dNegValue = -4.5234;
-            DateTime dtValue = new DateTime(2010, 1, 1);
-            bool bValue = true;
-            Uri uriValue = new Uri("ex:myUri");
+            var myProperty = new Property(new Uri("ex:myProperty"));
+            var myPropertyCopy = new Property(new Uri("ex:myProperty"));
+            var t1 = new Resource(new Uri("ex:myResource"));
+            var t2 = new Resource(new Uri("ex:mySecondResource"));
+            var sValue = "test";
+            var iValue = 123;
+            var iNegValue = -123;
+            var fValue = (float)2.0234;
+            var fNegValue = (float)-2.123;
+            var dValue = 3.123;
+            var dNegValue = -4.5234;
+            var dtValue = new DateTime(2010, 1, 1);
+            var bValue = true;
+            var uriValue = new Uri("ex:myUri");
 
             Assert.IsFalse(t1.HasProperty(myProperty));
             Assert.IsFalse(t1.HasProperty(myProperty, sValue));
@@ -285,13 +285,13 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestBool()
         {
-            Property myProperty = new Property(new Uri("ex:myProperty"));
-            Resource r1 = new Resource(new Uri("ex:myResource"));
+            var myProperty = new Property(new Uri("ex:myProperty"));
+            var r1 = new Resource(new Uri("ex:myResource"));
 
-            bool val = true;
+            var val = true;
             r1.AddProperty(myProperty, val);
 
-            object res = r1.ListValues(myProperty).First();
+            var res = r1.ListValues(myProperty).First();
 
             Assert.AreEqual(res.GetType(), typeof(bool));
             Assert.AreEqual((bool)res, val);
@@ -300,13 +300,13 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestInt()
         {
-            Property myProperty = new Property(new Uri("ex:myProperty"));
-            Resource r1 = new Resource(new Uri("ex:myResource"));
+            var myProperty = new Property(new Uri("ex:myProperty"));
+            var r1 = new Resource(new Uri("ex:myResource"));
 
 
-            int val1 = 123;
+            var val1 = 123;
             r1.AddProperty(myProperty, val1);
-            object res1 = r1.ListValues(myProperty).First();
+            var res1 = r1.ListValues(myProperty).First();
             Assert.AreEqual(val1.GetType(), res1.GetType());
             Assert.AreEqual(res1, val1);
             r1.RemoveProperty(myProperty, val1);
@@ -315,11 +315,11 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestInt16()
         {
-            Property myProperty = new Property(new Uri("ex:myProperty"));
-            Resource r = new Resource(new Uri("ex:myResource"));
+            var myProperty = new Property(new Uri("ex:myProperty"));
+            var r = new Resource(new Uri("ex:myResource"));
             Int16 val = 124;
             r.AddProperty(myProperty, val);
-            object res = r.ListValues(myProperty).First();
+            var res = r.ListValues(myProperty).First();
             Assert.AreEqual(val.GetType(), res.GetType());
             Assert.AreEqual(val, res);
             r.RemoveProperty(myProperty, val);
@@ -329,11 +329,11 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestInt32()
         {
-            Property myProperty = new Property(new Uri("ex:myProperty"));
-            Resource r = new Resource(new Uri("ex:myResource"));
-            Int32 val = 125;
+            var myProperty = new Property(new Uri("ex:myProperty"));
+            var r = new Resource(new Uri("ex:myResource"));
+            var val = 125;
             r.AddProperty(myProperty, val);
-            object res = r.ListValues(myProperty).First();
+            var res = r.ListValues(myProperty).First();
             Assert.AreEqual(val.GetType(), res.GetType());
             Assert.AreEqual(val, res);
             r.RemoveProperty(myProperty, val);
@@ -343,11 +343,11 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestInt64()
         {
-            Property myProperty = new Property(new Uri("ex:myProperty"));
-            Resource r = new Resource(new Uri("ex:myResource"));
+            var myProperty = new Property(new Uri("ex:myProperty"));
+            var r = new Resource(new Uri("ex:myResource"));
             Int64 val = 126;
             r.AddProperty(myProperty, val);
-            object res = r.ListValues(myProperty).First();
+            var res = r.ListValues(myProperty).First();
             Assert.AreEqual(val.GetType(), res.GetType());
             Assert.AreEqual(val, res);
             r.RemoveProperty(myProperty, val);
@@ -356,11 +356,11 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestUint()
         {
-            Property myProperty = new Property(new Uri("ex:myProperty"));
-            Resource r = new Resource(new Uri("ex:myResource"));
+            var myProperty = new Property(new Uri("ex:myProperty"));
+            var r = new Resource(new Uri("ex:myResource"));
             uint val = 126;
             r.AddProperty(myProperty, val);
-            object res = r.ListValues(myProperty).First();
+            var res = r.ListValues(myProperty).First();
             Assert.AreEqual(val.GetType(), res.GetType());
             Assert.AreEqual(val, res);
             r.RemoveProperty(myProperty, val);
@@ -369,11 +369,11 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestUint16()
         {
-            Property myProperty = new Property(new Uri("ex:myProperty"));
-            Resource r = new Resource(new Uri("ex:myResource"));
+            var myProperty = new Property(new Uri("ex:myProperty"));
+            var r = new Resource(new Uri("ex:myResource"));
             UInt16 val = 126;
             r.AddProperty(myProperty, val);
-            object res = r.ListValues(myProperty).First();
+            var res = r.ListValues(myProperty).First();
             Assert.AreEqual(val.GetType(), res.GetType());
             Assert.AreEqual(val, res);
             r.RemoveProperty(myProperty, val);
@@ -382,11 +382,11 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestUint32()
         {
-            Property myProperty = new Property(new Uri("ex:myProperty"));
-            Resource r = new Resource(new Uri("ex:myResource"));
+            var myProperty = new Property(new Uri("ex:myProperty"));
+            var r = new Resource(new Uri("ex:myResource"));
             UInt32 val = 126;
             r.AddProperty(myProperty, val);
-            object res = r.ListValues(myProperty).First();
+            var res = r.ListValues(myProperty).First();
             Assert.AreEqual(val.GetType(), res.GetType());
             Assert.AreEqual(val, res);
             r.RemoveProperty(myProperty, val);
@@ -395,11 +395,11 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestUint64()
         {
-            Property myProperty = new Property(new Uri("ex:myProperty"));
-            Resource r = new Resource(new Uri("ex:myResource"));
+            var myProperty = new Property(new Uri("ex:myProperty"));
+            var r = new Resource(new Uri("ex:myResource"));
             UInt32 val = 126;
             r.AddProperty(myProperty, val);
-            object res = r.ListValues(myProperty).First();
+            var res = r.ListValues(myProperty).First();
             Assert.AreEqual(val.GetType(), res.GetType());
             Assert.AreEqual(val, res);
             r.RemoveProperty(myProperty, val);
@@ -408,11 +408,11 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestFloat()
         {
-            Property myProperty = new Property(new Uri("ex:myProperty"));
-            Resource r = new Resource(new Uri("ex:myResource"));
-            float val = 1.234F;
+            var myProperty = new Property(new Uri("ex:myProperty"));
+            var r = new Resource(new Uri("ex:myResource"));
+            var val = 1.234F;
             r.AddProperty(myProperty, val);
-            object res = r.ListValues(myProperty).First();
+            var res = r.ListValues(myProperty).First();
             Assert.AreEqual(val.GetType(), res.GetType());
             Assert.AreEqual(val, res);
             r.RemoveProperty(myProperty, val);
@@ -421,11 +421,11 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestDouble()
         {
-            Property myProperty = new Property(new Uri("ex:myProperty"));
-            Resource r = new Resource(new Uri("ex:myResource"));
-            double val = 1.223;
+            var myProperty = new Property(new Uri("ex:myProperty"));
+            var r = new Resource(new Uri("ex:myResource"));
+            var val = 1.223;
             r.AddProperty(myProperty, val);
-            object res = r.ListValues(myProperty).First();
+            var res = r.ListValues(myProperty).First();
             Assert.AreEqual(val.GetType(), res.GetType());
             Assert.AreEqual(val, res);
             r.RemoveProperty(myProperty, val);
@@ -434,11 +434,11 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestSingle()
         {
-            Property myProperty = new Property(new Uri("ex:myProperty"));
-            Resource r = new Resource(new Uri("ex:myResource"));
-            Single val = 1.223F;
+            var myProperty = new Property(new Uri("ex:myProperty"));
+            var r = new Resource(new Uri("ex:myResource"));
+            var val = 1.223F;
             r.AddProperty(myProperty, val);
-            object res = r.ListValues(myProperty).First();
+            var res = r.ListValues(myProperty).First();
             Assert.AreEqual(val.GetType(), res.GetType());
             Assert.AreEqual(val, res);
             r.RemoveProperty(myProperty, val);
@@ -447,11 +447,11 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestString()
         {
-            Property myProperty = new Property(new Uri("ex:myProperty"));
-            Resource r = new Resource(new Uri("ex:myResource"));
-            string val = "Hello World!";
+            var myProperty = new Property(new Uri("ex:myProperty"));
+            var r = new Resource(new Uri("ex:myResource"));
+            var val = "Hello World!";
             r.AddProperty(myProperty, val);
-            object res = r.ListValues(myProperty).First();
+            var res = r.ListValues(myProperty).First();
             Assert.AreEqual(val.GetType(), res.GetType());
             Assert.AreEqual(val, res);
             r.RemoveProperty(myProperty, val);
@@ -461,14 +461,14 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestLocalizedString()
         {
-            Property myProperty = new Property(new Uri("ex:myProperty"));
-            Resource r = new Resource(new Uri("ex:myResource"));
-            string val = "Hello World!";
+            var myProperty = new Property(new Uri("ex:myProperty"));
+            var r = new Resource(new Uri("ex:myResource"));
+            var val = "Hello World!";
             var ci = "en";
             r.AddProperty(myProperty, val, ci);
-            object res = r.ListValues(myProperty).First();
+            var res = r.ListValues(myProperty).First();
             Assert.AreEqual(typeof(Tuple<string, string>), res.GetType());
-            Tuple<string, string> v = res as Tuple<string, string>;
+            var v = res as Tuple<string, string>;
             Assert.AreEqual(val, v.Item1);
             Assert.AreEqual(ci.ToLower(), v.Item2.ToLower());
             r.RemoveProperty(myProperty, val, ci);
@@ -478,11 +478,11 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestDateTime()
         {
-            Property myProperty = new Property(new Uri("ex:myProperty"));
-            Resource r = new Resource(new Uri("ex:myResource"));
-            DateTime val = DateTime.Today;
+            var myProperty = new Property(new Uri("ex:myProperty"));
+            var r = new Resource(new Uri("ex:myResource"));
+            var val = DateTime.Today;
             r.AddProperty(myProperty, val);
-            object res = r.ListValues(myProperty).First();
+            var res = r.ListValues(myProperty).First();
             Assert.AreEqual(val.GetType(), res.GetType());
             Assert.AreEqual(val, res);
             r.RemoveProperty(myProperty, val);
@@ -491,13 +491,13 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestByteArray()
         {
-            Property myProperty = new Property(new Uri("ex:myProperty"));
-            Resource r = new Resource(new Uri("ex:myResource"));
+            var myProperty = new Property(new Uri("ex:myProperty"));
+            var r = new Resource(new Uri("ex:myResource"));
 
-            byte[] val = new byte[] { 1, 2, 3, 4, 5 };
+            var val = new byte[] { 1, 2, 3, 4, 5 };
 
             r.AddProperty(myProperty, val);
-            object res = r.ListValues(myProperty).First();
+            var res = r.ListValues(myProperty).First();
             Assert.AreEqual(val.GetType(), res.GetType());
             Assert.AreEqual(val, res);
             r.RemoveProperty(myProperty, val);
@@ -507,11 +507,11 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestUri()
         {
-            Property myProperty = new Property(new Uri("ex:myProperty"));
-            Resource r = new Resource(new Uri("ex:myResource"));
-            Uri val = new Uri("ex:myUri");
+            var myProperty = new Property(new Uri("ex:myProperty"));
+            var r = new Resource(new Uri("ex:myResource"));
+            var val = new Uri("ex:myUri");
             r.AddProperty(myProperty, val);
-            object res = r.ListValues(myProperty).First();
+            var res = r.ListValues(myProperty).First();
             Assert.AreEqual(val.GetType(), res.GetType());
             Assert.AreEqual(val, res);
             r.RemoveProperty(myProperty, val);
@@ -527,20 +527,20 @@ namespace Semiodesk.Trinity.Test
         [Test()]
         public void ListValuesTest()
         {
-            Uri baseUri = new Uri("http://example.com/test");
-            string relativeUri = "#myResource";
+            var baseUri = new Uri("http://example.com/test");
+            var relativeUri = "#myResource";
 
-            Resource target = new Resource(new Uri(baseUri, relativeUri));
-            string b = target.Uri.Fragment;
+            var target = new Resource(new Uri(baseUri, relativeUri));
+            var b = target.Uri.Fragment;
 
-            Property property = new Property(new Uri(baseUri, "#related"));
-            List<object> list = new List<object>();
+            var property = new Property(new Uri(baseUri, "#related"));
+            var list = new List<object>();
 
-            int v1 = 12;
+            var v1 = 12;
             list.Add(v1);
             target.AddProperty(property, v1);
 
-            string v2 = "Hello World";
+            var v2 = "Hello World";
             target.AddProperty(property, v2);
             list.Add(v2);
 
@@ -548,15 +548,15 @@ namespace Semiodesk.Trinity.Test
             target.AddProperty(property, v2);
             list.Add(v2);
 
-            float v3 = 0.234F;
+            var v3 = 0.234F;
             target.AddProperty(property, v3);
             list.Add(v3);
 
-            DateTime v4 = new DateTime(1292, 1, 1);
+            var v4 = new DateTime(1292, 1, 1);
             target.AddProperty(property, v4);
             list.Add(v4);
 
-            Tuple<string, string> v5 = new Tuple<string, string>("Hallo Welt!", "de");
+            var v5 = new Tuple<string, string>("Hallo Welt!", "de");
             target.AddProperty(property, v5.Item1, v5.Item2);
             list.Add(v5);
 
@@ -564,26 +564,26 @@ namespace Semiodesk.Trinity.Test
             target.AddProperty(property, v6);
             list.Add(v6);
 
-            double v7 = 0.123;
+            var v7 = 0.123;
             target.AddProperty(property, v7);
             list.Add(v7);
 
-            bool v8 = true;
+            var v8 = true;
             target.AddProperty(property, v8);
             list.Add(v8);
 
-            Uri v9 = new Uri("ex:myUri");
+            var v9 = new Uri("ex:myUri");
             target.AddProperty(property, v9);
             list.Add(v9);
 
             IEnumerable<object> expected = list;
 
-            IEnumerable<object> actual = target.ListValues(property);
-            foreach (object obj in actual)
+            var actual = target.ListValues(property);
+            foreach (var obj in actual)
             {
                 if (obj.GetType() == typeof(string[]))
                 {
-                    Tuple<string, string> tmp = (Tuple<string, string>)obj;
+                    var tmp = (Tuple<string, string>)obj;
                     Assert.AreEqual(v5, tmp);
 
                 }
@@ -602,21 +602,21 @@ namespace Semiodesk.Trinity.Test
         [Test()]
         public void ListPropertiesTest()
         {
-            Uri baseUri = new Uri("http://example.com/test");
-            string relativeUri = "#myResource";
-            Resource target = new Resource(new Uri(baseUri, relativeUri));
-            Property property1 = new Property(new Uri(baseUri, "#related"));
-            bool v1 = true;
-            Property property2 = new Property(new Uri(baseUri, "#related2"));
-            bool v2 = false;
-            Property property3 = new Property(new Uri(baseUri, "#related3"));
-            bool v3 = true;
-            List<Property> expected = new List<Property> { property1, property2, property3 };
+            var baseUri = new Uri("http://example.com/test");
+            var relativeUri = "#myResource";
+            var target = new Resource(new Uri(baseUri, relativeUri));
+            var property1 = new Property(new Uri(baseUri, "#related"));
+            var v1 = true;
+            var property2 = new Property(new Uri(baseUri, "#related2"));
+            var v2 = false;
+            var property3 = new Property(new Uri(baseUri, "#related3"));
+            var v3 = true;
+            var expected = new List<Property> { property1, property2, property3 };
             target.AddProperty(property1, v1);
             target.AddProperty(property2, v2);
             target.AddProperty(property3, v3);
-            IEnumerable<Property> actual = target.ListProperties();
-            foreach (Property prop in actual)
+            var actual = target.ListProperties();
+            foreach (var prop in actual)
             {
                 Assert.AreEqual(true, expected.Contains(prop));
             }
@@ -624,7 +624,7 @@ namespace Semiodesk.Trinity.Test
             target.RemoveProperty(property1, v1);
             expected.Remove(property1);
             actual = target.ListProperties();
-            foreach (Property prop in actual)
+            foreach (var prop in actual)
             {
                 Assert.AreEqual(true, expected.Contains(prop));
             }
@@ -632,7 +632,7 @@ namespace Semiodesk.Trinity.Test
             target.RemoveProperty(property2, v2);
             expected.Remove(property2);
             actual = target.ListProperties();
-            foreach (Property prop in actual)
+            foreach (var prop in actual)
             {
                 Assert.AreEqual(true, expected.Contains(prop));
             }
@@ -658,15 +658,15 @@ namespace Semiodesk.Trinity.Test
         [Test()]
         public void HasPropertyTest2()
         {
-            Uri baseUri = new Uri("http://example.com/test");
-            string relativeUri = "#myResource";
-            Resource target = new Resource(new Uri(baseUri, relativeUri)); // TODO: Passenden Wert initialisieren
-            Property property = new Property(new Uri(baseUri, "#related"));
-            string value1 = "Hallo Welt";
-            CultureInfo lang1 = CultureInfo.GetCultureInfo("DE");
-            string value2 = "Hello World";
-            CultureInfo lang2 = CultureInfo.GetCultureInfo("en-US");
-            string value3 = "Hello";
+            var baseUri = new Uri("http://example.com/test");
+            var relativeUri = "#myResource";
+            var target = new Resource(new Uri(baseUri, relativeUri)); // TODO: Passenden Wert initialisieren
+            var property = new Property(new Uri(baseUri, "#related"));
+            var value1 = "Hallo Welt";
+            var lang1 = CultureInfo.GetCultureInfo("DE");
+            var value2 = "Hello World";
+            var lang2 = CultureInfo.GetCultureInfo("en-US");
+            var value3 = "Hello";
 
             Assert.AreEqual(false, target.HasProperty(property, value1, lang1));
             target.AddProperty(property, value1, lang1);
@@ -705,12 +705,12 @@ namespace Semiodesk.Trinity.Test
         [Test()]
         public void HasPropertyTest1()
         {
-            Uri baseUri = new Uri("http://example.com/test");
-            string relativeUri = "#myResource";
-            Resource target = new Resource(new Uri(baseUri, relativeUri));
-            Property property = new Property(new Uri(baseUri, "#related"));
-            int value1 = 1;
-            int value2 = 2;
+            var baseUri = new Uri("http://example.com/test");
+            var relativeUri = "#myResource";
+            var target = new Resource(new Uri(baseUri, relativeUri));
+            var property = new Property(new Uri(baseUri, "#related"));
+            var value1 = 1;
+            var value2 = 2;
 
             Assert.AreEqual(false, target.HasProperty(property, value1));
             target.AddProperty(property, value1);
@@ -736,12 +736,12 @@ namespace Semiodesk.Trinity.Test
         [Test()]
         public void HasPropertyTest()
         {
-            Uri baseUri = new Uri("http://example.com/test");
-            string relativeUri = "#myResource";
-            Resource target = new Resource(new Uri(baseUri, relativeUri));
-            Property property = new Property(new Uri(baseUri, "#related"));
-            int value1 = 1;
-            int value2 = 2;
+            var baseUri = new Uri("http://example.com/test");
+            var relativeUri = "#myResource";
+            var target = new Resource(new Uri(baseUri, relativeUri));
+            var property = new Property(new Uri(baseUri, "#related"));
+            var value1 = 1;
+            var value2 = 2;
 
             Assert.AreEqual(false, target.HasProperty(property));
             target.AddProperty(property, value1);
@@ -766,9 +766,9 @@ namespace Semiodesk.Trinity.Test
         [Test()]
         public void GetUriTest()
         {
-            Uri baseUri = new Uri("http://example.com");
-            Resource target = new Resource(new Uri(baseUri, "test"));
-            Uri expected = new Uri("http://example.com/test");
+            var baseUri = new Uri("http://example.com");
+            var target = new Resource(new Uri(baseUri, "test"));
+            var expected = new Uri("http://example.com/test");
             Uri actual = target.Uri;
             Assert.AreEqual(expected, actual);
 
@@ -789,11 +789,11 @@ namespace Semiodesk.Trinity.Test
         [Test()]
         public void AddPropertyTest9()
         {
-            Uri baseUri = new Uri("http://example.com/test");
-            string relativeUri = "#myResource";
-            Resource target = new Resource(new Uri(baseUri, relativeUri));
-            Property property = new Property(new Uri(baseUri, "#related"));
-            Uri value = new Uri(baseUri, "ex:test#myUriProp");
+            var baseUri = new Uri("http://example.com/test");
+            var relativeUri = "#myResource";
+            var target = new Resource(new Uri(baseUri, relativeUri));
+            var property = new Property(new Uri(baseUri, "#related"));
+            var value = new Uri(baseUri, "ex:test#myUriProp");
             target.AddProperty(property, value);
             Assert.IsTrue(target.HasProperty(property));
             Assert.AreEqual(value, target.ListValues(property).First());
@@ -806,17 +806,17 @@ namespace Semiodesk.Trinity.Test
         [Test()]
         public void AddPropertyTest8()
         {
-            Uri baseUri = new Uri("http://example.com/test");
-            string relativeUri = "#myResource";
-            Resource target = new Resource(new Uri(baseUri, relativeUri));
-            Property property = new Property(new Uri(baseUri, "#related"));
-            string value = "Hallo Welt!";
-            CultureInfo language = CultureInfo.GetCultureInfo("DE");
+            var baseUri = new Uri("http://example.com/test");
+            var relativeUri = "#myResource";
+            var target = new Resource(new Uri(baseUri, relativeUri));
+            var property = new Property(new Uri(baseUri, "#related"));
+            var value = "Hallo Welt!";
+            var language = CultureInfo.GetCultureInfo("DE");
             target.AddProperty(property, value, language);
 
             Assert.IsTrue(target.HasProperty(property));
             Assert.AreEqual(typeof(Tuple<string, string>), target.ListValues(property).First().GetType());
-            Tuple<string, string> res = (Tuple<string, string>)target.ListValues(property).First();
+            var res = (Tuple<string, string>)target.ListValues(property).First();
             Assert.AreEqual(value, res.Item1);
             Assert.AreEqual(language.Name.ToLower(), res.Item2.ToLower());
             Assert.AreEqual(value.GetType(), res.Item1.GetType());
@@ -829,11 +829,11 @@ namespace Semiodesk.Trinity.Test
         [Test()]
         public void AddPropertyTest7()
         {
-            Uri baseUri = new Uri("http://example.com/test");
-            string relativeUri = "#myResource";
-            Resource target = new Resource(new Uri(baseUri, relativeUri));
-            Property property = new Property(new Uri(baseUri, "#related"));
-            int value = 17;
+            var baseUri = new Uri("http://example.com/test");
+            var relativeUri = "#myResource";
+            var target = new Resource(new Uri(baseUri, relativeUri));
+            var property = new Property(new Uri(baseUri, "#related"));
+            var value = 17;
             target.AddProperty(property, value);
             Assert.IsTrue(target.HasProperty(property));
             Assert.AreEqual(value, target.ListValues(property).First());
@@ -846,10 +846,10 @@ namespace Semiodesk.Trinity.Test
         [Test()]
         public void AddPropertyTest6()
         {
-            Uri baseUri = new Uri("http://example.com/test");
-            string relativeUri = "#myResource";
-            Resource target = new Resource(new Uri(baseUri, relativeUri));
-            Property property = new Property(new Uri(baseUri, "#related"));
+            var baseUri = new Uri("http://example.com/test");
+            var relativeUri = "#myResource";
+            var target = new Resource(new Uri(baseUri, relativeUri));
+            var property = new Property(new Uri(baseUri, "#related"));
             IResource value = new Resource(new Uri(baseUri, "#mySecondResource"));
             target.AddProperty(property, value);
             Assert.IsTrue(target.HasProperty(property));
@@ -863,11 +863,11 @@ namespace Semiodesk.Trinity.Test
         [Test()]
         public void AddPropertyTest5()
         {
-            Uri baseUri = new Uri("http://example.com/test");
-            string relativeUri = "#myResource";
-            Resource target = new Resource(new Uri(baseUri, relativeUri));
-            Property property = new Property(new Uri(baseUri, "#related"));
-            string value = "All your base are belong to us!";
+            var baseUri = new Uri("http://example.com/test");
+            var relativeUri = "#myResource";
+            var target = new Resource(new Uri(baseUri, relativeUri));
+            var property = new Property(new Uri(baseUri, "#related"));
+            var value = "All your base are belong to us!";
             target.AddProperty(property, value);
             Assert.IsTrue(target.HasProperty(property));
             Assert.AreEqual(value, target.ListValues(property).First());
@@ -880,11 +880,11 @@ namespace Semiodesk.Trinity.Test
         [Test()]
         public void AddPropertyTest4()
         {
-            Uri baseUri = new Uri("http://example.com/test");
-            string relativeUri = "#myResource";
-            Resource target = new Resource(new Uri(baseUri, relativeUri));
-            Property property = new Property(new Uri(baseUri, "#related"));
-            float value = 21.345F;
+            var baseUri = new Uri("http://example.com/test");
+            var relativeUri = "#myResource";
+            var target = new Resource(new Uri(baseUri, relativeUri));
+            var property = new Property(new Uri(baseUri, "#related"));
+            var value = 21.345F;
             target.AddProperty(property, value);
             Assert.IsTrue(target.HasProperty(property));
             Assert.AreEqual(value, target.ListValues(property).First());
@@ -897,11 +897,11 @@ namespace Semiodesk.Trinity.Test
         [Test()]
         public void AddPropertyTest3()
         {
-            Uri baseUri = new Uri("http://example.com/test");
-            string relativeUri = "#myResource";
-            Resource target = new Resource(new Uri(baseUri, relativeUri));
-            Property property = new Property(new Uri(baseUri, "#related"));
-            DateTime value = new DateTime(2010, 3, 17);
+            var baseUri = new Uri("http://example.com/test");
+            var relativeUri = "#myResource";
+            var target = new Resource(new Uri(baseUri, relativeUri));
+            var property = new Property(new Uri(baseUri, "#related"));
+            var value = new DateTime(2010, 3, 17);
             target.AddProperty(property, value);
             Assert.IsTrue(target.HasProperty(property));
             Assert.AreEqual(value, target.ListValues(property).First());
@@ -915,10 +915,10 @@ namespace Semiodesk.Trinity.Test
         [Test()]
         public void AddPropertyTest1()
         {
-            Uri baseUri = new Uri("http://example.com/test");
-            string relativeUri = "#myResource";
-            Resource target = new Resource(new Uri(baseUri, relativeUri));
-            Property property = new Property(new Uri(baseUri, "#related"));
+            var baseUri = new Uri("http://example.com/test");
+            var relativeUri = "#myResource";
+            var target = new Resource(new Uri(baseUri, relativeUri));
+            var property = new Property(new Uri(baseUri, "#related"));
             double value = 0.234F;
             target.AddProperty(property, value);
             Assert.IsTrue(target.HasProperty(property));
@@ -932,11 +932,11 @@ namespace Semiodesk.Trinity.Test
         [Test()]
         public void AddPropertyTest()
         {
-            Uri baseUri = new Uri("http://example.com/test");
-            string relativeUri = "#myResource";
-            Resource target = new Resource(new Uri(baseUri, relativeUri));
-            Property property = new Property(new Uri(baseUri, "#related"));
-            bool value = false;
+            var baseUri = new Uri("http://example.com/test");
+            var relativeUri = "#myResource";
+            var target = new Resource(new Uri(baseUri, relativeUri));
+            var property = new Property(new Uri(baseUri, "#related"));
+            var value = false;
             target.AddProperty(property, value);
             Assert.IsTrue(target.HasProperty(property));
             Assert.AreEqual(value, target.ListValues(property).First());
@@ -953,16 +953,16 @@ namespace Semiodesk.Trinity.Test
         public void ResourceConstructorTest()
         {
 
-            Uri uri = new Uri("http://example.com/ex");
+            var uri = new Uri("http://example.com/ex");
 
-            Resource t1 = new Resource(uri);
-            Resource t2 = new Resource(uri);
-            bool a = t1.Equals(t2);
+            var t1 = new Resource(uri);
+            var t2 = new Resource(uri);
+            var a = t1.Equals(t2);
             Assert.AreEqual(t1, t2);
             Assert.AreEqual(uri, t1.Uri.ToString());
 
-            Uri ns = new Uri("http://example.com/");
-            Resource res = new Resource(new Uri(ns, "John"));
+            var ns = new Uri("http://example.com/");
+            var res = new Resource(new Uri(ns, "John"));
             Assert.AreEqual(res.Uri, new Uri("http://example.com/John"));
 
 
@@ -991,11 +991,11 @@ namespace Semiodesk.Trinity.Test
         [Test()]
         public void RemovePropertyTest8()
         {
-            Uri baseUri = new Uri("http://example.com/test");
-            string relativeUri = "#myResource";
-            Resource target = new Resource(new Uri(baseUri, relativeUri));
-            Property property = new Property(new Uri(baseUri, "#related"));
-            Uri value = new Uri("ex:test#myUriProp");
+            var baseUri = new Uri("http://example.com/test");
+            var relativeUri = "#myResource";
+            var target = new Resource(new Uri(baseUri, relativeUri));
+            var property = new Property(new Uri(baseUri, "#related"));
+            var value = new Uri("ex:test#myUriProp");
             target.AddProperty(property, value);
             Assert.AreEqual(true, target.HasProperty(property, value));
             target.RemoveProperty(property, value);
@@ -1009,12 +1009,12 @@ namespace Semiodesk.Trinity.Test
         [Test()]
         public void RemovePropertyTest7()
         {
-            Uri baseUri = new Uri("http://example.com/test");
-            string relativeUri = "#myResource";
-            Resource target = new Resource(new Uri(baseUri, relativeUri));
-            Property property = new Property(new Uri(baseUri, "#related"));
-            string value = "Hello";
-            CultureInfo language = CultureInfo.GetCultureInfo("en-US");
+            var baseUri = new Uri("http://example.com/test");
+            var relativeUri = "#myResource";
+            var target = new Resource(new Uri(baseUri, relativeUri));
+            var property = new Property(new Uri(baseUri, "#related"));
+            var value = "Hello";
+            var language = CultureInfo.GetCultureInfo("en-US");
             target.AddProperty(property, value, language);
             Assert.AreEqual(true, target.HasProperty(property, value, language));
             target.RemoveProperty(property, value, language);
@@ -1028,11 +1028,11 @@ namespace Semiodesk.Trinity.Test
         [Test()]
         public void RemovePropertyTest6()
         {
-            Uri baseUri = new Uri("http://example.com/test");
-            string relativeUri = "#myResource";
-            Resource target = new Resource(new Uri(baseUri, relativeUri));
-            Property property = new Property(new Uri(baseUri, "#related"));
-            int value = 12;
+            var baseUri = new Uri("http://example.com/test");
+            var relativeUri = "#myResource";
+            var target = new Resource(new Uri(baseUri, relativeUri));
+            var property = new Property(new Uri(baseUri, "#related"));
+            var value = 12;
             target.AddProperty(property, value);
             Assert.AreEqual(true, target.HasProperty(property, value));
             target.RemoveProperty(property, value);
@@ -1047,11 +1047,11 @@ namespace Semiodesk.Trinity.Test
         [Test()]
         public void RemovePropertyTest5()
         {
-            Uri baseUri = new Uri("http://example.com/test");
-            string relativeUri = "#myResource";
-            Resource target = new Resource(new Uri(baseUri, relativeUri));
-            Property property = new Property(new Uri(baseUri, "#related"));
-            string value = "Cheeseburgers are nice.";
+            var baseUri = new Uri("http://example.com/test");
+            var relativeUri = "#myResource";
+            var target = new Resource(new Uri(baseUri, relativeUri));
+            var property = new Property(new Uri(baseUri, "#related"));
+            var value = "Cheeseburgers are nice.";
             target.AddProperty(property, value);
             Assert.AreEqual(true, target.HasProperty(property, value));
             target.RemoveProperty(property, value);
@@ -1066,10 +1066,10 @@ namespace Semiodesk.Trinity.Test
         [Test()]
         public void RemovePropertyTest4()
         {
-            Uri baseUri = new Uri("http://example.com/test");
-            string relativeUri = "#myResource";
-            Resource target = new Resource(new Uri(baseUri, relativeUri));
-            Property property = new Property(new Uri(baseUri, "#related"));
+            var baseUri = new Uri("http://example.com/test");
+            var relativeUri = "#myResource";
+            var target = new Resource(new Uri(baseUri, relativeUri));
+            var property = new Property(new Uri(baseUri, "#related"));
             IResource value = new Resource(new Uri(baseUri, "#mySecondResource"));
             target.AddProperty(property, value);
             Assert.AreEqual(true, target.HasProperty(property, value));
@@ -1084,11 +1084,11 @@ namespace Semiodesk.Trinity.Test
         [Test()]
         public void RemovePropertyTest3()
         {
-            Uri baseUri = new Uri("http://example.com/test");
-            string relativeUri = "#myResource";
-            Resource target = new Resource(new Uri(baseUri, relativeUri));
-            Property property = new Property(new Uri(baseUri, "#related"));
-            bool value = false;
+            var baseUri = new Uri("http://example.com/test");
+            var relativeUri = "#myResource";
+            var target = new Resource(new Uri(baseUri, relativeUri));
+            var property = new Property(new Uri(baseUri, "#related"));
+            var value = false;
             target.AddProperty(property, value);
             Assert.AreEqual(true, target.HasProperty(property, value));
             target.RemoveProperty(property, value);
@@ -1102,11 +1102,11 @@ namespace Semiodesk.Trinity.Test
         [Test()]
         public void RemovePropertyTest2()
         {
-            Uri baseUri = new Uri("http://example.com/test");
-            string relativeUri = "#myResource";
-            Resource target = new Resource(new Uri(baseUri, relativeUri));
-            Property property = new Property(new Uri(baseUri, "#related"));
-            DateTime value = new DateTime(1999, 1, 3);
+            var baseUri = new Uri("http://example.com/test");
+            var relativeUri = "#myResource";
+            var target = new Resource(new Uri(baseUri, relativeUri));
+            var property = new Property(new Uri(baseUri, "#related"));
+            var value = new DateTime(1999, 1, 3);
             target.RemoveProperty(property, value);
             target.AddProperty(property, value);
             Assert.AreEqual(true, target.HasProperty(property, value));
@@ -1121,11 +1121,11 @@ namespace Semiodesk.Trinity.Test
         [Test()]
         public void RemovePropertyTest1()
         {
-            Uri baseUri = new Uri("http://example.com/test");
-            string relativeUri = "#myResource";
-            Resource target = new Resource(new Uri(baseUri, relativeUri));
-            Property property = new Property(new Uri(baseUri, "#related"));
-            float value = 0.211F;
+            var baseUri = new Uri("http://example.com/test");
+            var relativeUri = "#myResource";
+            var target = new Resource(new Uri(baseUri, relativeUri));
+            var property = new Property(new Uri(baseUri, "#related"));
+            var value = 0.211F;
             target.AddProperty(property, value);
             Assert.AreEqual(true, target.HasProperty(property, value));
             target.RemoveProperty(property, value);
@@ -1139,10 +1139,10 @@ namespace Semiodesk.Trinity.Test
         [Test()]
         public void RemovePropertyTest()
         {
-            Uri baseUri = new Uri("http://example.com/test");
-            string relativeUri = "#myResource";
-            Resource target = new Resource(new Uri(baseUri, relativeUri));
-            Property property = new Property(new Uri(baseUri, "#related"));
+            var baseUri = new Uri("http://example.com/test");
+            var relativeUri = "#myResource";
+            var target = new Resource(new Uri(baseUri, relativeUri));
+            var property = new Property(new Uri(baseUri, "#related"));
             double value = 0.12345632F; // TODO: Passenden Wert initialisieren
             target.AddProperty(property, value);
             Assert.AreEqual(true, target.HasProperty(property, value));

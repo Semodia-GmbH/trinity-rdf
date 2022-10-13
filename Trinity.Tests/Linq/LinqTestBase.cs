@@ -71,7 +71,7 @@ namespace Semiodesk.Trinity.Test.Linq
         [Test]
         public void CanAskResourceWithBinaryExpressionOnDateTime()
         {
-            DateTime value = new DateTime(1948, 2, 4);
+            var value = new DateTime(1948, 2, 4);
 
             var actual = (from person in Model.AsQueryable<Person>() where person.Birthday.Equals(value) select person).Any();
             Assert.IsTrue(actual);
@@ -651,7 +651,7 @@ namespace Semiodesk.Trinity.Test.Linq
         [Test]
         public void CanSelectResourcesWithBinaryExpressionOnFloat()
         {
-            float value = 100000f;
+            var value = 100000f;
 
             // Equal
             var expectedEqual = new UriRef[] { ex.Alice };
@@ -699,7 +699,7 @@ namespace Semiodesk.Trinity.Test.Linq
         [Test]
         public void CanSelectResourcesWithBinaryExpressionOnString()
         {
-            string value = "Alice";
+            var value = "Alice";
 
             // Equal
             var expectedEqual = new UriRef[] { ex.Alice };
@@ -723,7 +723,7 @@ namespace Semiodesk.Trinity.Test.Linq
         [Test]
         public void CanSelectResourcesWithBinaryExpressionOnResource()
         {
-            Person value = new Person(ex.Alice);
+            var value = new Person(ex.Alice);
 
             // Equal
             var expectedEqual = new UriRef[] { ex.Alice };
@@ -747,7 +747,7 @@ namespace Semiodesk.Trinity.Test.Linq
         [Test]
         public void CanSelectResourcesWithBinaryExpressionOnResourceMember()
         {
-            string value = "The Spiders";
+            var value = "The Spiders";
 
             // Equal
             var expectedEqual = new UriRef[] { ex.Alice };
@@ -771,7 +771,7 @@ namespace Semiodesk.Trinity.Test.Linq
         [Test]
         public void CanSelectResourcesWithBinaryExpressionOnUri()
         {
-            Person value = new Person(ex.Alice);
+            var value = new Person(ex.Alice);
 
             // Equal
             var expectedEqual = new UriRef[] { ex.Alice };
@@ -801,7 +801,7 @@ namespace Semiodesk.Trinity.Test.Linq
         [Test]
         public void CanSelectResourcesWithBinaryExpressionOnNull()
         {
-            string value = "Bob";
+            var value = "Bob";
 
             var actual = (from person in Model.AsQueryable<Person>() where person.Group == null select person).ToList();
             CollectionAssert.AreEquivalent(new [] { ex.Bob }, actual.Select(p => p.Uri));
@@ -1213,7 +1213,7 @@ namespace Semiodesk.Trinity.Test.Linq
         [Test]
         public void CanSelectResourcesWithVariableExpression()
         {
-            foreach (int age in new[] { 40, 50, 60 })
+            foreach (var age in new[] { 40, 50, 60 })
             {
                 CanSelectResourcesWithVariableExpression(age);
             }
@@ -1229,7 +1229,7 @@ namespace Semiodesk.Trinity.Test.Linq
 
             // Tests if retrieving resources is possible through extension methods 
             // that have generic parameters with iterfaces.
-            Agent agent = Model.GetResource<Agent>(ex.Alice);
+            var agent = Model.GetResource<Agent>(ex.Alice);
 
             actual = agent.GetImages<Image>(Model).Where(i => i.DepictedAgent == agent).ToList();
 
@@ -1288,14 +1288,14 @@ namespace Semiodesk.Trinity.Test.Linq
         public void CanExecuteScalarWithInferencingEnabled()
         {
             // See if inferencing works for boolean (ASK) queries.
-            bool hasAgent = Model.AsQueryable<Agent>().Where(a => a.FirstName == "Alice").Any();
+            var hasAgent = Model.AsQueryable<Agent>().Where(a => a.FirstName == "Alice").Any();
             Assert.IsFalse(hasAgent);
 
             hasAgent = Model.AsQueryable<Agent>(true).Where(a => a.FirstName == "Alice").Any();
             Assert.IsTrue(hasAgent);
 
             // See if inferencing works for queries that return numeric bindings.
-            int agentCount = Model.AsQueryable<Agent>().Where(a => a.FirstName == "Alice").Count();
+            var agentCount = Model.AsQueryable<Agent>().Where(a => a.FirstName == "Alice").Count();
             Assert.AreEqual(0, agentCount);
 
             agentCount = Model.AsQueryable<Agent>(true).Where(a => a.FirstName == "Alice").Count();
