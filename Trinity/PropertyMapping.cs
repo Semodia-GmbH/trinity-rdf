@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections;
+using System.Globalization;
 
 namespace Semiodesk.Trinity
 {
@@ -189,6 +190,7 @@ namespace Semiodesk.Trinity
                                                  typeof(float), typeof(float?), 
                                                  typeof(double), typeof(double?),
                                                  typeof(decimal), typeof(decimal?),
+                                                 typeof(byte), typeof(sbyte),
                                                  typeof(Int16), typeof(Int16?),
                                                  typeof(Int32), typeof(Int32?),
                                                  typeof(Int64), typeof(Int64?),
@@ -197,7 +199,7 @@ namespace Semiodesk.Trinity
                                                  typeof(UInt64), typeof(UInt64?),
                                                  typeof(DateTime), typeof(DateTime?),
                                                  typeof(TimeSpan), typeof(TimeSpan?),
-                                                 typeof(System.Uri), typeof(Tuple<string, string>)};
+                                                 typeof(System.Uri), typeof(Tuple<string, CultureInfo>)};
 
             if (!allowed.Contains(_dataType) && _dataType.GetInterface("IResource") == null && !typeof(Resource).IsAssignableFrom(_dataType))
             {

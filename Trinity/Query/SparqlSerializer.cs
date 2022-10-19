@@ -22,8 +22,10 @@
 //
 //  Moritz Eberl <moritz@semiodesk.com>
 //  Sebastian Faubel <sebastian@semiodesk.com>
+//  Jan Funke <jan.funke@semodia.com>
 //
 // Copyright (c) Semiodesk GmbH 2015-2019
+// Copyright for derived work (c) Semodia GmbH 2022
 
 using System;
 using System.Collections;
@@ -38,7 +40,7 @@ namespace Semiodesk.Trinity
     /// <summary>
     /// Provides functionality to perform serialization of native .NET types into SPARQL strings.
     /// </summary>
-    public class SparqlSerializer
+    public static class SparqlSerializer
     {
         #region Methods
 
@@ -49,7 +51,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeString(string str)
         {
-            // We need to escape specrial characters: http://www.w3.org/TeamSubmission/turtle/#sec-strings
+            // We need to escape special characters: http://www.w3.org/TeamSubmission/turtle/#sec-strings
             var s = str.Replace(@"\", @"\\");
 
             if(s.Contains('\n'))
@@ -128,17 +130,22 @@ namespace Semiodesk.Trinity
             }
         }
 
+        /// <summary>
+        /// Serializes a translated string collection
+        /// </summary>
+        /// <param name="translatedString">Collection of string translations</param>
+        /// <returns>SPARQL snippet</returns>
         private static string SerializeTranslatedString(IEnumerable<Tuple<string, CultureInfo>> translatedString)
         {
-            if (!translatedString.Any()) return string.Empty;
+            var translatedStringList = translatedString.ToList();
+            if (translatedStringList.Count == 0) return string.Empty;
             
             var result = new StringBuilder();
-            var count = translatedString.Count();
-            foreach (var (translation, culture) in translatedString)
+            var count = translatedStringList.Count;
+            foreach (var (translation, culture) in translatedStringList)
             {
-                count--;
                 result.Append(SerializeTranslatedString(translation, culture.Name));
-                if (count > 0) result.Append(", ");
+                if (--count > 0) result.Append(", ");
             }
             
             return result.ToString();

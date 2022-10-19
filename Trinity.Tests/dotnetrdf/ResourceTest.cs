@@ -26,6 +26,7 @@
 // Copyright (c) Semiodesk GmbH 2015-2019
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Semiodesk.Trinity;
 using NUnit.Framework;
@@ -298,6 +299,31 @@ namespace dotNetRDFStore.Test
             Assert.AreEqual(val, v.Item1);
             Assert.AreEqual(ci.Name.ToLower(), v.Item2.ToLower());
             r.RemoveProperty(myProperty, val, ci);
+        }
+        
+        [Test]
+        public void TestLocalizedStringCollection()
+        {
+            var myProperty = new Property(new Uri("ex:myProperty"));
+            var r = Model.CreateResource<Resource>(new Uri("ex:myResource"));
+            var val = new List<Tuple<string, CultureInfo>>()
+            {
+                new Tuple<string, CultureInfo>("Hallo", CultureInfo.GetCultureInfoByIetfLanguageTag("de-DE")),
+                new Tuple<string, CultureInfo>("Hello", CultureInfo.GetCultureInfoByIetfLanguageTag("en")),
+            }; 
+            
+            
+            r.AddProperty(myProperty, val);
+            r.Commit();
+
+            var r1 = Model.GetResource<Resource>(r.Uri);
+            var res = r1.ListValues(myProperty).ToList();
+            Assert.AreEqual(typeof(List<Tuple<string, CultureInfo>>), res.GetType()); 
+            var v = res as IEnumerable<Tuple<string, CultureInfo>>;
+            
+            //Assert.AreEqual(val, v.Item1);
+            //Assert.AreEqual(ci.Name.ToLower(), v.Item2.ToLower());
+            //r.RemoveProperty(myProperty, val);
         }
 
         [Test]

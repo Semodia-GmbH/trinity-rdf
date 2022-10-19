@@ -422,6 +422,15 @@ namespace Semiodesk.Trinity
         }
 
         /// <summary>
+        /// Adds a property with a string and language as value.
+        /// If this property is mapped with a compatible type, it will be filled with the given value.
+        /// </summary>
+        public void AddProperty(Property property, IEnumerable<Tuple<string, CultureInfo>> value)
+        {
+            AddPropertyToMapping(property, value, false);
+        }
+
+        /// <summary>
         /// Add a property with a string and language as value.
         /// If this property is mapped with a compatible type, it will be filled with the given value.
         /// </summary>

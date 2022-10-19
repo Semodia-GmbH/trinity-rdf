@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using VDS.RDF;
 using VDS.RDF.Query;
@@ -325,7 +326,7 @@ namespace Semiodesk.Trinity.Store
                     }
                     else
                     {
-                        return new Tuple<string, string>(literalNode.Value, literalNode.Language);
+                        return new Tuple<string, CultureInfo>(literalNode.Value, CultureInfo.GetCultureInfoByIetfLanguageTag(literalNode.Language));
                     }
                 }
 
