@@ -168,7 +168,7 @@ namespace Semiodesk.Trinity.Store.Fuseki
         /// <param name="transaction">An associated transaction</param>
         public override void ExecuteNonQuery(ISparqlUpdate query, ITransaction transaction = null)
         {
-            string q = query.ToString();
+            var q = query.ToString();
 
             Log?.Invoke(q);
 
@@ -185,9 +185,9 @@ namespace Semiodesk.Trinity.Store.Fuseki
         /// <returns></returns>
         public override ISparqlQueryResult ExecuteQuery(ISparqlQuery query, ITransaction transaction = null)
         {
-            string q = query.ToString();
+            var q = query.ToString();
 
-            object results = ExecuteQuery(q);
+            var results = ExecuteQuery(q);
 
             if (results is IGraph)
             {
@@ -287,7 +287,7 @@ namespace Semiodesk.Trinity.Store.Fuseki
         public override Uri Read(string content, Uri graphUri, RdfSerializationFormat format, bool update)
         {
             var exists = Connector.HasGraph(graphUri);
-            using (StringReader reader = new StringReader(content))
+            using (var reader = new StringReader(content))
             {
                 IGraph graph = new Graph();
 
@@ -370,7 +370,7 @@ namespace Semiodesk.Trinity.Store.Fuseki
                 {
                     if (format == RdfSerializationFormat.Trig)
                     {
-                        TripleStore s = new TripleStore();
+                        var s = new TripleStore();
                         s.LoadFromFile(path, new TriGParser());
 
                         foreach (Graph g in s.Graphs)
@@ -482,7 +482,7 @@ namespace Semiodesk.Trinity.Store.Fuseki
         /// <returns></returns>
         public override IModelGroup CreateModelGroup(params Uri[] models)
         {
-            List<IModel> modelList = new List<IModel>();
+            var modelList = new List<IModel>();
 
             foreach (var x in models)
             {
@@ -499,7 +499,7 @@ namespace Semiodesk.Trinity.Store.Fuseki
         /// <returns></returns>
         public new IModelGroup CreateModelGroup(params IModel[] models)
         {
-            List<IModel> modelList = new List<IModel>();
+            var modelList = new List<IModel>();
 
             // This approach might seem a bit redundant, but we want to make sure to get the model from the right store.
             foreach (var x in models)

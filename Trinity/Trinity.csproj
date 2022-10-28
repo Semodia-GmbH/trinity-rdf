@@ -5,16 +5,16 @@
         <Copyright>Copyright © Semiodesk GmbH 2015-2020</Copyright>
         <Description>Enterprise ready object mapper for developing RDF knowledge graph applications with .NET</Description>
         <Company>Semiodesk GmbH</Company>
-        <Version>1.0.4.4</Version>
+        <Version>1.1.0</Version>
         <AssemblyName>Semiodesk.Trinity</AssemblyName>
         <RootNamespace>Semiodesk.Trinity</RootNamespace>
         <IsPackable>true</IsPackable>
         <TargetFramework>netstandard2.0</TargetFramework>
         <DocumentationFile>..\Build\$(Configuration)\$(TargetFramework)\Semiodesk.Trinity.xml</DocumentationFile>
-        <NeutralLanguage>en-001</NeutralLanguage>
+        <NeutralLanguage>en</NeutralLanguage>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageId>Semiodesk.Trinity</PackageId>
-        <Authors>Semiodesk GmbH</Authors>
+        <Authors>Semiodesk GmbH,Semodia GmbH</Authors>
         <Product>Semiodesk.Trinity</Product>
         <PackageTags>RDF SPARQL ORM object mapping linked data semantic web knowledge graph database</PackageTags>
         <PackageProjectUrl>https://trinity-rdf.net</PackageProjectUrl>
@@ -33,7 +33,7 @@
 
 
     <ItemGroup>
-        <None Include="..\assets\trinity-logo.png" Pack="true" PackagePath="\"/>
+        <None Include="..\assets\trinity-logo.png" Pack="true" PackagePath="\" />
     </ItemGroup>
 
     <!--  THIS SECTION CONTAINS THE PACKAGING INSTRUCTIONS FOR CILGENERATOR & ONTOLOGYGENERATOR -->
@@ -60,32 +60,32 @@
 
 
     <ItemGroup>
-        <Compile Remove="Properties\AssemblyVersion.cs"/>
-        <Compile Remove="Stores\Virtuoso\**"/>
-        <EmbeddedResource Remove="Stores\Virtuoso\**"/>
+        <Compile Remove="Properties\AssemblyVersion.cs" />
+        <Compile Remove="Stores\Virtuoso\**" />
+        <EmbeddedResource Remove="Stores\Virtuoso\**" />
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Remove="Stores\FusekiQueryResult.cs"/>
-        <Compile Remove="Stores\FusekiStore.cs"/>
+        <Compile Remove="Stores\FusekiQueryResult.cs" />
+        <Compile Remove="Stores\FusekiStore.cs" />
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove="app.config"/>
-        <None Remove="ontologies.config"/>
-        <None Remove="packages.config"/>
-        <None Remove="Stores\IStorageSpecific.cs.orig"/>
-        <None Remove="Stores\StoreUpdater.cs.orig"/>
-        <None Remove="Trinity.csproj.orig"/>
-        <None Remove="Trinity.v12.suo"/>
+        <None Remove="app.config" />
+        <None Remove="ontologies.config" />
+        <None Remove="packages.config" />
+        <None Remove="Stores\IStorageSpecific.cs.orig" />
+        <None Remove="Stores\StoreUpdater.cs.orig" />
+        <None Remove="Trinity.csproj.orig" />
+        <None Remove="Trinity.v12.suo" />
     </ItemGroup>
 
     <!-- ALL TARGETS -->
     <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
-        <PackageReference Include="Remotion.Linq" Version="2.2.0"/>
-        <PackageReference Include="dotNetRDF" Version="2.7.5"/>
-        <PackageReference Include="System.Composition" Version="6.0.0"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+        <PackageReference Include="Remotion.Linq" Version="2.2.0" />
+        <PackageReference Include="dotNetRDF" Version="2.7.5" />
+        <PackageReference Include="System.Composition" Version="6.0.0" />
     </ItemGroup>
     
     <ItemGroup>

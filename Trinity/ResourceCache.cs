@@ -105,7 +105,8 @@ namespace Semiodesk.Trinity
 
             if (!mapping.IsList && cachedUris.Count > 1)
             {
-                throw new Exception(string.Format("An error occured while loading the cached resources for property {0}. Found {1} elements but it is mapped to a non-list property. Try to map to a list of objects.", mapping.PropertyName, cachedUris.Count));
+                throw new Exception(
+                    $"An error occured while loading the cached resources for property {mapping.PropertyName}. Found {cachedUris.Count} elements but it is mapped to a non-list property. Try to map to a list of objects.");
             }
 
             var res = Model.GetResources(cachedUris, baseType);
@@ -138,7 +139,7 @@ namespace Semiodesk.Trinity
                     if (list.Contains(resource))
                         list.Remove(resource);
 
-                    // Add ther resource to the mapped list
+                    // Add their resource to the mapped list
                     list.Add(resource);
                 }
             }

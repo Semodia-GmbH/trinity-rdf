@@ -31,9 +31,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Semiodesk.Trinity.Ontologies;
 using Semiodesk.Trinity.Test.Cilg;
-#if NET35
-using Semiodesk.Trinity.Utility;
-#endif
 
 namespace Semiodesk.Trinity.Test
 {
@@ -54,31 +51,28 @@ namespace Semiodesk.Trinity.Test
         [TearDown]
         public void TearDown()
         {
-            if (_store != null)
-            {
-                _store.Dispose();
-            }
+            _store?.Dispose();
         }
 
         [Test]
         public void MultipleRdfClassesTest()
         {
-            IModel model = GetModel();
+            var model = GetModel();
             model.Clear();
 
             // Test if the GetTypes method was correctly implemented by the CilGenerator.
-            CilgMultipleMappingTestClass t1 = model.CreateResource<CilgMultipleMappingTestClass>();
+            var t1 = model.CreateResource<CilgMultipleMappingTestClass>();
             t1.Commit();
 
             Assert.AreEqual(2, t1.GetTypes().Count());
 
             // Test if the types were correctly persisted.
-            CilgMultipleMappingTestClass t2 = model.GetResource<CilgMultipleMappingTestClass>(t1);
+            var t2 = model.GetResource<CilgMultipleMappingTestClass>(t1);
 
             Assert.AreEqual(2, t2.ListValues(rdf.type).Count());
 
             // Test if we can retrieve instances of the class from the model.
-            IEnumerable<CilgMultipleMappingTestClass> classes = model.GetResources<CilgMultipleMappingTestClass>();
+            var classes = model.GetResources<CilgMultipleMappingTestClass>();
 
             Assert.AreEqual(1, classes.Count());
 
@@ -88,24 +82,24 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void AddRemoveIntegerTest()
         {
-            IModel model = GetModel();
+            var model = GetModel();
             model.Clear();
 
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            CilgMappingTestClass t1 = model.CreateResource<CilgMappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = model.CreateResource<CilgMappingTestClass>(t1Uri);
 
             // Add value using the mapping interface
-            int value = 1;
+            var value = 1;
             t1.uniqueIntTest = value;
             t1.Commit();
 
-            CilgMappingTestClass t_actual = model.GetResource<CilgMappingTestClass>(t1Uri);
+            var t_actual = model.GetResource<CilgMappingTestClass>(t1Uri);
 
             // Test if value was stored
             Assert.AreEqual(value, t_actual.uniqueIntTest);
 
             // Test if property is present
-            IEnumerable<Property> l = t_actual.ListProperties();
+            var l = t_actual.ListProperties();
             Assert.True(l.Contains(TestOntology.uniqueIntTest));
             Assert.AreEqual(2, l.Count());
 
@@ -133,25 +127,25 @@ namespace Semiodesk.Trinity.Test
         public void SubAddRemoveIntegerTest()
         {
 
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
 
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            CilgSubMappingTestClass t1 = m.CreateResource<CilgSubMappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<CilgSubMappingTestClass>(t1Uri);
             // Add value using the mapping interface
-            int value = 1;
+            var value = 1;
             t1.uniqueIntTest = value;
 
             t1.Commit();
 
-            CilgSubMappingTestClass t_actual = m.GetResource<CilgSubMappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<CilgSubMappingTestClass>(t1Uri);
 
             // Test if value was stored
             Assert.AreEqual(value, t_actual.uniqueIntTest);
 
 
             // Test if property is present
-            IEnumerable<Property> l = t_actual.ListProperties();
+            var l = t_actual.ListProperties();
             Assert.True(l.Contains(TestOntology.uniqueIntTest));
             Assert.AreEqual(2, l.Count());
 
@@ -178,24 +172,24 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void AddRemoveIntegerListTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            CilgMappingTestClass t1 = m.CreateResource<CilgMappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<CilgMappingTestClass>(t1Uri);
             // Add value using the mapping interface
-            int value = 2;
+            var value = 2;
             t1.intTest.Add(value);
 
             t1.Commit();
 
-            CilgMappingTestClass t_actual = m.GetResource<CilgMappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<CilgMappingTestClass>(t1Uri);
 
             // Test if value was stored
             Assert.AreEqual(1, t_actual.intTest.Count());
             Assert.AreEqual(value, t_actual.intTest[0]);
 
             // Test if property is present
-            IEnumerable<Property> l = t_actual.ListProperties();
+            var l = t_actual.ListProperties();
             Assert.True(l.Contains(TestOntology.intTest));
             Assert.AreEqual(2, l.Count());
 
@@ -204,7 +198,7 @@ namespace Semiodesk.Trinity.Test
             Assert.AreEqual(value, t_actual.ListValues(TestOntology.intTest).First());
 
             // Add another value
-            int value2 = -18583;
+            var value2 = -18583;
             t1.intTest.Add(value2);
             t1.Commit();
             t_actual = m.GetResource<CilgMappingTestClass>(t1Uri);
@@ -259,19 +253,19 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void AddRemoveUriTest()
         {
-            IModel model = GetModel();
+            var model = GetModel();
 
             if (!model.IsEmpty)
             {
                 model.Clear();
             }
 
-            Uri uri1 = new Uri("urn:1");
-            Uri uri2 = new Uri("file:///a.bc");
-            Uri uri3 = new Uri("file:///x.yz");
+            var uri1 = new Uri("urn:1");
+            var uri2 = new Uri("file:///a.bc");
+            var uri3 = new Uri("file:///x.yz");
 
             // 1. Create a new instance of the test class and commit it to the model.
-            CilgMappingTestClass test1 = model.CreateResource<CilgMappingTestClass>(uri1);
+            var test1 = model.CreateResource<CilgMappingTestClass>(uri1);
             test1.uriProperty = new Resource(uri2);
             test1.Commit();
 

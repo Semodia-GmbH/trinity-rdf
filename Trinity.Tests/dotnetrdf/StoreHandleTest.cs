@@ -40,7 +40,7 @@ namespace dotNetRDFStore.Test
             var p = new Property(new Uri("ex:myProperty"));
 
             var Store = StoreFactory.CreateMemoryStore();
-            IModel m = Store.CreateModel(new UriRef("semio:test"));
+            var m = Store.CreateModel(new UriRef("semio:test"));
             Assert.IsNotNull(m);
             m.Clear();
             Assert.IsTrue(m.IsEmpty);
@@ -58,7 +58,7 @@ namespace dotNetRDFStore.Test
             var p = new Property(new Uri("ex:myProperty"));
 
             var Store = StoreFactory.CreateStore("provider=dotnetrdf");
-            IModel m = Store.CreateModel(new UriRef("semio:test"));
+            var m = Store.CreateModel(new UriRef("semio:test"));
             m.Clear();
             var x = m.CreateResource<Resource>();
             x.AddProperty(p, "uarg");

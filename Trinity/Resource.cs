@@ -35,14 +35,11 @@ using System.Linq;
 using System.Collections;
 using Newtonsoft.Json;
 using System.Runtime.Serialization;
-#if NET35
-using Semiodesk.Trinity.Utility;
-#endif
 
 namespace Semiodesk.Trinity
 {
     /// <summary>
-    /// This class repesents a RDF resource. 
+    /// This class represents a RDF resource. 
     /// </summary>
     public class Resource : IResource
     {
@@ -422,6 +419,15 @@ namespace Semiodesk.Trinity
             var aggregation = new Tuple<string, string>(value, language.Name.ToLower());
 
             AddPropertyToMapping(property, aggregation, false);
+        }
+
+        /// <summary>
+        /// Adds a property with a string and language as value.
+        /// If this property is mapped with a compatible type, it will be filled with the given value.
+        /// </summary>
+        public void AddProperty(Property property, IEnumerable<Tuple<string, CultureInfo>> value)
+        {
+            AddPropertyToMapping(property, value, false);
         }
 
         /// <summary>
@@ -931,7 +937,7 @@ namespace Semiodesk.Trinity
 
         /// <summary>
         /// Lists all values associated with one property.
-        /// This inclues the mapped values as well.
+        /// This includes the mapped values as well.
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>

@@ -13,6 +13,10 @@ Therefore, our primary goal was to allow developers to use proven enterprise dev
 The software is supported by `Semiodesk`_, for more information have a look at the `product page`_.
 We are available for consulting and projects, don't hesitate to `contact us`_.
 
+Fork
+===========
+This fork primarily aims to update Semiodesk Trinity to a modern .NET SDK environment to support all platforms. It also adds custom serializations for Semodias use case.
+
 Installation
 ============
 The easiest way to start using the Trinity API is to add it to your project trough NuGet.

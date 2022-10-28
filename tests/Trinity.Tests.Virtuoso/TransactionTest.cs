@@ -54,7 +54,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         {
             _store = StoreFactory.CreateStore(_connectionString);
 
-            IModel model = _store.GetModel(_model);
+            var model = _store.GetModel(_model);
 
             if(!model.IsEmpty)
             {
@@ -63,9 +63,9 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         }
 
         [TearDown]
-        public void TearDown()
+        public new void TearDown()
         {
-            IModel model = _store.GetModel(_model);
+            var model = _store.GetModel(_model);
 
             if (!model.IsEmpty)
             {
@@ -85,18 +85,18 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         {
             Assert.Inconclusive();
 
-            List<SingleMappingTestClass> list1 = new List<SingleMappingTestClass>();
-            List<SingleMappingTestClass> list2 = new List<SingleMappingTestClass>();
+            var list1 = new List<SingleMappingTestClass>();
+            var list2 = new List<SingleMappingTestClass>();
 
-            Barrier sync = new Barrier(3);
+            var sync = new Barrier(3);
 
-            Thread worker1 = new Thread(() =>
+            var worker1 = new Thread(() =>
             {
                 IStore s;
-                IModel m = GetModel(out s);
-                ITransaction t = m.BeginTransaction(System.Data.IsolationLevel.ReadCommitted);
+                var m = GetModel(out s);
+                var t = m.BeginTransaction(System.Data.IsolationLevel.ReadCommitted);
                 sync.SignalAndWait();
-                for (int i = 0; i < 50; i++)
+                for (var i = 0; i < 50; i++)
                 {
                     var res = m.CreateResource<SingleMappingTestClass>(new Uri("ex:Resource:Thread1#" + i), t);
                     res.stringTest.Add("Thread1 " + i.ToString());
@@ -107,13 +107,13 @@ namespace Semiodesk.Trinity.Test.Virtuoso
                 s.Dispose();
             });
 
-            Thread worker2 = new Thread(() =>
+            var worker2 = new Thread(() =>
             {
                 IStore s;
-                IModel m = GetModel(out s);
-                ITransaction t = m.BeginTransaction(System.Data.IsolationLevel.ReadCommitted);
+                var m = GetModel(out s);
+                var t = m.BeginTransaction(System.Data.IsolationLevel.ReadCommitted);
                 sync.SignalAndWait();
-                for (int i = 0; i < 50; i++)
+                for (var i = 0; i < 50; i++)
                 {
                     var res = m.CreateResource<SingleMappingTestClass>(new Uri("ex:Resource:Thread2#" + i), t);
                     res.stringTest.Add("Thread2 " + i.ToString());
@@ -135,7 +135,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
             Assert.AreEqual(50, list1.Count());
             Assert.AreEqual(50, list2.Count());
 
-            IModel model = _store.GetModel(_model);
+            var model = _store.GetModel(_model);
 
             foreach (var res in list1)
             {
@@ -156,24 +156,24 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         public void TestModifyElement()
         {
             Assert.Inconclusive();
-            IModel model = _store.GetModel(_model);
+            var model = _store.GetModel(_model);
             var newResource = model.CreateResource<SingleMappingTestClass>();
             newResource.stringTest.Add("Hello");
             newResource.stringTest.Add("my");
             newResource.stringTest.Add("dear");
             newResource.Commit();
 
-            Barrier sync = new Barrier(3);
-            Barrier sync2 = new Barrier(2);
+            var sync = new Barrier(3);
+            var sync2 = new Barrier(2);
 
-            Thread worker1 = new Thread(() =>
+            var worker1 = new Thread(() =>
             {
                 IStore s;
-                IModel m = GetModel(out s);
+                var m = GetModel(out s);
 
                 try
                 {
-                    ITransaction t = m.BeginTransaction(System.Data.IsolationLevel.RepeatableRead);
+                    var t = m.BeginTransaction(System.Data.IsolationLevel.RepeatableRead);
                     sync.SignalAndWait();
                     var res = m.GetResource<SingleMappingTestClass>(newResource.Uri, t);
                     
@@ -191,13 +191,13 @@ namespace Semiodesk.Trinity.Test.Virtuoso
                 }
             });
 
-            Thread worker2 = new Thread(() =>
+            var worker2 = new Thread(() =>
             {
                 try
                 {
                     IStore s;
-                    IModel m = GetModel(out s);
-                    ITransaction t = m.BeginTransaction(System.Data.IsolationLevel.RepeatableRead);
+                    var m = GetModel(out s);
+                    var t = m.BeginTransaction(System.Data.IsolationLevel.RepeatableRead);
 
                     
                     var res = m.GetResource<SingleMappingTestClass>(newResource.Uri, t);
@@ -236,22 +236,22 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         {
             Assert.Inconclusive();
 
-            IModel model = _store.GetModel(_model);
+            var model = _store.GetModel(_model);
             var newResource = model.CreateResource<SingleMappingTestClass>();
             newResource.stringTest.Add("Hello");
             newResource.stringTest.Add("my");
             newResource.stringTest.Add("dear");
             newResource.Commit();
 
-            Uri addedResourceUri = new Uri("ex:blub");
+            var addedResourceUri = new Uri("ex:blub");
 
-            Barrier sync = new Barrier(3);
+            var sync = new Barrier(3);
 
-            Thread worker1 = new Thread(() =>
+            var worker1 = new Thread(() =>
             {
                 IStore s;
-                IModel m = GetModel(out s);
-                ITransaction t = m.BeginTransaction(System.Data.IsolationLevel.ReadCommitted);
+                var m = GetModel(out s);
+                var t = m.BeginTransaction(System.Data.IsolationLevel.ReadCommitted);
                 Debug.WriteLine("Worker 1: Started Transaction");
                 sync.SignalAndWait();
                 var res = m.CreateResource<SingleMappingTestClass>(addedResourceUri);
@@ -264,11 +264,11 @@ namespace Semiodesk.Trinity.Test.Virtuoso
                 s.Dispose();
             });
 
-            Thread worker2 = new Thread(() =>
+            var worker2 = new Thread(() =>
             {
                 IStore s;
-                IModel m = GetModel(out s);
-                ITransaction t = m.BeginTransaction(System.Data.IsolationLevel.RepeatableRead);
+                var m = GetModel(out s);
+                var t = m.BeginTransaction(System.Data.IsolationLevel.RepeatableRead);
                 Debug.WriteLine("Worker 2: started Transaction");
                 sync.SignalAndWait();
 
@@ -306,25 +306,25 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         {
             Assert.Inconclusive();
 
-            bool faulted = false;
+            var faulted = false;
 
-            Barrier sync = new Barrier(2);
-            Barrier sync2 = new Barrier(3);
+            var sync = new Barrier(2);
+            var sync2 = new Barrier(3);
 
-            Thread createWorker = new Thread(() =>
+            var createWorker = new Thread(() =>
             {
                 IStore store;
-                IModel model = GetModel(out store);
+                var model = GetModel(out store);
 
                 model.Clear();
 
-                using (ITransaction tx = model.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
+                using (var tx = model.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
                 {
-                    ResourceMappingTestClass r1 = model.CreateResource<ResourceMappingTestClass>(new Uri("ex:r1"), tx);
+                    var r1 = model.CreateResource<ResourceMappingTestClass>(new Uri("ex:r1"), tx);
                     r1.IntegerValue = 1;
                     r1.Commit();
 
-                    ResourceMappingTestClass r0 = model.CreateResource<ResourceMappingTestClass>(new Uri("ex:r0"), tx);
+                    var r0 = model.CreateResource<ResourceMappingTestClass>(new Uri("ex:r0"), tx);
                     r0.Resource = r1;
                     r0.Commit();
 
@@ -336,14 +336,14 @@ namespace Semiodesk.Trinity.Test.Virtuoso
                 sync.SignalAndWait();
             });
 
-            Thread getWorker = new Thread(() =>
+            var getWorker = new Thread(() =>
             {
                 try
                 {
                     IStore store;
-                    IModel model = GetModel(out store);
+                    var model = GetModel(out store);
 
-                    ResourceMappingTestClass r3 = model.GetResource<ResourceMappingTestClass>(new Uri("ex:r0"));
+                    var r3 = model.GetResource<ResourceMappingTestClass>(new Uri("ex:r0"));
 
                     Assert.NotNull(r3.Resource);
                     Assert.AreEqual(r3.Resource.IntegerValue, 1);
@@ -358,16 +358,16 @@ namespace Semiodesk.Trinity.Test.Virtuoso
                 sync2.SignalAndWait();
             });
 
-            Thread getWorkerTx = new Thread(() =>
+            var getWorkerTx = new Thread(() =>
             {
                 try
                 {
                     IStore store;
-                    IModel model = GetModel(out store);
+                    var model = GetModel(out store);
 
-                    using (ITransaction tx = model.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
+                    using (var tx = model.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
                     {
-                        ResourceMappingTestClass r2 = model.GetResource<ResourceMappingTestClass>(new Uri("ex:r0"), tx);
+                        var r2 = model.GetResource<ResourceMappingTestClass>(new Uri("ex:r0"), tx);
 
                         Assert.NotNull(r2.Resource);
                         Assert.AreEqual(r2.Resource.IntegerValue, 1);

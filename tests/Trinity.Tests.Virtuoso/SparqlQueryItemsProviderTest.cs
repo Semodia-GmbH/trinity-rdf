@@ -42,7 +42,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [SetUp]
         public void SetUp()
         {
-            string connectionString = SetupClass.ConnectionString;
+            var connectionString = SetupClass.ConnectionString;
 
             Store = StoreFactory.CreateStore(string.Format("{0};rule=urn:semiodesk/test/ruleset", connectionString));
             Model = Store.GetModel(new Uri("http://example.org/TestModel"));
@@ -66,10 +66,10 @@ namespace Semiodesk.Trinity.Test.Virtuoso
 
             Model.Clear();
 
-            for (int i = 0; i < 100; i++)
+            for (var i = 0; i < 100; i++)
             {
 
-                IResource resource0 = Model.CreateResource();
+                var resource0 = Model.CreateResource();
                 resource0.AddProperty(rdf.type, nco.PersonContact);
                 resource0.AddProperty(nco.fullname, Guid.NewGuid().ToString());
                 resource0.Commit();
@@ -78,7 +78,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         }
 
         [TearDown]
-        public void TearDown()
+        public new void TearDown()
         {
             Model.Clear();
             Store.Dispose();
@@ -87,8 +87,8 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void TestCount()
         {
-            SparqlQuery q = new SparqlQuery("select ?s ?p ?o where { ?s ?p ?o. ?s a nco:PersonContact. }");
-            SparqlQueryItemsProvider<Resource> p = new SparqlQueryItemsProvider<Resource>(Model, q, false);
+            var q = new SparqlQuery("select ?s ?p ?o where { ?s ?p ?o. ?s a nco:PersonContact. }");
+            var p = new SparqlQueryItemsProvider<Resource>(Model, q, false);
 
             Assert.AreEqual(100, p.Count());
 
@@ -101,8 +101,8 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void TestGetItems()
         {
-            SparqlQuery q = new SparqlQuery("select ?s ?p ?o where { ?s rdf:type nco:PersonContact. ?s ?p ?o. }");
-            SparqlQueryItemsProvider<Resource> p = new SparqlQueryItemsProvider<Resource>(Model, q, false);
+            var q = new SparqlQuery("select ?s ?p ?o where { ?s rdf:type nco:PersonContact. ?s ?p ?o. }");
+            var p = new SparqlQueryItemsProvider<Resource>(Model, q, false);
 
             Assert.AreEqual(10, p.GetItems(0, 10).Count());
 

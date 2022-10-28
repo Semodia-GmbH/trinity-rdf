@@ -32,11 +32,6 @@ using System.Text.RegularExpressions;
 using Semiodesk.Trinity.Store;
 using System.Configuration;
 using System.Net;
-#if NETSTANDARD2_0
-
-#elif !NET35
-using System.ComponentModel.Composition.Hosting;
-#endif
 
 namespace Semiodesk.Trinity
 {
@@ -134,7 +129,7 @@ namespace Semiodesk.Trinity
 
             if (!string.IsNullOrEmpty(name))
             {
-                throw new ArgumentException(string.Format("Connection string with given name \"{0}\" not found.", name));
+                throw new ArgumentException($"Connection string with given name \"{name}\" not found.");
             }
 
             return null;

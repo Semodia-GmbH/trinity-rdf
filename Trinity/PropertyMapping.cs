@@ -28,9 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections;
-#if NET35
-using Semiodesk.Trinity.Utility;
-#endif
+using System.Globalization;
 
 namespace Semiodesk.Trinity
 {
@@ -192,6 +190,7 @@ namespace Semiodesk.Trinity
                                                  typeof(float), typeof(float?), 
                                                  typeof(double), typeof(double?),
                                                  typeof(decimal), typeof(decimal?),
+                                                 typeof(byte), typeof(sbyte),
                                                  typeof(Int16), typeof(Int16?),
                                                  typeof(Int32), typeof(Int32?),
                                                  typeof(Int64), typeof(Int64?),
@@ -200,7 +199,7 @@ namespace Semiodesk.Trinity
                                                  typeof(UInt64), typeof(UInt64?),
                                                  typeof(DateTime), typeof(DateTime?),
                                                  typeof(TimeSpan), typeof(TimeSpan?),
-                                                 typeof(System.Uri), typeof(Tuple<string, string>)};
+                                                 typeof(System.Uri), typeof(Tuple<string, CultureInfo>)};
 
             if (!allowed.Contains(_dataType) && _dataType.GetInterface("IResource") == null && !typeof(Resource).IsAssignableFrom(_dataType))
             {
@@ -357,7 +356,7 @@ namespace Semiodesk.Trinity
                 typeString = typeof(T).ToString();
             }
 
-            var message = string.Format("Provided argument value was not of type {0}", typeString);
+            var message = $"Provided argument value was not of type {typeString}";
 
             throw new Exception(message);
         }
@@ -397,7 +396,7 @@ namespace Semiodesk.Trinity
                 typeString = typeof(T).ToString();
             }
 
-            var message = string.Format("Provided argument value was not of type {0}", typeString);
+            var message = $"Provided argument value was not of type {typeString}";
             
             throw new Exception(message);
         }

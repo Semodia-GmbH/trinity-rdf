@@ -51,7 +51,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [SetUp]
         public void SetUp()
         {
-            string connectionString = SetupClass.ConnectionString;
+            var connectionString = SetupClass.ConnectionString;
 
             Store = StoreFactory.CreateStore(string.Format("{0};rule=urn:semiodesk/test/ruleset", connectionString));
             Store.InitializeFromConfiguration();
@@ -70,28 +70,28 @@ namespace Semiodesk.Trinity.Test.Virtuoso
                 Model2.Clear();
             }
 
-            IResource model_resource = Model.CreateResource(new Uri("http://example.org/MyResource"));
+            var model_resource = Model.CreateResource(new Uri("http://example.org/MyResource"));
 
-            Property property = new Property(new Uri("http://example.org/MyProperty"));
+            var property = new Property(new Uri("http://example.org/MyProperty"));
             model_resource.AddProperty(property, "in the jungle");
             model_resource.AddProperty(property, 123);
             model_resource.AddProperty(property, DateTime.Now);
             model_resource.Commit();
 
-            IResource model_resource2 = Model.CreateResource(new Uri("ex:Resource"));
+            var model_resource2 = Model.CreateResource(new Uri("ex:Resource"));
             model_resource2.AddProperty(property, "in the jungle");
             model_resource2.AddProperty(property, 123);
             model_resource2.AddProperty(property, DateTime.Now);
             model_resource2.Commit();
 
 
-            IResource model2_resource = Model2.CreateResource(new Uri("http://example.org/MyResource"));
+            var model2_resource = Model2.CreateResource(new Uri("http://example.org/MyResource"));
             model2_resource.AddProperty(property, "in the jungle");
             model2_resource.AddProperty(property, 123);
             model2_resource.AddProperty(property, DateTime.Now);
             model2_resource.Commit();
 
-            IResource model2_resource2 = Model2.CreateResource(new Uri("ex:Resource"));
+            var model2_resource2 = Model2.CreateResource(new Uri("ex:Resource"));
             model2_resource2.AddProperty(property, "in the jungle");
             model2_resource2.AddProperty(property, 123);
             model2_resource2.AddProperty(property, DateTime.Now);
@@ -99,7 +99,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         }
 
         [TearDown]
-        public void TearDown()
+        public new void TearDown()
         {
             Model.Clear();
             Model2.Clear();
@@ -137,19 +137,19 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void ModelNameTest()
         {
-            Uri modelUri = new Uri("http://www.example.com");
-            Uri modelUri2 = new Uri("http://www.example.com/");
+            var modelUri = new Uri("http://www.example.com");
+            var modelUri2 = new Uri("http://www.example.com/");
 
-            IModel m1 = Store.GetModel(modelUri);
+            var m1 = Store.GetModel(modelUri);
             m1.Clear();
 
             Assert.IsTrue(m1.IsEmpty);
 
-            IModel m2 = Store.GetModel(modelUri2);
+            var m2 = Store.GetModel(modelUri2);
 
             Assert.IsTrue(m2.IsEmpty);
             
-            PersonContact c = m1.CreateResource<PersonContact>(new Uri("http://www.example.com/testResource"));
+            var c = m1.CreateResource<PersonContact>(new Uri("http://www.example.com/testResource"));
             c.NameFamily = "Doe";
             c.Commit();
 
@@ -188,8 +188,8 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void DeleteResourceTest()
         {
-            Uri uri0 = new Uri("http://example.org/MyResource");
-            Uri uri1 = new Uri("http://example.org/MyResource1");
+            var uri0 = new Uri("http://example.org/MyResource");
+            var uri1 = new Uri("http://example.org/MyResource1");
 
             Assert.IsTrue(Model.ContainsResource(uri0));
 
@@ -197,15 +197,15 @@ namespace Semiodesk.Trinity.Test.Virtuoso
 
             Assert.IsFalse(Model.ContainsResource(uri0));
 
-            Property p0 = new Property(new Uri("http://example.org/MyProperty"));
-            Property p1 = new Property(new Uri("http://example.org/MyProperty1"));
+            var p0 = new Property(new Uri("http://example.org/MyProperty"));
+            var p1 = new Property(new Uri("http://example.org/MyProperty1"));
 
-            IResource r0 = Model.CreateResource(uri0);
+            var r0 = Model.CreateResource(uri0);
             r0.AddProperty(p0, "in the jungle");
             r0.AddProperty(p0, 123);
             r0.Commit();
 
-            IResource r1 = Model.CreateResource(uri1);
+            var r1 = Model.CreateResource(uri1);
             r1.AddProperty(p0, 123);
             r1.AddProperty(p1, r0);
             r1.Commit();
@@ -228,13 +228,13 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void DeleteResourcesTest()
         {
-            Uri uri0 = new Uri("http://example.org/MyResource");
-            Uri uri1 = new Uri("http://example.org/MyResource1");
-            Property p0 = new Property(new Uri("http://example.org/MyProperty"));
-            Property p1 = new Property(new Uri("http://example.org/MyProperty1"));
+            var uri0 = new Uri("http://example.org/MyResource");
+            var uri1 = new Uri("http://example.org/MyResource1");
+            var p0 = new Property(new Uri("http://example.org/MyProperty"));
+            var p1 = new Property(new Uri("http://example.org/MyProperty1"));
 
 
-            IResource r1 = Model.CreateResource(uri1);
+            var r1 = Model.CreateResource(uri1);
             r1.AddProperty(p0, 123);
             r1.AddProperty(p1, new Resource(uri0));
             r1.Commit();
@@ -255,13 +255,13 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void DeleteResourcesByUrisTest()
         {
-            Uri uri0 = new Uri("http://example.org/MyResource");
-            Uri uri1 = new Uri("http://example.org/MyResource1");
-            Property p0 = new Property(new Uri("http://example.org/MyProperty"));
-            Property p1 = new Property(new Uri("http://example.org/MyProperty1"));
+            var uri0 = new Uri("http://example.org/MyResource");
+            var uri1 = new Uri("http://example.org/MyResource1");
+            var p0 = new Property(new Uri("http://example.org/MyProperty"));
+            var p1 = new Property(new Uri("http://example.org/MyProperty1"));
 
 
-            IResource r1 = Model.CreateResource(uri1);
+            var r1 = Model.CreateResource(uri1);
             r1.AddProperty(p0, 123);
             r1.AddProperty(p1, new Resource(uri0));
             r1.Commit();
@@ -280,9 +280,9 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         {
             Model.Clear();
 
-            Property p = new Property(new Uri("http://example.org/MyProperty"));
+            var p = new Property(new Uri("http://example.org/MyProperty"));
 
-            IResource x = Model.CreateResource(new BlankId());
+            var x = Model.CreateResource(new BlankId());
             x.AddProperty(p, 123);
             x.Commit();
 
@@ -328,7 +328,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void GetResourceTest()
         {
-            IResource hans = Model.GetResource(new Uri("http://example.org/MyResource"));
+            var hans = Model.GetResource(new Uri("http://example.org/MyResource"));
             Assert.NotNull(hans);
             Assert.NotNull(hans.Model);
 
@@ -354,9 +354,9 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void GetResourcesTest()
         {
-            SparqlQuery query = new SparqlQuery("DESCRIBE <http://example.org/MyResource>");
+            var query = new SparqlQuery("DESCRIBE <http://example.org/MyResource>");
 
-            List<Resource> resources = new List<Resource>();
+            var resources = new List<Resource>();
             resources.AddRange(Model.GetResources(query));
 
             Assert.Greater(resources.Count, 0);
@@ -370,15 +370,15 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void UpdateResourceTest()
         {
-            Property property = new Property(new Uri("http://example.org/MyProperty"));
+            var property = new Property(new Uri("http://example.org/MyProperty"));
 
-            Uri resourceUri = new Uri("http://example.org/MyResource");
+            var resourceUri = new Uri("http://example.org/MyResource");
 
-            IResource resource = Model.GetResource(resourceUri);
+            var resource = Model.GetResource(resourceUri);
             resource.RemoveProperty(property, 123);
             resource.Commit();
 
-            IResource actual = Model.GetResource(resourceUri);
+            var actual = Model.GetResource(resourceUri);
 
             Assert.AreEqual(resource, actual);
 
@@ -387,7 +387,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
             Assert.AreEqual(resource, actual);
 
             // Try to update resource with different properties then persisted
-            Resource r2 = new Resource(resourceUri);
+            var r2 = new Resource(resourceUri);
             r2.AddProperty(property, "in the jengle");
 
             r2.Model = Model;
@@ -399,21 +399,21 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void DateTimeResourceTest()
         {
-            Uri resUri = new Uri("http://example.org/DateTimeTest");
-            IResource res = Model.CreateResource(resUri);
+            var resUri = new Uri("http://example.org/DateTimeTest");
+            var res = Model.CreateResource(resUri);
 
-            Property property = new Property(new Uri("http://example.org/MyProperty"));
+            var property = new Property(new Uri("http://example.org/MyProperty"));
 
-            DateTime t = new DateTime();
+            var t = new DateTime();
             Assert.IsTrue(DateTime.TryParse("2013-01-21T16:27:23.000Z", out t));
 
             res.AddProperty(property, t);
             res.Commit();
 
-            IResource actual = Model.GetResource(resUri);
-            object o = actual.GetValue(property);
+            var actual = Model.GetResource(resUri);
+            var o = actual.GetValue(property);
             Assert.AreEqual(typeof(DateTime), o.GetType());
-            DateTime actualDateTime = (DateTime)actual.GetValue(property);
+            var actualDateTime = (DateTime)actual.GetValue(property);
 
             Assert.AreEqual(t.ToUniversalTime(), actualDateTime.ToUniversalTime());
         }
@@ -421,20 +421,20 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void TimeSpanResourceTest()
         {
-            Uri resUri = new Uri("http://example.org/DateTimeTest");
-            IResource res = Model.CreateResource(resUri);
+            var resUri = new Uri("http://example.org/DateTimeTest");
+            var res = Model.CreateResource(resUri);
 
-            Property property = new Property(new Uri("http://example.org/MyProperty"));
+            var property = new Property(new Uri("http://example.org/MyProperty"));
 
-            TimeSpan t = TimeSpan.FromMinutes(5);
+            var t = TimeSpan.FromMinutes(5);
 
             res.AddProperty(property, t);
             res.Commit();
 
-            IResource actual = Model.GetResource(resUri);
-            object o = actual.GetValue(property);
+            var actual = Model.GetResource(resUri);
+            var o = actual.GetValue(property);
             Assert.AreEqual(typeof(TimeSpan), o.GetType());
-            TimeSpan actualDateTime = (TimeSpan)actual.GetValue(property);
+            var actualDateTime = (TimeSpan)actual.GetValue(property);
 
             Assert.AreEqual(t.TotalMinutes, actualDateTime.TotalMinutes);
         }
@@ -444,14 +444,14 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         {
             Model.Clear();
 
-            Property property = new Property(new Uri("http://example.org/MyProperty"));
+            var property = new Property(new Uri("http://example.org/MyProperty"));
 
-            IResource model2_resource2 = Model.CreateResource(new Uri("ex:Resource"));
+            var model2_resource2 = Model.CreateResource(new Uri("ex:Resource"));
             model2_resource2.AddProperty(property, "\"in the jungle\"");
             model2_resource2.Commit();
 
-            IResource r = Model.GetResource(new Uri("ex:Resource"));
-            object o = r.GetValue(property);
+            var r = Model.GetResource(new Uri("ex:Resource"));
+            var o = r.GetValue(property);
             Assert.AreEqual(typeof(string), o.GetType());
             Assert.AreEqual("\"in the jungle\"", o);
         }
@@ -461,14 +461,14 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         {
             Model.Clear();
 
-            Property property = new Property(new Uri("http://example.org/MyProperty"));
+            var property = new Property(new Uri("http://example.org/MyProperty"));
 
-            IResource model2_resource2 = Model.CreateResource(new Uri("ex:Resource"));
+            var model2_resource2 = Model.CreateResource(new Uri("ex:Resource"));
             model2_resource2.AddProperty(property, "in the jungle", "EN");
             model2_resource2.Commit();
 
-            IResource r = Model.GetResource(new Uri("ex:Resource"));
-            object o = r.GetValue(property);
+            var r = Model.GetResource(new Uri("ex:Resource"));
+            var o = r.GetValue(property);
 
             Assert.AreEqual(typeof(Tuple<string, CultureInfo>), o.GetType());
 
@@ -482,15 +482,15 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         {
             Model.Clear();
 
-            Property p0 = new Property(new Uri("http://example.org/MyProperty"));
+            var p0 = new Property(new Uri("http://example.org/MyProperty"));
 
-            IResource r0 = Model.CreateResource(new Uri("ex:Resource"));
+            var r0 = Model.CreateResource(new Uri("ex:Resource"));
             r0.AddProperty(p0, "in the\n jungle");
             r0.Commit();
 
             r0 = Model.GetResource(new Uri("ex:Resource"));
 
-            object o = r0.GetValue(p0);
+            var o = r0.GetValue(p0);
 
             Assert.AreEqual(typeof(string), o.GetType());
             Assert.AreEqual("in the\n jungle", o);
@@ -499,29 +499,29 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void AddResourceTest()
         {
-            Uri uriResource = new Uri("http://example.org/AddResourceTest");
+            var uriResource = new Uri("http://example.org/AddResourceTest");
             IResource resource = new Resource (uriResource);
 
-            Property property = new Property(new Uri("http://example.org/MyProperty"));
+            var property = new Property(new Uri("http://example.org/MyProperty"));
             resource.AddProperty(property, "in the jungle");
             resource.AddProperty(property, 123);
             resource.AddProperty(property, DateTime.Now);
 
             Model.AddResource(resource);
 
-            IResource actual = Model.GetResource(uriResource);
+            var actual = Model.GetResource(uriResource);
 
             Assert.AreEqual(uriResource, uriResource);
             Assert.AreEqual(resource.ListValues(property).Count(), actual.ListValues(property).Count());
 
 
             uriResource = new Uri("http://example.org/AddResourceTest2");
-            Contact contact = new Contact(uriResource);
+            var contact = new Contact(uriResource);
             contact.Fullname = "Peter";
 
             Model.AddResource<Contact>(contact);
 
-            Contact actualContact = Model.GetResource<Contact>(uriResource);
+            var actualContact = Model.GetResource<Contact>(uriResource);
 
             Assert.AreEqual(uriResource, uriResource);
             Assert.AreEqual(contact.Fullname, actualContact.Fullname);
@@ -530,13 +530,13 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void GetTypedResourcesTest()
         {
-            Uri uriResource = new Uri("http://example.org/Peter");
-            Contact contact = Model.CreateResource<Contact>(uriResource);
+            var uriResource = new Uri("http://example.org/Peter");
+            var contact = Model.CreateResource<Contact>(uriResource);
             contact.Fullname = "Peter";
             contact.Commit();
 
             uriResource = new Uri("http://example.org/Hans");
-            Contact contact2 = Model.CreateResource<Contact>(uriResource);
+            var contact2 = Model.CreateResource<Contact>(uriResource);
             contact2.Fullname = "Hans";
             contact2.Commit();
 
@@ -548,7 +548,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
 
             Model.Clear();
 
-            PersonContact personContact = Model.CreateResource<PersonContact>(uriResource);
+            var personContact = Model.CreateResource<PersonContact>(uriResource);
             personContact.Fullname = "Peter";
             personContact.Commit();
 
@@ -568,13 +568,13 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         {
             Model.Clear();
 
-            Property property = new Property(new Uri("http://example.org/MyProperty"));
+            var property = new Property(new Uri("http://example.org/MyProperty"));
 
-            IResource model2_resource2 = Model.CreateResource(new Uri("ex:Resource"));
+            var model2_resource2 = Model.CreateResource(new Uri("ex:Resource"));
             model2_resource2.AddProperty(property, "in the\n jungle");
             model2_resource2.Commit();
 
-            MemoryStream wr = new MemoryStream();
+            var wr = new MemoryStream();
             Model.Write(wr, RdfSerializationFormat.RdfXml);
             var myString = Encoding.UTF8.GetString(wr.ToArray());
         }
@@ -584,11 +584,11 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         {
             Model.Clear();
 
-            IResource r = Model.CreateResource(new Uri("http://example.org/test"));
+            var r = Model.CreateResource(new Uri("http://example.org/test"));
             r.AddProperty(new Property(new Uri("http://example.org/name")), "test");
             r.Commit();
 
-            using (MemoryStream stream = new MemoryStream())
+            using (var stream = new MemoryStream())
             {
                 Model.Write(stream, RdfSerializationFormat.Turtle, null, new Uri("http://example.org/"), true);
 
@@ -606,8 +606,8 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         {
             Model.Clear();
 
-            FileInfo fi = new FileInfo("Models\\test-ntriples.nt");
-            UriRef fileUri = fi.ToUriRef();
+            var fi = new FileInfo("Models\\test-ntriples.nt");
+            var fileUri = fi.ToUriRef();
 
             Assert.IsTrue(Model.IsEmpty);
             Assert.IsTrue(Model.Read(fileUri, RdfSerializationFormat.NTriples, false));
@@ -634,7 +634,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         {
             Model.Clear();
 
-            string turtle = @"@base <http://example.org/> .
+            var turtle = @"@base <http://example.org/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
@@ -649,29 +649,29 @@ namespace Semiodesk.Trinity.Test.Virtuoso
     a foaf:Person ;
     foaf:name ""Spiderman"", ""Человек-паук""@ru .";
 
-            using (Stream s = GenerateStreamFromString(turtle))
+            using (var s = GenerateStreamFromString(turtle))
             {
                 Assert.IsTrue(Model.Read(s, RdfSerializationFormat.Turtle, false));
             }
 
-            IResource r = Model.GetResource(new Uri("http://example.org/#green-goblin"));
-            string name = r.GetValue(new Property(new Uri("http://xmlns.com/foaf/0.1/name"))) as string;
+            var r = Model.GetResource(new Uri("http://example.org/#green-goblin"));
+            var name = r.GetValue(new Property(new Uri("http://xmlns.com/foaf/0.1/name"))) as string;
             Assert.AreEqual("Green Goblin", name);
 
-            string turtle2 = @"@base <http://example.org/> .
+            var turtle2 = @"@base <http://example.org/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 
 
 <#green-goblin> foaf:age ""27""^^xsd:int .";
 
-            using (Stream s = GenerateStreamFromString(turtle2))
+            using (var s = GenerateStreamFromString(turtle2))
             {
                 Assert.IsTrue(Model.Read(s, RdfSerializationFormat.Turtle, true));
             }
 
             r = Model.GetResource(new Uri("http://example.org/#green-goblin"));
-            int age = (int)r.GetValue(new Property(new Uri("http://xmlns.com/foaf/0.1/age")));
+            var age = (int)r.GetValue(new Property(new Uri("http://xmlns.com/foaf/0.1/age")));
             name = r.GetValue(new Property(new Uri("http://xmlns.com/foaf/0.1/name"))) as string;
             Assert.AreEqual(27, age);
 
@@ -690,7 +690,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
     a foaf:Person ;
     foaf:name ""Spiderman"", ""Человек-паук""@ru .";
 
-            using (Stream s = GenerateStreamFromString(turtle))
+            using (var s = GenerateStreamFromString(turtle))
             {
                 Assert.IsTrue(Model.Read(s, RdfSerializationFormat.Turtle, false));
             }
@@ -706,10 +706,10 @@ namespace Semiodesk.Trinity.Test.Virtuoso
             Model.Clear();
 
             
-            IResource r = Model.CreateResource(new Uri("http://example.org/test"));
+            var r = Model.CreateResource(new Uri("http://example.org/test"));
             r.AddProperty(new Property(new Uri("http://xmlns.com/foaf/0.1/name")), "test");
             r.Commit();
-            MemoryStream stream = new MemoryStream();
+            var stream = new MemoryStream();
 
             Model.Write(stream, RdfSerializationFormat.Turtle, null, null, true);
 
@@ -726,11 +726,11 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         {
             Assert.Inconclusive("This test should work, it just takes too long.");
             Model.Clear();
-            for (int j = 1; j < 7; j++)
+            for (var j = 1; j < 7; j++)
             {
-                for (int i = 1; i < 1000; i++)
+                for (var i = 1; i < 1000; i++)
                 {
-                    using (PersonContact pers = Model.CreateResource<PersonContact>())
+                    using (var pers = Model.CreateResource<PersonContact>())
                     {
                         pers.Fullname = string.Format("Name {0}", i * j);
                         pers.Commit();
@@ -743,8 +743,8 @@ namespace Semiodesk.Trinity.Test.Virtuoso
 
         public Stream GenerateStreamFromString(string s)
         {
-            MemoryStream stream = new MemoryStream();
-            StreamWriter writer = new StreamWriter(stream);
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
             writer.Write(s);
             writer.Flush();
             stream.Position = 0;

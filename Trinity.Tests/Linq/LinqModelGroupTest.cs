@@ -38,7 +38,7 @@ namespace Semiodesk.Trinity.Test.Linq
         public override void SetUp()
         {
             // DotNetRdf memory store.
-            string connectionString = "provider=dotnetrdf";
+            var connectionString = "provider=dotnetrdf";
 
             // Stardog store.
             //string connectionString = "provider=stardog;host=http://localhost:5820;uid=admin;pw=admin;sid=test";
@@ -50,27 +50,27 @@ namespace Semiodesk.Trinity.Test.Linq
             Store.InitializeFromConfiguration();
             Store.Log = (l) => Debug.WriteLine(l);
 
-            IModel model1 = Store.CreateModel(new Uri("http://test.com/test1"));
+            var model1 = Store.CreateModel(new Uri("http://test.com/test1"));
             model1.Clear();
 
-            IModel model2 = Store.CreateModel(new Uri("http://test.com/test2"));
+            var model2 = Store.CreateModel(new Uri("http://test.com/test2"));
             model2.Clear();
 
             // Add an agent so we can check if types are correctly queried.
-            Agent a1 = model1.CreateResource<Agent>(ex.John);
+            var a1 = model1.CreateResource<Agent>(ex.John);
             a1.FirstName = "John";
             a1.LastName = "Doe";
             a1.Commit();
 
-            Group g1 = model1.CreateResource<Group>(ex.TheSpiders);
+            var g1 = model1.CreateResource<Group>(ex.TheSpiders);
             g1.Name = "The Spiders";
             g1.Commit();
 
-            Group g2 = model2.CreateResource<Group>(ex.AlicaKeys);
+            var g2 = model2.CreateResource<Group>(ex.AlicaKeys);
             g2.Name = "Alicia Keys";
             g2.Commit();
 
-            Person p1 = model1.CreateResource<Person>(ex.Alice);
+            var p1 = model1.CreateResource<Person>(ex.Alice);
             p1.FirstName = "Alice";
             p1.LastName = "Cooper";
             p1.Age = 69;
@@ -80,7 +80,7 @@ namespace Semiodesk.Trinity.Test.Linq
             p1.AccountBalance = 100000f;
             p1.Commit();
 
-            Person p2 = model1.CreateResource<Person>(ex.Bob);
+            var p2 = model1.CreateResource<Person>(ex.Bob);
             p2.FirstName = "Bob";
             p2.LastName = "Dylan";
             p2.Age = 76;
@@ -88,7 +88,7 @@ namespace Semiodesk.Trinity.Test.Linq
             p2.AccountBalance = 10000.1f;
             p2.Commit();
 
-            Person p3 = model2.CreateResource<Person>(ex.Eve);
+            var p3 = model2.CreateResource<Person>(ex.Eve);
             p3.FirstName = "Eve";
             p3.LastName = "Jeffers-Cooper";
             p3.Birthday = new DateTime(1978, 11, 10);
@@ -108,7 +108,7 @@ namespace Semiodesk.Trinity.Test.Linq
             p3.Interests.Add(p3);
             p3.Commit();
 
-            Image i1 = model1.CreateResource<Image>();
+            var i1 = model1.CreateResource<Image>();
             i1.DepictedAgent = p1;
             i1.Commit();
 

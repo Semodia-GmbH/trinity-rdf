@@ -80,11 +80,7 @@ namespace Semiodesk.Trinity.Query
             SelectedVariables = new List<SparqlVariable>();
             CoalescedVariables = new Dictionary<SparqlVariable, SparqlExpression>();
             QueryBuilder = queryBuilder;
-#if NET35
-            PatternBuilder = QueryBuilder.RootGraphPatternBuilder;
-#else
             PatternBuilder = QueryBuilder.Root;
-#endif
         }
 
         public SparqlQueryGenerator(ISelectBuilder selectBuilder)
@@ -140,21 +136,13 @@ namespace Semiodesk.Trinity.Query
 
                     if (hasAggregate && !v.IsAggregate)
                     {
-#if !NET35
                         SelectBuilder.GroupBy(v.Name);
-#else
-                        QueryBuilder.GroupBy(v.Name);
-#endif
                     }
                 }
 
                 if (hasAggregate && !IsRoot)
                 {
-#if !NET35
                     SelectBuilder.Distinct();
-#else
-                        QueryBuilder.Distinct();
-#endif
                 }
             }
         }
@@ -281,7 +269,7 @@ namespace Semiodesk.Trinity.Query
 
             if (p == null)
             {
-                throw new Exception(string.Format("No RdfPropertyAttribute found for member: {0}", member.Name));
+                throw new Exception($"No RdfPropertyAttribute found for member: {member.Name}");
             }
 
             // Invoke the final user-handled member access triple builder callback.

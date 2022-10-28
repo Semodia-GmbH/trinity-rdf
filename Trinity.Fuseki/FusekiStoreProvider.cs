@@ -44,23 +44,23 @@ namespace Semiodesk.Trinity.Store.Fuseki
 
         public override IStore GetStore(Dictionary<string, string> configurationDictionary )
         {
-            string hostKey = "host";
-            string host = "http://localhost:3030/";
+            const string hostKey = "host";
+            var host = "http://localhost:3030/";
 
             if (configurationDictionary.ContainsKey(hostKey))
             {
                 host = configurationDictionary[hostKey];
             }
 
-            string datasetKey = "dataset";
-            string dataset = "dataset";
+            const string datasetKey = "dataset";
+            var dataset = "dataset";
 
             if (configurationDictionary.ContainsKey(datasetKey))
             {
                 dataset = configurationDictionary[datasetKey];
             }
 
-            string userKey = "uid";
+            const string userKey = "uid";
             string user = null;
 
             if (configurationDictionary.ContainsKey(userKey))
@@ -69,7 +69,7 @@ namespace Semiodesk.Trinity.Store.Fuseki
             }
 
 
-            string passwordKey = "pw";
+            const string passwordKey = "pw";
             string password = null;
 
             if (configurationDictionary.ContainsKey(passwordKey))
@@ -83,7 +83,7 @@ namespace Semiodesk.Trinity.Store.Fuseki
             }
 
           
-            FusekiStore store = new FusekiStore(host, dataset, user, password);
+            var store = new FusekiStore(host, dataset, user, password);
 
             return store;
         }

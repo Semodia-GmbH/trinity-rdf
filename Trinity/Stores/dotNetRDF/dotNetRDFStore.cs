@@ -234,25 +234,15 @@ namespace Semiodesk.Trinity.Store
 
                 case RdfSerializationFormat.NTriples:
                     new NTriplesParser().Load(graph, reader); break;
-
-#if !NET35
                 case RdfSerializationFormat.NQuads:
                     new NQuadsParser().Load(new GraphHandler(graph), reader); break;
-#endif
-
                 case RdfSerializationFormat.Turtle:
                     new TurtleParser().Load(graph, reader); break;
-
                 case RdfSerializationFormat.Json:
                     new RdfJsonParser().Load(graph, reader); break;
-
-#if !NET35
                 case RdfSerializationFormat.JsonLd:
                     new JsonLdParser().Load(new GraphHandler(graph), reader); break;
-#endif
-
                 default:
-                case RdfSerializationFormat.RdfXml:
                     new RdfXmlParser().Load(graph, reader); break;
             }
         }

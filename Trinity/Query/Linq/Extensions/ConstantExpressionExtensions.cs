@@ -117,7 +117,7 @@ namespace Semiodesk.Trinity.Query
             else
             {
                 // We cannot determine the Uri of generic reference types.
-                var msg = string.Format("Unsupported constant type: {0}", constant.Type);
+                var msg = $"Unsupported constant type: {constant.Type}";
                 throw new ArgumentException(msg);
             }
         }

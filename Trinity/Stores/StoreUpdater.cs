@@ -81,7 +81,8 @@ namespace Semiodesk.Trinity
                 }
                 else
                 {
-                    throw new ArgumentException(string.Format("The file for the ontology {0} ({1}) could not be found. Please check the configuration file.", onto.Prefix, onto.Uri));
+                    throw new ArgumentException(
+                        $"The file for the ontology {onto.Prefix} ({onto.Uri}) could not be found. Please check the configuration file.");
                 }
             }
         }

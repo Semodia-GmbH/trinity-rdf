@@ -85,13 +85,7 @@ namespace Semiodesk.Trinity.Configuration
         /// <returns>An enumeration of ontology settings.</returns>
         public IEnumerable<IOntologyConfiguration> ListOntologies()
         {
-
-#if NET35
-            foreach( var x in Ontologies )
-                yield return x;
-#else
             return Ontologies;
-#endif
         }
 
         /// <summary>

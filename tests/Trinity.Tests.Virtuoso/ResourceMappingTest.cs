@@ -32,9 +32,6 @@ using Semiodesk.Trinity.Ontologies;
 using NUnit.Framework;
 using Semiodesk.Trinity.Serialization;
 using Newtonsoft.Json;
-#if NET35
-using Semiodesk.Trinity.Utility;
-#endif
 
 namespace Semiodesk.Trinity.Test.Virtuoso
 {
@@ -48,7 +45,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         private IStore _store;
 
         [TearDown]
-        public void TearDown()
+        public new void TearDown()
         {
             if (_store != null)
             {
@@ -60,14 +57,14 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         // This test does not run, but it needs to.
         public void AddUnmappedType()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
 
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            Uri t2Uri = new Uri("semio:test:testInstance2");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t2Uri = new Uri("semio:test:testInstance2");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
-            IResource r = m.CreateResource(t2Uri);
+            var r = m.CreateResource(t2Uri);
             r.AddProperty(rdf.type, TestOntology.TestClass2);
 
             t1.AddProperty(TestOntology.uniqueResourceTest, r);
@@ -82,12 +79,12 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void GetTypesTest()
         {
-            MappingTestClass2 t2 = new MappingTestClass2(new Uri("semio:t2"));
-            List<Class> classes = t2.GetTypes().ToList();
+            var t2 = new MappingTestClass2(new Uri("semio:t2"));
+            var classes = t2.GetTypes().ToList();
             Assert.AreEqual(1, classes.Count);
             Assert.Contains(TestOntology.TestClass2, classes);
 
-            MappingTestClass3 t3 = new MappingTestClass3(new Uri("semio:t3"));
+            var t3 = new MappingTestClass3(new Uri("semio:t3"));
             classes = t3.GetTypes().ToList();
             Assert.AreEqual(1, classes.Count);
             Assert.Contains(TestOntology.TestClass3, classes);
@@ -96,26 +93,26 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void AddRemoveIntegerTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
 
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
             // Add value using the mapping interface
-            int value = 1;
+            var value = 1;
             t1.uniqueIntTest = value;
 
             t1.Commit();
 
-            MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
             Assert.AreEqual(value, t_actual.uniqueIntTest);
 
 
             // Test if property is present
-            IEnumerable<Property> l = t_actual.ListProperties();
+            var l = t_actual.ListProperties();
             Assert.True(l.Contains(TestOntology.uniqueIntTest));
             Assert.AreEqual(2, l.Count());
 
@@ -142,24 +139,24 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void AddRemoveIntegerListTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
             // Add value using the mapping interface
-            int value = 2;
+            var value = 2;
             t1.intTest.Add(value);
 
             t1.Commit();
 
-            MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
             Assert.AreEqual(1, t_actual.intTest.Count());
             Assert.AreEqual(value, t_actual.intTest[0]);
 
             // Test if property is present
-            IEnumerable<Property> l = t_actual.ListProperties();
+            var l = t_actual.ListProperties();
             Assert.True(l.Contains(TestOntology.intTest));
             Assert.AreEqual(2, l.Count());
 
@@ -168,7 +165,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
             Assert.AreEqual(value, t_actual.ListValues(TestOntology.intTest).First());
 
             // Add another value
-            int value2 = -18583;
+            var value2 = -18583;
             t1.intTest.Add(value2);
             t1.Commit();
             t_actual = m.GetResource<MappingTestClass>(t1Uri);
@@ -227,10 +224,10 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         //[Test]
         public void AddRemoveUnsignedIntegerTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
             // Add value using the mapping interface
             uint uValue = 1;
@@ -238,7 +235,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
 
             t1.Commit();
 
-            MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
             Assert.AreEqual(uValue, t_actual.uniqueUintTest);
@@ -272,17 +269,17 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         //[Test]
         public void AddRemoveUnsignedIntegerListTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
             // Add value using the mapping interface
             uint uValue = 2;
             t1.uintTest.Add(uValue);
 
             t1.Commit();
-            MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
             Assert.AreEqual(1, t_actual.uintTest.Count());
@@ -319,18 +316,18 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void AddRemoveStringTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
 
             // Add value using the mapping interface
-            string strValue = "Hallo Welt!";
+            var strValue = "Hallo Welt!";
             t1.uniqueStringTest = strValue;
             t1.Commit();
 
-            MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
             Assert.AreEqual(strValue, t_actual.uniqueStringTest);
@@ -384,18 +381,18 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void AddRemoveStringListTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
             // Add value using the mapping interface
-            string strValue = "（╯°□°）╯︵ ┻━┻";
+            var strValue = "（╯°□°）╯︵ ┻━┻";
             t1.stringTest.Add(strValue);
 
             t1.Commit();
 
-            MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
             Assert.AreEqual(1, t_actual.stringTest.Count());
@@ -446,19 +443,19 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void AddRemoveBoolTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
 
             // Add value using the mapping interface
-            bool bValue = true;
+            var bValue = true;
             t1.uniqueBoolTest = bValue;
 
             t1.Commit();
 
-            MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
             Assert.AreEqual(bValue, t_actual.uniqueBoolTest);
@@ -492,18 +489,18 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void AddRemoveBoolListTest()
         {
-            IModel model = GetModel();
+            var model = GetModel();
             model.Clear();
 
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = model.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = model.CreateResource<MappingTestClass>(t1Uri);
 
             // Add value using the mapping interface
-            bool value = true;
+            var value = true;
             t1.boolTest.Add(value);
             t1.Commit();
 
-            MappingTestClass t_actual = model.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = model.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
             Assert.AreEqual(1, t_actual.boolTest.Count());
@@ -542,26 +539,26 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void AddRemoveFloatTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
 
-            Uri uri = new Uri("semio:test:testInstance1");
+            var uri = new Uri("semio:test:testInstance1");
 
-            MappingTestClass testResource = m.CreateResource<MappingTestClass>(uri);
+            var testResource = m.CreateResource<MappingTestClass>(uri);
 
             // Add value using the mapping interface
-            float floatValue = 1.0f;
+            var floatValue = 1.0f;
 
             testResource.uniqueFloatTest = floatValue;
             testResource.Commit();
 
-            MappingTestClass storedResource = m.GetResource<MappingTestClass>(uri);
+            var storedResource = m.GetResource<MappingTestClass>(uri);
 
             // Test if value was stored
             Assert.AreEqual(floatValue, storedResource.uniqueFloatTest);
 
             // Test if property is present
-            List<Property> properties = storedResource.ListProperties().ToList();
+            var properties = storedResource.ListProperties().ToList();
 
             Assert.True(properties.Contains(TestOntology.uniqueFloatTest));
             Assert.AreEqual(2, properties.Count());
@@ -590,26 +587,26 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void AddRemoveDoubleTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
 
-            Uri uri = new Uri("semio:test:testInstance1");
+            var uri = new Uri("semio:test:testInstance1");
 
-            MappingTestClass testResource = m.CreateResource<MappingTestClass>(uri);
+            var testResource = m.CreateResource<MappingTestClass>(uri);
 
             // Add value using the mapping interface
-            double doubleValue = 1.0;
+            var doubleValue = 1.0;
 
             testResource.uniqueDoubleTest = doubleValue;
             testResource.Commit();
 
-            MappingTestClass storedResource = m.GetResource<MappingTestClass>(uri);
+            var storedResource = m.GetResource<MappingTestClass>(uri);
 
             // Test if value was stored
             Assert.AreEqual(doubleValue, storedResource.uniqueDoubleTest);
 
             // Test if property is present
-            List<Property> properties = storedResource.ListProperties().ToList();
+            var properties = storedResource.ListProperties().ToList();
 
             Assert.True(properties.Contains(TestOntology.uniqueDoubleTest));
             Assert.AreEqual(2, properties.Count());
@@ -648,26 +645,26 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void AddRemoveDecimalTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
 
-            Uri uri = new Uri("semio:test:testInstance1");
+            var uri = new Uri("semio:test:testInstance1");
 
-            MappingTestClass testResource = m.CreateResource<MappingTestClass>(uri);
+            var testResource = m.CreateResource<MappingTestClass>(uri);
 
             // Add value using the mapping interface
-            decimal decimalValue = 1.0m;
+            var decimalValue = 1.0m;
 
             testResource.uniqueDecimalTest = decimalValue;
             testResource.Commit();
 
-            MappingTestClass storedResource = m.GetResource<MappingTestClass>(uri);
+            var storedResource = m.GetResource<MappingTestClass>(uri);
 
             // Test if value was stored
             Assert.AreEqual(decimalValue, storedResource.uniqueDecimalTest);
 
             // Test if property is present
-            List<Property> properties = storedResource.ListProperties().ToList();
+            var properties = storedResource.ListProperties().ToList();
 
             Assert.True(properties.Contains(TestOntology.uniqueDecimalTest));
             Assert.AreEqual(2, properties.Count());
@@ -700,18 +697,18 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void AddRemoveDateTimeTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
 
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
             // Add value using the mapping interface
-            DateTime Value = new DateTime(2012, 8, 15, 12, 3, 55, DateTimeKind.Local);
+            var Value = new DateTime(2012, 8, 15, 12, 3, 55, DateTimeKind.Local);
             t1.uniqueDateTimeTest = Value;
             t1.Commit();
 
-            MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
             Assert.AreEqual(Value.ToUniversalTime(), t_actual.uniqueDateTimeTest.ToUniversalTime());
@@ -723,7 +720,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
 
             // Test if ListValues works
             Assert.AreEqual(typeof(DateTime), t_actual.ListValues(TestOntology.uniqueDatetimeTest).First().GetType());
-            DateTime time = (DateTime)t_actual.ListValues(TestOntology.uniqueDatetimeTest).First();
+            var time = (DateTime)t_actual.ListValues(TestOntology.uniqueDatetimeTest).First();
             Assert.AreEqual(Value.ToUniversalTime(), time.ToUniversalTime());
 
             // Remove with RemoveProperty
@@ -740,7 +737,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
             Assert.AreEqual(0, t_actual.ListValues(TestOntology.uniqueDatetimeTest).Count());
 
 
-            DateTime t = new DateTime();
+            var t = new DateTime();
             Assert.IsTrue(DateTime.TryParse("2013-01-21T16:27:23.000Z", out t));
 
             t1.uniqueDateTimeTest = t;
@@ -755,15 +752,15 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void AddRemoveUriTest()
         {
-            IModel model = GetModel();
+            var model = GetModel();
             model.Clear();
 
-            Uri uri1 = new Uri("urn:1");
-            Uri uri2 = new Uri("urn:2");
-            Uri uri3 = new Uri("urn:3");
+            var uri1 = new Uri("urn:1");
+            var uri2 = new Uri("urn:2");
+            var uri3 = new Uri("urn:3");
 
             // 1. Create a new instance of the test class and commit it to the model.
-            MappingTestClass test1 = model.CreateResource<MappingTestClass>(uri1);
+            var test1 = model.CreateResource<MappingTestClass>(uri1);
             test1.resProperty = new Resource(uri2);
             test1.Commit();
 
@@ -787,19 +784,19 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void AddRemoveUriPropTest()
         {
-            IModel model = GetModel();
+            var model = GetModel();
             model.Clear();
 
-            Uri v = new Uri("urn:test#myUri");
+            var v = new Uri("urn:test#myUri");
 
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = model.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = model.CreateResource<MappingTestClass>(t1Uri);
 
             // Add value using the mapping interface
             t1.uniqueUriTest = v;
             t1.Commit();
 
-            MappingTestClass t_actual = model.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = model.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
             Assert.IsNotNull(t_actual.uniqueUriTest);
@@ -812,7 +809,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
 
             // Test if ListValues works
             Assert.IsTrue( t_actual.ListValues(TestOntology.uniqueUriTest).First() is Uri);
-            Uri u = (Uri)t_actual.ListValues(TestOntology.uniqueUriTest).First();
+            var u = (Uri)t_actual.ListValues(TestOntology.uniqueUriTest).First();
             Assert.AreEqual(v.ToString(), u.ToString());
 
             // Remove with RemoveProperty
@@ -844,34 +841,34 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void TimeZoneTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
 
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            DateTime t = new DateTime();
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t = new DateTime();
             Assert.IsTrue(DateTime.TryParse("2013-01-21T16:27:23.000Z", out t));
 
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
             t1.uniqueDateTimeTest = t;
             t1.Commit();
 
-            MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<MappingTestClass>(t1Uri);
         }
 
         [Test]
         public void AddRemoveDateTimeListTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
 
             // Add value using the mapping interface
-            DateTime value = new DateTime(2012, 8, 15, 12, 3, 55, DateTimeKind.Local);
+            var value = new DateTime(2012, 8, 15, 12, 3, 55, DateTimeKind.Local);
             t1.dateTimeTest.Add(value);
             t1.Commit();
-            MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
             Assert.AreEqual(1, t1.dateTimeTest.Count());
@@ -885,7 +882,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
 
             // Test if ListValues works
             Assert.AreEqual(typeof(DateTime), t_actual.ListValues(TestOntology.datetimeTest).First().GetType());
-            DateTime time = (DateTime)t_actual.ListValues(TestOntology.datetimeTest).First();
+            var time = (DateTime)t_actual.ListValues(TestOntology.datetimeTest).First();
             Assert.AreEqual(value.ToUniversalTime(), time.ToUniversalTime());
 
             // Remove value from mapped list
@@ -908,23 +905,23 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void AddRemoveResourceTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
 
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
-            Uri testClass2Uri = new Uri("semio:test:testInstance2");
-            MappingTestClass2 t2 = new MappingTestClass2(testClass2Uri);
+            var testClass2Uri = new Uri("semio:test:testInstance2");
+            var t2 = new MappingTestClass2(testClass2Uri);
 
-            Uri testClass3Uri = new Uri("semio:test:testInstance3");
-            MappingTestClass3 t3 = m.CreateResource<MappingTestClass3>(testClass3Uri);
+            var testClass3Uri = new Uri("semio:test:testInstance3");
+            var t3 = m.CreateResource<MappingTestClass3>(testClass3Uri);
             t3.Commit(); // Force loading the resource from the model with the appropriate (derived) type.
 
             t1.uniqueResourceTest = t2;
             t1.Commit();
 
-            MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             Assert.AreEqual(t2, t_actual.uniqueResourceTest);
 
@@ -975,21 +972,21 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void AddRemoveResourceListTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
 
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
             // Add value using the mapping interface
-            MappingTestClass2 t2 = new MappingTestClass2(new Uri("semio:test:testInstance2"));
-            MappingTestClass3 t3 = new MappingTestClass3(new Uri("semio:test:testInstance3"));
+            var t2 = new MappingTestClass2(new Uri("semio:test:testInstance2"));
+            var t3 = new MappingTestClass3(new Uri("semio:test:testInstance3"));
 
             t1.resourceTest.Add(t2);
             t1.resourceTest.Add(t3);
             t1.Commit();
 
-            MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
+            var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             Assert.AreEqual(2, t_actual.resourceTest.Count);
             Assert.Contains(t2, t_actual.resourceTest);
@@ -1034,19 +1031,19 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         public void LazyLoadResourceTest()
         {
             
-            IModel model = GetModel();
+            var model = GetModel();
             model.Clear();
 
-            Uri testRes1 = new Uri("semio:test:testInstance");
-            Uri testRes2 = new Uri("semio:test:testInstance2");
-            MappingTestClass t1 = model.CreateResource<MappingTestClass>(testRes1);
-            MappingTestClass2 t2 = model.CreateResource<MappingTestClass2>(new Uri("semio:test:testInstance2"));
+            var testRes1 = new Uri("semio:test:testInstance");
+            var testRes2 = new Uri("semio:test:testInstance2");
+            var t1 = model.CreateResource<MappingTestClass>(testRes1);
+            var t2 = model.CreateResource<MappingTestClass2>(new Uri("semio:test:testInstance2"));
 
             t1.uniqueResourceTest = t2;
             // TODO: Debug messsage, because t2 was not commited
             t1.Commit();
 
-            MappingTestClass p1 = model.GetResource<MappingTestClass>(testRes1);
+            var p1 = model.GetResource<MappingTestClass>(testRes1);
             //Assert.AreEqual(null, p1.uniqueResourceTest);
 
             var v = p1.ListValues(TestOntology.uniqueResourceTest);
@@ -1067,7 +1064,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
             var tt1 = model.GetResource<MappingTestClass>(testRes1);
             Assert.AreEqual(t2, tt1.uniqueResourceTest);
 
-            IResource tr1 = model.GetResource(testRes1);
+            var tr1 = model.GetResource(testRes1);
             Assert.AreEqual(typeof(MappingTestClass), tr1.GetType());
             
             model.Clear();
@@ -1077,31 +1074,31 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void MappingTypeTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass2 t1 = m.CreateResource<MappingTestClass2>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass2>(t1Uri);
             //Assert.AreEqual(1, t1.Classes.Count);
             t1.uniqueStringTest = "testing 1";
             t1.Commit();
 
-            Uri t2Uri = new Uri("semio:test:testInstance2");
-            MappingTestClass3 t2 = m.CreateResource<MappingTestClass3>(t2Uri);
+            var t2Uri = new Uri("semio:test:testInstance2");
+            var t2 = m.CreateResource<MappingTestClass3>(t2Uri);
             t2.uniqueStringTest = "testing 2";
             t2.Commit();
 
-            Uri t3Uri = new Uri("semio:test:testInstance3");
-            MappingTestClass4 t3 = m.CreateResource<MappingTestClass4>(t3Uri);
+            var t3Uri = new Uri("semio:test:testInstance3");
+            var t3 = m.CreateResource<MappingTestClass4>(t3Uri);
             t3.uniqueStringTest = "testing 3";
             t3.Commit();
 
-            Resource r1 = m.GetResource<Resource>(t1Uri);
+            var r1 = m.GetResource<Resource>(t1Uri);
             Assert.AreEqual(t1, r1);
 
-            Resource r2 = m.GetResource<Resource>(t2Uri);
+            var r2 = m.GetResource<Resource>(t2Uri);
             Assert.AreEqual(t2, r2);
 
-            Resource r3 = m.GetResource<Resource>(t3Uri);
+            var r3 = m.GetResource<Resource>(t3Uri);
             Assert.AreEqual(t3, r3);
 
             r2 = m.GetResource<MappingTestClass2>(t2Uri);
@@ -1112,11 +1109,11 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void MappingTypeCollectionTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
 
-            Uri t2Uri = new Uri("semio:test:testInstance2");
-            PersonContact t2 = m.CreateResource<PersonContact>(t2Uri);
+            var t2Uri = new Uri("semio:test:testInstance2");
+            var t2 = m.CreateResource<PersonContact>(t2Uri);
             t2.NameFamily = "Doe";
             t2.Commit();
 
@@ -1127,18 +1124,18 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void MultipeTypesMappingTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
 
-            Uri t3Uri = new Uri("semio:test:testInstance3");
-            MappingTestClass5 t3 = m.CreateResource<MappingTestClass5>(t3Uri);
+            var t3Uri = new Uri("semio:test:testInstance3");
+            var t3 = m.CreateResource<MappingTestClass5>(t3Uri);
             t3.uniqueStringTest = "testing 3";
             t3.AddProperty(rdf.type, nco.Affiliation);
             t3.Commit();
 
-            Resource r3 = m.GetResource<Resource>(t3Uri);
-            Type tr3 = r3.GetType();
-            Type tt3 = typeof(MappingTestClass5);
+            var r3 = m.GetResource<Resource>(t3Uri);
+            var tr3 = r3.GetType();
+            var tt3 = typeof(MappingTestClass5);
             Assert.AreEqual(typeof(MappingTestClass5), r3.GetType());
 
             m.Clear();
@@ -1157,18 +1154,18 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void MappingTypeWithInferencingTest()
         {
-            IModel model = GetModel();
+            var model = GetModel();
 
             // Load the rulesets for inferencing.
             _store.InitializeFromConfiguration();
 
             model.Clear();
 
-            PersonContact r = model.CreateResource<PersonContact>(new Uri("ex:t3"));
+            var r = model.CreateResource<PersonContact>(new Uri("ex:t3"));
             r.NameGiven = "Hans";
             r.Commit();
 
-            SparqlQuery query = new SparqlQuery("SELECT ?s ?p ?o WHERE { ?s ?p ?o . ?s a @type .}");
+            var query = new SparqlQuery("SELECT ?s ?p ?o WHERE { ?s ?p ?o . ?s a @type .}");
             query.Bind("@type", nco.Contact);
 
             Assert.AreEqual(1, model.ExecuteQuery(query, true).GetResources().Count());
@@ -1184,14 +1181,14 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void RollbackTest()
         {
-            IModel model = GetModel();
+            var model = GetModel();
             model.Clear();
 
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = model.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = model.CreateResource<MappingTestClass>(t1Uri);
 
             // Add value using the mapping interface
-            string strValue = "Hallo Welt!";
+            var strValue = "Hallo Welt!";
             t1.uniqueStringTest = strValue;
             t1.Commit();
 
@@ -1201,7 +1198,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
 
             Assert.AreEqual(strValue, t1.uniqueStringTest);
 
-            MappingTestClass newRef = model.GetResource<MappingTestClass>(t1Uri);
+            var newRef = model.GetResource<MappingTestClass>(t1Uri);
             newRef.stringTest.Add("Hi");
             newRef.stringTest.Add("Blub");
             newRef.Commit();
@@ -1212,8 +1209,8 @@ namespace Semiodesk.Trinity.Test.Virtuoso
             Assert.IsTrue(t1.stringTest.Contains("Hi"));
             Assert.IsTrue(t1.stringTest.Contains("Blub"));
 
-            Uri t2Uri = new Uri("semio:test:testInstance2");
-            MappingTestClass2 p = model.CreateResource<MappingTestClass2>(t2Uri);
+            var t2Uri = new Uri("semio:test:testInstance2");
+            var p = model.CreateResource<MappingTestClass2>(t2Uri);
             p.uniqueStringTest = "blub";
             p.Commit();
 
@@ -1230,14 +1227,14 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void RollbackMappedResourcesTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            SingleResourceMappingTestClass t1 = m.CreateResource<SingleResourceMappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<SingleResourceMappingTestClass>(t1Uri);
             t1.Commit();
 
-            Uri t2Uri = new Uri("semio:test:testInstance2");
-            SingleMappingTestClass p = m.CreateResource<SingleMappingTestClass>(t2Uri);
+            var t2Uri = new Uri("semio:test:testInstance2");
+            var p = m.CreateResource<SingleMappingTestClass>(t2Uri);
             p.stringTest.Add("blub");
             p.Commit();
 
@@ -1254,14 +1251,14 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void ListValuesTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri t1Uri = new Uri("semio:test:testInstance1");
-            MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance1");
+            var t1 = m.CreateResource<MappingTestClass>(t1Uri);
 
 
             // Add value using the mapping interface
-            string strValue = "Hallo Welt!";
+            var strValue = "Hallo Welt!";
             t1.uniqueStringTest = strValue;
             t1.Commit();
 
@@ -1271,7 +1268,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
 
             var x = t1.ListValues(TestOntology.stringTest).ToList();
 
-            MappingTestClass actual = m.GetResource<MappingTestClass>(t1.Uri);
+            var actual = m.GetResource<MappingTestClass>(t1.Uri);
             var x2 = actual.ListValues(TestOntology.stringTest).ToList().ToList();
 
             Assert.AreEqual(x.Count, x2.Count);
@@ -1282,10 +1279,10 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void KeepListsAfterRollbackTest()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri t1Uri = new Uri("semio:test:testInstance8");
-            SingleMappingTestClass t1 = m.CreateResource<SingleMappingTestClass>(t1Uri);
+            var t1Uri = new Uri("semio:test:testInstance8");
+            var t1 = m.CreateResource<SingleMappingTestClass>(t1Uri);
             t1.AddProperty(TestOntology.uniqueStringTest, "Hello");
             t1.Commit();
             t1.Rollback();
@@ -1296,7 +1293,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
             Assert.AreEqual(2, x.Count);
             t1.Commit();
 
-            SingleMappingTestClass t2 = m.GetResource<SingleMappingTestClass>(t1Uri);
+            var t2 = m.GetResource<SingleMappingTestClass>(t1Uri);
 
             var x2 = t2.ListValues(TestOntology.stringTest).ToList();
 
@@ -1309,8 +1306,8 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void TestEquality()
         {
-            Resource c1 = new Resource(new Uri("http://www.semanticdesktop.org/ontologies/2007/04/02/ncal#cancelledStatus"));
-            Resource c2 = new Resource(new Uri("http://www.semanticdesktop.org/ontologies/2007/04/02/ncal#cancelledStatus"));
+            var c1 = new Resource(new Uri("http://www.semanticdesktop.org/ontologies/2007/04/02/ncal#cancelledStatus"));
+            var c2 = new Resource(new Uri("http://www.semanticdesktop.org/ontologies/2007/04/02/ncal#cancelledStatus"));
 
             Assert.IsTrue(c1.Equals(c2));
             Assert.IsFalse(c1 == c2);
@@ -1319,7 +1316,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void TestStringPropertyMapping()
         {
-            StringMappingTestClass p = new StringMappingTestClass(new Uri("http://test.example.com"));
+            var p = new StringMappingTestClass(new Uri("http://test.example.com"));
             p.uniqueStringTest = "Test string";
 
             var x = p.GetValue(TestOntology.uniqueStringTest);
@@ -1334,13 +1331,13 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void TestLocalizedStringPropertyMapping()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
             var resUri = new Uri("http://test.example.com");
-            StringMappingTestClass p = m.CreateResource<StringMappingTestClass>(resUri);
+            var p = m.CreateResource<StringMappingTestClass>(resUri);
 
-            string germanText = "Hallo Welt";
-            string englishText = "Hello World";
+            var germanText = "Hallo Welt";
+            var englishText = "Hello World";
             p.AddProperty(TestOntology.uniqueStringTest, germanText, "DE");
             p.AddProperty(TestOntology.uniqueStringTest, englishText, "EN");
             Assert.AreEqual(null, p.uniqueStringTest);
@@ -1358,10 +1355,10 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void TestLocalizedStringInvariancy()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
-            Uri peterUri = new Uri("http://test.example.com/peter");
-            PersonContact contact = m.CreateResource<PersonContact>(peterUri);
+            var peterUri = new Uri("http://test.example.com/peter");
+            var contact = m.CreateResource<PersonContact>(peterUri);
             contact.NameGiven = "Peter";
             contact.Language = "DE";
             Assert.AreEqual("Peter", contact.NameGiven);
@@ -1371,13 +1368,13 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void TestLocalizedStringListPropertyMapping()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
             var resUri = new Uri("http://test.example.com");
-            StringMappingTestClass p = m.CreateResource<StringMappingTestClass>(resUri);
+            var p = m.CreateResource<StringMappingTestClass>(resUri);
 
-            string germanText = "Hallo Welt";
-            string englishText = "Hello World";
+            var germanText = "Hallo Welt";
+            var englishText = "Hello World";
             p.AddProperty(TestOntology.stringTest, germanText+1, "DE");
             p.AddProperty(TestOntology.stringTest, germanText+2, "de");
             p.AddProperty(TestOntology.stringTest, germanText+3, "DE");
@@ -1412,15 +1409,15 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void TestLocalizedStringListPropertyMapping2()
         {
-            IModel m = GetModel();
+            var m = GetModel();
             m.Clear();
             var resUri = new Uri("http://test.example.com");
-            StringMappingTestClass p = m.CreateResource<StringMappingTestClass>(resUri);
+            var p = m.CreateResource<StringMappingTestClass>(resUri);
 
             p.stringListTest.Add("Hello interanational World" + 1);
             p.stringListTest.Add("Hello interanational World" + 2);
-            string germanText = "Hallo Welt";
-            string englishText = "Hello World";
+            var germanText = "Hallo Welt";
+            var englishText = "Hello World";
             p.Language = "DE";
             p.stringListTest.Add(germanText + 1);
             p.stringListTest.Add(germanText + 2);
@@ -1444,19 +1441,19 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void TestJsonSerialization()
         {
-            IModel model = GetModel();
+            var model = GetModel();
             model.Clear();
 
-            JsonMappingTestClass expected = model.CreateResource<JsonMappingTestClass>();
+            var expected = model.CreateResource<JsonMappingTestClass>();
             expected.stringTest.Add("Hello World!");
             expected.stringTest.Add("Hallo Welt!");
             expected.Commit();
 
-            string json = JsonConvert.SerializeObject(expected);
+            var json = JsonConvert.SerializeObject(expected);
 
-            JsonResourceSerializerSettings settings = new JsonResourceSerializerSettings(_store);
+            var settings = new JsonResourceSerializerSettings(_store);
 
-            JsonMappingTestClass actual = JsonConvert.DeserializeObject<JsonMappingTestClass>(json, settings);
+            var actual = JsonConvert.DeserializeObject<JsonMappingTestClass>(json, settings);
 
             Assert.AreEqual(expected.Uri, actual.Uri);
             Assert.AreEqual(expected.Model.Uri, actual.Model.Uri);

@@ -61,7 +61,7 @@ namespace dotNetRDFStore.Test
         {
             Store.InitializeFromConfiguration();
 
-            List<IModel> models0 = Store.ListModels().ToList();
+            var models0 = Store.ListModels().ToList();
 
             // Note: the NCO ontology contains a metadata graph.
             Assert.AreEqual(8, models0.Count);
@@ -70,7 +70,7 @@ namespace dotNetRDFStore.Test
         [Test]
         public void LoadOntologiesFromFileTest()
         {
-            string configFile = Path.Combine(Environment.CurrentDirectory, "custom.config");
+            var configFile = Path.Combine(Environment.CurrentDirectory, "custom.config");
 
             Store.InitializeFromConfiguration(configFile);
 
@@ -87,7 +87,7 @@ namespace dotNetRDFStore.Test
         [Test]
         public void LoadOntologiesFromFileWithoutStoreTest()
         {
-            string configFile = Path.Combine(Environment.CurrentDirectory, "without_store.config");
+            var configFile = Path.Combine(Environment.CurrentDirectory, "without_store.config");
 
             Store.InitializeFromConfiguration(configFile);
 
@@ -97,7 +97,7 @@ namespace dotNetRDFStore.Test
         [Test]
         public void AddModelTest()
         {
-            IModel model = Store.CreateModel(new Uri("ex:Test"));
+            var model = Store.CreateModel(new Uri("ex:Test"));
 
             Assert.IsNotNull(model);
         }
@@ -106,11 +106,11 @@ namespace dotNetRDFStore.Test
         [Test]
         public void ContainsModelTest()
         {
-            Uri testModel = new Uri("ex:Test");
+            var testModel = new Uri("ex:Test");
 
             Assert.IsFalse(Store.ContainsModel(testModel));
 
-            IModel model = Store.CreateModel(testModel);
+            var model = Store.CreateModel(testModel);
 
             var r = model.CreateResource(new Uri("ex:test:resource"));
             r.AddProperty(new Property(new Uri("ex:test:property")), "var");
@@ -124,15 +124,15 @@ namespace dotNetRDFStore.Test
         [Test]
         public void GetModelTest()
         {
-            Uri testModel = new Uri("ex:Test");
+            var testModel = new Uri("ex:Test");
 
-            IModel model0 = Store.CreateModel(testModel);
+            var model0 = Store.CreateModel(testModel);
 
-            IResource r = model0.CreateResource(new Uri("ex:test:resource"));
+            var r = model0.CreateResource(new Uri("ex:test:resource"));
             r.AddProperty(new Property(new Uri("ex:test:property")), "var");
             r.Commit();
 
-            IModel model1 = Store.GetModel(testModel);
+            var model1 = Store.GetModel(testModel);
 
             Assert.AreEqual(testModel, model1.Uri);
             Assert.IsTrue(model1.ContainsResource(r));
@@ -141,15 +141,15 @@ namespace dotNetRDFStore.Test
         [Test]
         public void RemoveModelTest()
         {
-            Uri testModel = new Uri("ex:Test");
+            var testModel = new Uri("ex:Test");
 
-            IModel model0 = Store.CreateModel(testModel);
+            var model0 = Store.CreateModel(testModel);
 
             var res = model0.CreateResource(new Uri("ex:test:resource"));
             res.AddProperty(new Property(new Uri("ex:test:property")), "var");
             res.Commit();
 
-            IModel model1 = Store.GetModel(testModel);
+            var model1 = Store.GetModel(testModel);
             Assert.AreEqual(testModel, model1.Uri);
 
             Store.RemoveModel(testModel);
@@ -162,13 +162,13 @@ namespace dotNetRDFStore.Test
         [Test]
         public void ReadJsonLdContentTest()
         {
-            Uri modelUri = new Uri("http://trinty-rdf.net/models/test/jsonld");
+            var modelUri = new Uri("http://trinty-rdf.net/models/test/jsonld");
 
-            IModel model = Store.GetModel(modelUri);
+            var model = Store.GetModel(modelUri);
 
             Assert.IsTrue(model.IsEmpty);
 
-            string content = @"
+            var content = @"
             [
               {
                 '@type': ['http://www.w3.org/2002/07/owl#Class'],

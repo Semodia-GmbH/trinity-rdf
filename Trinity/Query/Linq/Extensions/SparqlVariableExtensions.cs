@@ -27,7 +27,7 @@ namespace Semiodesk.Trinity.Query
             var name = variableName;
             var functor = aggregate.Functor.ToLowerInvariant();
 
-            return string.Format("{0}_{1}", name, functor);
+            return $"{name}_{functor}";
         }
     }
 }

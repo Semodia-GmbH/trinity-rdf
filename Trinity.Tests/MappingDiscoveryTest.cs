@@ -82,7 +82,7 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestGetRdfClasses()
         {
-            List<Class> classTypes = MappingDiscovery.GetRdfClasses(typeof(BaseClass)).ToList();
+            var classTypes = MappingDiscovery.GetRdfClasses(typeof(BaseClass)).ToList();
             Assert.AreEqual(1, classTypes.Count());
             Assert.Contains(MappingTestOntology.BaseClass, classTypes);
 
@@ -99,7 +99,7 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestGetBaseClasses()
         {
-            List<Class> baseTypes = new List<Class>();
+            var baseTypes = new List<Class>();
             MappingDiscovery.GetBaseTypes(typeof(BaseClass), ref baseTypes);
             Assert.AreEqual(0, baseTypes.Count());
 
@@ -118,7 +118,7 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestGetMatchingTypes()
         {
-            Class[] types = new[] { MappingTestOntology.BaseClass };
+            var types = new[] { MappingTestOntology.BaseClass };
             var res = MappingDiscovery.GetMatchingTypes(types, typeof(BaseClass), false);
 
             Assert.AreEqual(1, res.Length);

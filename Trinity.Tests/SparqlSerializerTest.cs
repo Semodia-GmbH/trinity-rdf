@@ -9,11 +9,11 @@ namespace Semiodesk.Trinity.Test
         [TestCase]
         public void TestStringSerializeResource()
         {
-            Resource r = new Resource("http://example.com/ex");
+            var r = new Resource("http://example.com/ex");
             r.AddProperty(Ontologies.dc.title, "MyResource");
 
-            string res = SparqlSerializer.SerializeResource(r);
-            string expected = "<http://example.com/ex> <http://purl.org/dc/elements/1.1/title> 'MyResource'. ";
+            var res = SparqlSerializer.SerializeResource(r);
+            var expected = "<http://example.com/ex> <http://purl.org/dc/elements/1.1/title> 'MyResource'. ";
 
             Assert.AreEqual(expected, res);
         }
@@ -21,7 +21,7 @@ namespace Semiodesk.Trinity.Test
         [TestCase]
         public void TestStringSerializeResourceWithMapping()
         {
-            PersonContact contact = new PersonContact(new Uri("http://example.com/ex"));
+            var contact = new PersonContact(new Uri("http://example.com/ex"));
             contact.NameGiven = "Peter";
 
             var res = SparqlSerializer.SerializeResource(contact);
@@ -38,7 +38,7 @@ namespace Semiodesk.Trinity.Test
         [TestCase]
         public void TestStringSerializeResourceEmpty()
         {
-            Resource empty = new Resource("http://test.com/ex");
+            var empty = new Resource("http://test.com/ex");
 
             var res = SparqlSerializer.SerializeResource(empty);
             var expected = "";
@@ -49,8 +49,8 @@ namespace Semiodesk.Trinity.Test
         [TestCase]
         public void TestSerializeResourceWithBlankNode()
         {
-            Resource r0 = new Resource(new UriRef("_:0", true));
-            Resource r1 = new Resource(new UriRef("_:1", true));
+            var r0 = new Resource(new UriRef("_:0", true));
+            var r1 = new Resource(new UriRef("_:1", true));
             r1.AddProperty(new Property(new UriRef("http://schema.org/relatedTo")), r0);
 
             var s = SparqlSerializer.SerializeResource(r1);
