@@ -50,10 +50,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
 
         private readonly ITransaction _transaction;
 
-        private bool _isOrdered
-        {
-            get { return !string.IsNullOrEmpty(_query.GetRootOrderByClause()); }
-        }
+        private bool _isOrdered => !string.IsNullOrEmpty(_query.GetRootOrderByClause());
 
         #endregion
 
@@ -351,18 +348,13 @@ namespace Semiodesk.Trinity.Store.Virtuoso
                         types.Add(s, new List<Class>());
                     }
 
-                    if (OntologyDiscovery.Classes.ContainsKey(o))
-                    {
-                        types[s].Add(OntologyDiscovery.Classes[o]);
-                    }
-                    else
-                    {
-                        types[s].Add(new Class(new Uri(o)));
-                    }
+                    types[s].Add(OntologyDiscovery.Classes.ContainsKey(o)
+                        ? OntologyDiscovery.Classes[o]
+                        : new Class(new Uri(o)));
                 }
             }
 
-            // Iterate over all types and find the right class and instatiate it.
+            // Iterate over all types and find the right class and instantiate it.
             foreach (var subject in types.Keys)
             {
                 IList<Type> classType = MappingDiscovery.GetMatchingTypes(types[subject], type, inferencingEnabled);
@@ -372,7 +364,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
                     #if DEBUG
                     if (classType.Count > 1)
                     {
-                        var msg = "Info: There is more that one assignable type for <{0}>. It was initialized using the first.";
+                        const string msg = "Info: There is more that one assignable type for <{0}>. It was initialized using the first.";
                         Debug.WriteLine(string.Format(msg, subject));
                     }
                     #endif
@@ -414,10 +406,8 @@ namespace Semiodesk.Trinity.Store.Virtuoso
                 {
                     return ((int) queryResults.Rows[0][0] != 0);
                 }
-                else
-                {
-                    return false;
-                }
+
+                return false;
             }
         }
 
@@ -480,32 +470,31 @@ namespace Semiodesk.Trinity.Store.Virtuoso
             // query would return and issue another query to describe those resources withoud inference.
             var uris = FetchUris(offset, limit).ToList();
 
-            if (!uris.Count.Equals(0))
+            if (uris.Count.Equals(0)) yield break;
+            
+            var queryBuilder = new StringBuilder();
+
+            foreach (Uri uri in uris)
             {
-                var queryBuilder = new StringBuilder();
+                queryBuilder.Append(SparqlSerializer.SerializeUri(uri));
+            }
 
-                foreach (Uri uri in uris)
+            var query = new SparqlQuery($"DESCRIBE {queryBuilder}");
+
+            var queryResult = _model.ExecuteQuery(query);
+
+            if (_isOrdered)
+            {
+                foreach (var t in queryResult.GetResources<T>().OrderBy(o => uris.IndexOf(o.Uri)))
                 {
-                    queryBuilder.Append(SparqlSerializer.SerializeUri(uri));
+                    yield return t;
                 }
-
-                var query = new SparqlQuery(string.Format("DESCRIBE {0}", queryBuilder.ToString()));
-
-                var queryResult = _model.ExecuteQuery(query);
-
-                if (_isOrdered)
+            }
+            else
+            {
+                foreach (var t in queryResult.GetResources<T>())
                 {
-                    foreach (var t in queryResult.GetResources<T>().OrderBy(o => uris.IndexOf(o.Uri)))
-                    {
-                        yield return t;
-                    }
-                }
-                else
-                {
-                    foreach (var t in queryResult.GetResources<T>())
-                    {
-                        yield return t;
-                    }
+                    yield return t;
                 }
             }
         }
@@ -522,16 +511,11 @@ namespace Semiodesk.Trinity.Store.Virtuoso
 
         public IEnumerable<Resource> GetResources(Type type)
         {
-            if (_query.ProvidesStatements())
-            {
-                using (var queryResults = _store.ExecuteQuery(_store.CreateQuery(_query), _transaction))
-                {
-                    return GenerateResources(type, queryResults);
-                }
-            }
-            else
-            {
+            if (!_query.ProvidesStatements())
                 throw new ArgumentException("The given query cannot be resolved into statements.");
+            using (var queryResults = _store.ExecuteQuery(_store.CreateQuery(_query), _transaction))
+            {
+                return GenerateResources(type, queryResults);
             }
         }
 
@@ -543,17 +527,14 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// <returns>An enumeration of instances of the given type.</returns>
         public IEnumerable<T> GetResources<T>() where T : Resource
         {
-            if (_query.ProvidesStatements())
-            {
-                using (var queryResults = _store.ExecuteQuery(_store.CreateQuery(_query), _transaction))
-                {
-                    return GenerateResources(typeof(T), queryResults).Where(x => typeof(T).IsAssignableFrom(x.GetType())).Select(x => x as T);
-                }
-            }
-            else
-            {
+            if (!_query.ProvidesStatements())
                 throw new ArgumentException("Error: The given SELECT query cannot be resolved into statements.");
+            
+            using (var queryResults = _store.ExecuteQuery(_store.CreateQuery(_query), _transaction))
+            {
+                return GenerateResources(typeof(T), queryResults).OfType<T>();
             }
+
         }
 
         /// <summary>

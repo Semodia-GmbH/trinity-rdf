@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using VDS.RDF.Parsing;
 using VDS.RDF;
 using Semiodesk.Trinity.Extensions;
@@ -46,7 +47,7 @@ namespace Semiodesk.Trinity.Store.Fuseki
     {
         #region Members
 
-        SparqlUpdateParser _parser;
+        private SparqlUpdateParser _parser;
 
         /// <summary>
         ///  Handle to the Virtuoso connection.
@@ -114,7 +115,6 @@ namespace Semiodesk.Trinity.Store.Fuseki
             if (uri != null)
             {
                 Connector.HasGraph(uri);
-
             }
 
             return false;
@@ -139,10 +139,8 @@ namespace Semiodesk.Trinity.Store.Fuseki
 
             if (resource.IsNew)
             {
-                updateString = string.Format(@"
-                    INSERT DATA {{ GRAPH <{0}> {{  {1} }} }} ",
-                modelUri.OriginalString,
-                SparqlSerializer.SerializeResource(resource, ignoreUnmappedProperties));
+                updateString = $@"
+                    INSERT DATA {{ GRAPH <{modelUri.OriginalString}> {{  {SparqlSerializer.SerializeResource(resource, ignoreUnmappedProperties)} }} }} ";
             }
             else
             {
@@ -233,10 +231,7 @@ namespace Semiodesk.Trinity.Store.Fuseki
         /// <returns>All handles to existing models.</returns>
         public override IEnumerable<IModel> ListModels()
         {
-            foreach (var graph in Connector.ListGraphs())
-            {
-                yield return new Model(this, new UriRef(graph));   
-            }
+            return Connector.ListGraphs().Select(graph => new Model(this, new UriRef(graph)));
         }
 
         /// <summary>
@@ -267,6 +262,13 @@ namespace Semiodesk.Trinity.Store.Fuseki
                 case RdfSerializationFormat.JsonLd:
                     new JsonLdParser().Load(new GraphHandler(graph), reader);
                     break;
+                case RdfSerializationFormat.GZippedRdfXml:
+                case RdfSerializationFormat.GZippedN3:
+                case RdfSerializationFormat.GZippedNQuads:
+                case RdfSerializationFormat.Trig:
+                case RdfSerializationFormat.GZippedTrig:
+                case RdfSerializationFormat.GZippedTurtle:
+                case RdfSerializationFormat.GZippedJsonLd:
                 default:
                 case RdfSerializationFormat.RdfXml:
                     new RdfXmlParser().Load(graph, reader);
@@ -363,8 +365,9 @@ namespace Semiodesk.Trinity.Store.Fuseki
                         var s = new TripleStore();
                         s.LoadFromFile(path, new TriGParser());
 
-                        foreach (Graph g in s.Graphs)
+                        foreach (var graph1 in s.Graphs)
                         {
+                            var g = (Graph)graph1;
                             if (!update && exists)
                             {
                                 Connector.DeleteGraph(graphUri);
@@ -466,12 +469,7 @@ namespace Semiodesk.Trinity.Store.Fuseki
         /// <returns></returns>
         public override IModelGroup CreateModelGroup(params Uri[] models)
         {
-            var modelList = new List<IModel>();
-
-            foreach (var x in models)
-            {
-                modelList.Add(GetModel(x));
-            }
+            var modelList = models.Select(GetModel).ToList();
 
             return new ModelGroup(this, modelList);
         }
@@ -483,14 +481,8 @@ namespace Semiodesk.Trinity.Store.Fuseki
         /// <returns></returns>
         public new IModelGroup CreateModelGroup(params IModel[] models)
         {
-            var modelList = new List<IModel>();
-
             // This approach might seem a bit redundant, but we want to make sure to get the model from the right store.
-            foreach (var x in models)
-            {
-                modelList.Add(GetModel(x.Uri));
-            }
-
+            var modelList = models.Select(x => GetModel(x.Uri)).ToList();
             return new ModelGroup(this, modelList);
         }
 

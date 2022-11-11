@@ -22,13 +22,12 @@
 //
 //  Moritz Eberl <moritz@semiodesk.com>
 //  Sebastian Faubel <sebastian@semiodesk.com>
+//  Jan Funke <jan.funke@semodia.com>
 //
 // Copyright (c) Semiodesk GmbH 2022
 
-
 using System.Collections.Generic;
 using System.Composition;
-
 
 namespace Semiodesk.Trinity.Store.Fuseki
 {
@@ -42,6 +41,7 @@ namespace Semiodesk.Trinity.Store.Fuseki
             Name = "fuseki";
         }
 
+        /// <inheritdoc/>
         public override IStore GetStore(Dictionary<string, string> configurationDictionary )
         {
             const string hostKey = "host";

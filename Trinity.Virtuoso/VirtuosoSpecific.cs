@@ -22,6 +22,7 @@
 //
 //  Moritz Eberl <moritz@semiodesk.com>
 //  Sebastian Faubel <sebastian@semiodesk.com>
+//  Jan Funke <jan.funke@semodia.com>
 //
 // Copyright (c) Semiodesk GmbH 2018
 
@@ -89,7 +90,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         {
             try
             {
-                var query = string.Format("delete * from DB.DBA.SYS_RDF_SCHEMA where RS_NAME='{0}';", ruleSet.OriginalString);
+                var query = $"delete * from DB.DBA.SYS_RDF_SCHEMA where RS_NAME='{ruleSet.OriginalString}';";
                 store.ExecuteQuery(query);
             }catch(Exception)
             {
@@ -100,7 +101,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         {
             try
             {
-                var query = string.Format("rdfs_rule_set ('{0}', '{1}', 1)", ruleSet, graph);
+                var query = $"rdfs_rule_set ('{ruleSet}', '{graph}', 1)";
                 store.ExecuteQuery(query);
             }
             catch (Exception)
@@ -110,7 +111,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
 
         private void AddGraphToRuleSet(Uri ruleSet, Uri graph, VirtuosoStore store)
         {
-            var query = string.Format("rdfs_rule_set ('{0}', '{1}')", ruleSet, graph);
+            var query = $"rdfs_rule_set ('{ruleSet}', '{graph}')";
             store.ExecuteQuery(query);
         }
         

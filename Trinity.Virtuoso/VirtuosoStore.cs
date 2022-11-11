@@ -76,15 +76,9 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// <summary>
         /// 
         /// </summary>
-        public override bool IsReady
-        {
-            get
-            {
-                return Connection.State == ConnectionState.Open;
-            }
-        }
+        public override bool IsReady => Connection.State == ConnectionState.Open;
 
-        private string _defaultInferenceRule = "urn:semiodesk/ruleset";
+        private readonly string _defaultInferenceRule = "urn:semiodesk/ruleset";
 
         private bool _isDisposed;
 
@@ -136,7 +130,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
 
         /// <summary>
         /// Alternative constructor to create a Virtuoso storage connection.
-        /// It automatically connectso to the local virtuoso store with the default port.
+        /// It automatically connects to the local virtuoso store with the default port.
         /// </summary>
         /// <param name="username">Username used to connect to storage.</param>
         /// <param name="password">Password needed to connect to storage.</param>
@@ -164,10 +158,10 @@ namespace Semiodesk.Trinity.Store.Virtuoso
             {
                 try
                 {
-                    var clear = new SparqlUpdate(string.Format("CLEAR GRAPH <{0}>", uri.AbsoluteUri));
+                    var clear = new SparqlUpdate($"CLEAR GRAPH <{uri.AbsoluteUri}>");
                     ExecuteNonQuery(clear, transaction);
 
-                    var drop = new SparqlUpdate(string.Format("DROP GRAPH <{0}>", uri.AbsoluteUri));
+                    var drop = new SparqlUpdate($"DROP GRAPH <{uri.AbsoluteUri}>");
                     ExecuteNonQuery(drop, transaction);
 
                     transaction.Commit();
@@ -181,20 +175,18 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         [Obsolete("This method does not list empty models. At the moment you should just call GetModel() and test for IsEmpty()")]
         public override bool ContainsModel(Uri uri)
         {
-            if (uri != null)
+            if (uri == null) return false;
+            
+            using (var transaction = this.BeginTransaction(IsolationLevel.ReadCommitted))
             {
-                using (var transaction = this.BeginTransaction(IsolationLevel.ReadCommitted))
-                {
-                    var query = string.Format("SPARQL ASK {{ GRAPH <{0}> {{ ?s ?p ?o . }} }}", uri.AbsoluteUri);
+                var query = $"SPARQL ASK {{ GRAPH <{uri.AbsoluteUri}> {{ ?s ?p ?o . }} }}";
 
-                    using (var result = ExecuteQuery(query, transaction))
-                    {
-                        return result.Rows.Count > 0;
-                    }
+                using (var result = ExecuteQuery(query, transaction))
+                {
+                    return result.Rows.Count > 0;
                 }
             }
 
-            return false;
         }
 
         [Obsolete("This method does not list empty models. At the moment you should just call GetModel() and test for IsEmpty()")]
@@ -286,7 +278,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
 
             queryBuilder.Append(query.ToString());
 
-            return string.Format("SPARQL {0}", queryBuilder);
+            return $"SPARQL {queryBuilder}";
         }
 
         public DataTable ExecuteQuery(string queryString, ITransaction transaction = null)
@@ -391,16 +383,13 @@ namespace Semiodesk.Trinity.Store.Virtuoso
             }
             finally
             {
-                if (command != null)
-                {
-                    command.Dispose();
-                }
+                command?.Dispose();
             }
         }
 
         public override void ExecuteNonQuery(ISparqlUpdate update, ITransaction transaction = null)
         {
-            var queryString = string.Format("SPARQL {{ {0} }}", update.ToString());
+            var queryString = $"SPARQL {{ {update.ToString()} }}";
 
             ExecuteDirectQuery(queryString, transaction);
         }
@@ -409,14 +398,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         {
             string path;
 
-            if (url.IsAbsoluteUri)
-            {
-                path = url.LocalPath;
-            }
-            else
-            {
-                path = Path.Combine(Directory.GetCurrentDirectory(), url.OriginalString.Substring(5));
-            }
+            path = url.IsAbsoluteUri ? url.LocalPath : Path.Combine(Directory.GetCurrentDirectory(), url.OriginalString.Substring(5));
 
             return path;
         }
@@ -430,104 +412,88 @@ namespace Semiodesk.Trinity.Store.Virtuoso
 
                 using (TextReader reader = File.OpenText(path))
                 {
-                    if (format == RdfSerializationFormat.Trig)
-                    {
-                        return ReadQuadFormat(reader, graph, format, update);
-                    }
-                    else
-                    {
-                        return ReadTripleFormat(reader, graph, format, update);
-                    }
+                    return format == RdfSerializationFormat.Trig ? 
+                        ReadQuadFormat(reader, graph, format, update) :
+                        ReadTripleFormat(reader, graph, format, update);
                 }
             }
-            else if (url.Scheme == "http")
+
+            if (url.Scheme == "http")
             {
                 if (format == RdfSerializationFormat.Trig)
                 {
                     throw new Exception("Loading of remote trig files is not supported yet.");
                 }
-                else
-                {
-                    return ReadRemoteTripleFormat(graph, url, format);
-                }
+
+                return ReadRemoteTripleFormat(graph, url, format);
             }
-            else
-            {
-                var msg = string.Format("Unkown URL scheme {0}", url.Scheme);
-                throw new ArgumentException(msg);
-            }
+            var msg = $"Unknown URL scheme {url.Scheme}";
+            throw new ArgumentException(msg);
         }
 
         public override Uri Read(Stream stream, Uri graph, RdfSerializationFormat format, bool update, bool leaveOpen = false)
         {
             using (TextReader reader = new StreamReader(stream))
             {
-#if !NET35
                 if (format == RdfSerializationFormat.Trig || format == RdfSerializationFormat.NQuads || format == RdfSerializationFormat.JsonLd)
-#else
-                if (format == RdfSerializationFormat.Trig)
-#endif
                 {
                     return ReadQuadFormat(reader, graph, format, update);
                 }
-                else
-                {
-                    return ReadTripleFormat(reader, graph, format, update);
-                }
+
+                return ReadTripleFormat(reader, graph, format, update);
             }
         }
 
         public override Uri Read(string content, Uri graph, RdfSerializationFormat format, bool update)
         {
-            
-#if !NET35
-                if (format == RdfSerializationFormat.Trig || format == RdfSerializationFormat.NQuads || format == RdfSerializationFormat.JsonLd)
-#else
-                if (format == RdfSerializationFormat.Trig)
-#endif
-                {
-                    return ReadQuadFormat(content, graph, format, update);
-                }
-                else
-                {
-                    return ReadTripleFormat(content, graph, format, update);
-                }
-            
+            if (format == RdfSerializationFormat.Trig || format == RdfSerializationFormat.NQuads || format == RdfSerializationFormat.JsonLd)
+            {
+                return ReadQuadFormat(content, graph, format, update);
+            }
+
+            return ReadTripleFormat(content, graph, format, update);
         }
 
         private IStoreReader GetStoreReader(RdfSerializationFormat format)
         {
-            if (format == RdfSerializationFormat.JsonLd)
-                return new JsonLdParser();
-            if (format == RdfSerializationFormat.GZippedJsonLd)
-                return new GZippedJsonLdParser();
-            if (format == RdfSerializationFormat.NQuads)
-                return new NQuadsParser();
-            if (format == RdfSerializationFormat.GZippedNQuads)
-                return new GZippedNQuadsParser();
-            if (format == RdfSerializationFormat.Trig)
-                return new TriGParser();
-            if (format == RdfSerializationFormat.GZippedTrig)
-                return new GZippedTriGParser();
-
-            return null;
+            switch (format)
+            {
+                case RdfSerializationFormat.JsonLd:
+                    return new JsonLdParser();
+                case RdfSerializationFormat.GZippedJsonLd:
+                    return new GZippedJsonLdParser();
+                case RdfSerializationFormat.NQuads:
+                    return new NQuadsParser();
+                case RdfSerializationFormat.GZippedNQuads:
+                    return new GZippedNQuadsParser();
+                case RdfSerializationFormat.Trig:
+                    return new TriGParser();
+                case RdfSerializationFormat.GZippedTrig:
+                    return new GZippedTriGParser();
+                default:
+                    return null;
+            }
         }
 
         private IRdfReader GetParser(RdfSerializationFormat format)
         {
-            if (format == RdfSerializationFormat.Turtle)
-                return new TurtleParser();
-            if (format == RdfSerializationFormat.GZippedTurtle)
-                return new GZippedTurtleParser();
-            if (format == RdfSerializationFormat.N3)
-                return new Notation3Parser();
-            if (format == RdfSerializationFormat.GZippedN3)
-                return new GZippedNotation3Parser();
-            if (format == RdfSerializationFormat.GZippedRdfXml)
-                return new GZippedRdfXmlParser();
-            if (format == RdfSerializationFormat.RdfXml)
-                return new RdfXmlParser();
-            return null;
+            switch (format)
+            {
+                case RdfSerializationFormat.Turtle:
+                    return new TurtleParser();
+                case RdfSerializationFormat.GZippedTurtle:
+                    return new GZippedTurtleParser();
+                case RdfSerializationFormat.N3:
+                    return new Notation3Parser();
+                case RdfSerializationFormat.GZippedN3:
+                    return new GZippedNotation3Parser();
+                case RdfSerializationFormat.GZippedRdfXml:
+                    return new GZippedRdfXmlParser();
+                case RdfSerializationFormat.RdfXml:
+                    return new RdfXmlParser();
+                default:
+                    return null;
+            }
         }
 
         private Uri ReadQuadFormat(TextReader reader, Uri graph, RdfSerializationFormat format, bool update)
@@ -571,18 +537,16 @@ namespace Semiodesk.Trinity.Store.Virtuoso
 
                     parser.Load(store, content);
 
-                    var g = store.Graphs.Where(x => x.BaseUri == graph).FirstOrDefault();
+                    var g = store.Graphs.FirstOrDefault(x => x.BaseUri == graph);
 
-                    if( g != null )
+                    if (g == null) return graph;
+                    if (update)
                     {
-                        if (update)
-                        {
-                            manager.UpdateGraph(g.BaseUri, g.Triples, new Triple[] { });
-                        }
-                        else
-                        {
-                            manager.SaveGraph(g);
-                        }
+                        manager.UpdateGraph(g.BaseUri, g.Triples, new Triple[] { });
+                    }
+                    else
+                    {
+                        manager.SaveGraph(g);
                     }
                 }
             }
@@ -781,27 +745,23 @@ namespace Semiodesk.Trinity.Store.Virtuoso
             resource.IsNew = false;
             resource.IsSynchronized = true;
 
-            if (!string.IsNullOrEmpty(guid))
-            {
-                // Retrieve the blank node id from the id property value.
-                var queryString = string.Format(@"SPARQL SELECT ?x FROM <{0}> WHERE {{ ?x <http://trinity-rdf.net/id> '{1}' . }}",
-                    modelUri.OriginalString,
-                    guid);
+            if (string.IsNullOrEmpty(guid)) return;
+            
+            // Retrieve the blank node id from the id property value.
+            var queryString =
+                $@"SPARQL SELECT ?x FROM <{modelUri.OriginalString}> WHERE {{ ?x <http://trinity-rdf.net/id> '{guid}' . }}";
 
-                var result = ExecuteQuery(queryString, transaction);
+            var result = ExecuteQuery(queryString, transaction);
 
-                resource.Uri = new UriRef(result.Rows[0]["x"].ToString(), true);
+            resource.Uri = new UriRef(result.Rows[0]["x"].ToString(), true);
 
-                // Remove the id property from the resource *and* the model.
-                resource.RemoveProperty(_idProperty, guid);
+            // Remove the id property from the resource *and* the model.
+            resource.RemoveProperty(_idProperty, guid);
 
-                updateString = string.Format(@"SPARQL DELETE FROM <{0}> {{ <{1}> <http://trinity-rdf.net/id> '{2}'. }}",
-                    modelUri.OriginalString,
-                    resource.Uri.OriginalString,
-                    guid);
+            updateString =
+                $@"SPARQL DELETE FROM <{modelUri.OriginalString}> {{ <{resource.Uri.OriginalString}> <http://trinity-rdf.net/id> '{guid}'. }}";
 
-                ExecuteDirectQuery(updateString, transaction);
-            }
+            ExecuteDirectQuery(updateString, transaction);
         }
 
         public override void UpdateResources(IEnumerable<Resource> resources, Uri modelUri, ITransaction transaction = null, bool ignoreUnmappedProperties = false)
@@ -885,7 +845,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
                 throw new NotSupportedException();
             }
 
-            var template = "WITH @graph DELETE WHERE { ?s ?p ?o. FILTER( _filter_ )}";
+            const string template = "WITH @graph DELETE WHERE { ?s ?p ?o. FILTER( _filter_ )}";
 
             var filters = new List<string>();
 
@@ -918,11 +878,9 @@ namespace Semiodesk.Trinity.Store.Virtuoso
 
         private void OnColumnsCollectionChanged(object sender, CollectionChangeEventArgs e)
         {
-            var columns = sender as DataColumnCollection;
-
-            if (columns != null)
+            if (sender is DataColumnCollection columns)
             {
-                columns[columns.Count - 1].DataType = typeof(Object);
+                columns[columns.Count - 1].DataType = typeof(object);
             }
         }
 

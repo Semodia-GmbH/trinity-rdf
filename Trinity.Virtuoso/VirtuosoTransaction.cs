@@ -68,8 +68,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         {
             Transaction.Rollback();
 
-            if (OnFinishedTransaction != null)
-                OnFinishedTransaction(this, new TransactionEventArgs(false));
+            OnFinishedTransaction?.Invoke(this, new TransactionEventArgs(false));
 
             this.Dispose();
         }
