@@ -87,7 +87,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         {
             if (cellValue is SqlExtendedString extendedString)
             {
-                bool isBlankId = extendedString.IsBlankId();
+                var isBlankId = extendedString.IsBlankId();
 
                 if (extendedString.IsResource() || isBlankId)
                 {
@@ -150,7 +150,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         {
             foreach (DataRow row in queryResults.Rows)
             {
-                BindingSet binding = new BindingSet();
+                var binding = new BindingSet();
 
                 foreach (DataColumn column in queryResults.Columns)
                 {
@@ -168,27 +168,27 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// <returns>An enumeration of marshalled objects of the given type.</returns>
         private IEnumerable<Resource> GenerateResources(Type type, DataTable queryResults)
         {
-            List<Resource> result = new List<Resource>();
+            var result = new List<Resource>();
 
             if (0 < queryResults.Columns.Count)
             {
                 // A list of global scope variables without the ?. Used to access the
                 // subject, predicate and object variable in statement providing queries.
-                string[] vars = _query.GetGlobalScopeVariableNames();
+                var vars = _query.GetGlobalScopeVariableNames();
 
-                bool providesStatements = _query.ProvidesStatements();
+                var providesStatements = _query.ProvidesStatements();
 
                 // A dictionary mapping URIs to the generated resource objects.
-                Dictionary<string, Resource> cache = new Dictionary<string, Resource>();
+                var cache = new Dictionary<string, Resource>();
 
-                Dictionary<string, Resource> types = FindResourceTypes(type,
+                var types = FindResourceTypes(type,
                     queryResults,
                     queryResults.Columns[0].ColumnName,
                     queryResults.Columns[1].ColumnName,
                     queryResults.Columns[2].ColumnName,
                     _query.IsInferenceEnabled);
 
-                foreach (KeyValuePair<string, Resource> resourceType in types)
+                foreach (var resourceType in types)
                 {
                     cache.Add(resourceType.Key, resourceType.Value);
                 }
@@ -198,8 +198,8 @@ namespace Semiodesk.Trinity.Store.Virtuoso
 
                 foreach (DataRow row in queryResults.Rows)
                 {
-                    bool subjectBlank = false;
-                    bool objectBlank = false;
+                    var subjectBlank = false;
+                    var objectBlank = false;
 
                     if (row[0] is SqlExtendedString x)
                     {
@@ -281,7 +281,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
 
                     if (o is UriRef)
                     {
-                        UriRef uri = o as UriRef;
+                        var uri = o as UriRef;
 
                         if (cache.ContainsKey(uri.OriginalString))
                         {
@@ -292,7 +292,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
                         }
                         else
                         {
-                            Resource r = new Resource(uri)
+                            var r = new Resource(uri)
                             {
                                 IsNew = false
                             };
@@ -331,8 +331,8 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// <returns></returns>
         private Dictionary<string, Resource> FindResourceTypes(Type type, DataTable queryResults, string subjectColumn, string preducateColumn, string objectColumn, bool inferencingEnabled = false)
         {
-            Dictionary<string, Resource> result = new Dictionary<string, Resource>();
-            Dictionary<string, List<Class>> types = new Dictionary<string, List<Class>>();
+            var result = new Dictionary<string, Resource>();
+            var types = new Dictionary<string, List<Class>>();
             string s, p, o;
 
             // Collect all types for every resource in the types dictionary.
@@ -363,7 +363,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
             }
 
             // Iterate over all types and find the right class and instatiate it.
-            foreach (string subject in types.Keys)
+            foreach (var subject in types.Keys)
             {
                 IList<Type> classType = MappingDiscovery.GetMatchingTypes(types[subject], type, inferencingEnabled);
 
@@ -372,12 +372,12 @@ namespace Semiodesk.Trinity.Store.Virtuoso
                     #if DEBUG
                     if (classType.Count > 1)
                     {
-                        string msg = "Info: There is more that one assignable type for <{0}>. It was initialized using the first.";
+                        var msg = "Info: There is more that one assignable type for <{0}>. It was initialized using the first.";
                         Debug.WriteLine(string.Format(msg, subject));
                     }
                     #endif
 
-                    Resource resource = (Resource)Activator.CreateInstance(classType[0], new UriRef(subject));
+                    var resource = (Resource)Activator.CreateInstance(classType[0], new UriRef(subject));
                     resource.SetModel(_model);
                     resource.IsNew = false;
 
@@ -386,7 +386,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
                 #if DEBUG
                 else if (type != typeof(Resource))
                 {
-                    string msg = "Info: No assignable type found for <{0}>.";
+                    var msg = "Info: No assignable type found for <{0}>.";
 
                     if (inferencingEnabled)
                     {
@@ -407,7 +407,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// <returns>True on success, False otherwise.</returns>
         public bool GetAnswer()
         {
-            using (DataTable queryResults = _store.ExecuteQuery(_store.CreateQuery(_query), _transaction))
+            using (var queryResults = _store.ExecuteQuery(_store.CreateQuery(_query), _transaction))
             {
 
                 if (queryResults.Rows.Count > 0)
@@ -423,16 +423,16 @@ namespace Semiodesk.Trinity.Store.Virtuoso
 
         public int Count()
         {
-            string countQuery = SparqlSerializer.SerializeCount(_model, _query);
+            var countQuery = SparqlSerializer.SerializeCount(_model, _query);
 
-            SparqlQuery query = new SparqlQuery(countQuery)
+            var query = new SparqlQuery(countQuery)
             {
                 IsInferenceEnabled = _query.IsInferenceEnabled
             };
 
-            string q = _store.CreateQuery(query);
+            var q = _store.CreateQuery(query);
 
-            foreach (BindingSet b in GenerateBindings(_store.ExecuteQuery(q)))
+            foreach (var b in GenerateBindings(_store.ExecuteQuery(q)))
             {
                 return (int)b["count"];
             }
@@ -454,11 +454,11 @@ namespace Semiodesk.Trinity.Store.Virtuoso
 
             if (!_query.IsInferenceEnabled)
             {
-                String queryString = SparqlSerializer.SerializeOffsetLimit(_model, _query, offset, limit);
+                var queryString = SparqlSerializer.SerializeOffsetLimit(_model, _query, offset, limit);
 
-                SparqlQuery query = new SparqlQuery(queryString);
+                var query = new SparqlQuery(queryString);
 
-                using (DataTable queryResults = _store.ExecuteQuery(_store.CreateQuery(query), _transaction))
+                using (var queryResults = _store.ExecuteQuery(_store.CreateQuery(query), _transaction))
                 {
                    
                   return GenerateResources(typeof(T), queryResults).Where(x => typeof(T).IsAssignableFrom(x.GetType())).Select(x => x as T);
@@ -478,31 +478,31 @@ namespace Semiodesk.Trinity.Store.Virtuoso
             // NOTE: When inferencing is enabled, we are unable to determine which triples were inferred and
             // which not. Therefore we need to issue a query to get the URIs of all the resources the original
             // query would return and issue another query to describe those resources withoud inference.
-            List<UriRef> uris = FetchUris(offset, limit).ToList();
+            var uris = FetchUris(offset, limit).ToList();
 
             if (!uris.Count.Equals(0))
             {
-                StringBuilder queryBuilder = new StringBuilder();
+                var queryBuilder = new StringBuilder();
 
                 foreach (Uri uri in uris)
                 {
                     queryBuilder.Append(SparqlSerializer.SerializeUri(uri));
                 }
 
-                SparqlQuery query = new SparqlQuery(string.Format("DESCRIBE {0}", queryBuilder.ToString()));
+                var query = new SparqlQuery(string.Format("DESCRIBE {0}", queryBuilder.ToString()));
 
-                ISparqlQueryResult queryResult = _model.ExecuteQuery(query);
+                var queryResult = _model.ExecuteQuery(query);
 
                 if (_isOrdered)
                 {
-                    foreach (T t in queryResult.GetResources<T>().OrderBy(o => uris.IndexOf(o.Uri)))
+                    foreach (var t in queryResult.GetResources<T>().OrderBy(o => uris.IndexOf(o.Uri)))
                     {
                         yield return t;
                     }
                 }
                 else
                 {
-                    foreach (T t in queryResult.GetResources<T>())
+                    foreach (var t in queryResult.GetResources<T>())
                     {
                         yield return t;
                     }
@@ -524,7 +524,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         {
             if (_query.ProvidesStatements())
             {
-                using (DataTable queryResults = _store.ExecuteQuery(_store.CreateQuery(_query), _transaction))
+                using (var queryResults = _store.ExecuteQuery(_store.CreateQuery(_query), _transaction))
                 {
                     return GenerateResources(type, queryResults);
                 }
@@ -545,7 +545,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         {
             if (_query.ProvidesStatements())
             {
-                using (DataTable queryResults = _store.ExecuteQuery(_store.CreateQuery(_query), _transaction))
+                using (var queryResults = _store.ExecuteQuery(_store.CreateQuery(_query), _transaction))
                 {
                     return GenerateResources(typeof(T), queryResults).Where(x => typeof(T).IsAssignableFrom(x.GetType())).Select(x => x as T);
                 }
@@ -562,11 +562,11 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// <returns>An enumeration of bound solution variables (BindingSet).</returns>
         public IEnumerable<BindingSet> GetBindings()
         {
-            string queryString = "";
+            var queryString = "";
             try
             {
                 queryString = _store.CreateQuery(_query);
-                using (DataTable queryResults = _store.ExecuteQuery(queryString, _transaction))
+                using (var queryResults = _store.ExecuteQuery(queryString, _transaction))
                 {
                     return GenerateBindings(queryResults);
                 }
@@ -586,19 +586,19 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// </remarks>
         IEnumerable<UriRef> FetchUris(int offset, int limit)
         {
-            String queryString = SparqlSerializer.SerializeFetchUris(_model, _query, offset, limit);
+            var queryString = SparqlSerializer.SerializeFetchUris(_model, _query, offset, limit);
 
-            SparqlQuery query = new SparqlQuery(queryString) { IsInferenceEnabled = _query.IsInferenceEnabled };
+            var query = new SparqlQuery(queryString) { IsInferenceEnabled = _query.IsInferenceEnabled };
 
-            using (DataTable queryResults = _store.ExecuteQuery(_store.CreateQuery(query), _transaction))
+            using (var queryResults = _store.ExecuteQuery(_store.CreateQuery(query), _transaction))
             {
-                IEnumerable<BindingSet> bindings = GenerateBindings(queryResults);
+                var bindings = GenerateBindings(queryResults);
 
                 UriRef previousUri = null;
 
-                foreach (BindingSet binding in bindings)
+                foreach (var binding in bindings)
                 {
-                    UriRef currentUri = binding[_query.GetGlobalScopeVariableNames()[0]] as UriRef;
+                    var currentUri = binding[_query.GetGlobalScopeVariableNames()[0]] as UriRef;
 
                     if (currentUri == null) continue;
 

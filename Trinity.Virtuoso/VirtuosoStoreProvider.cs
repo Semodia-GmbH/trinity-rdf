@@ -44,8 +44,8 @@ namespace Semiodesk.Trinity.Store.Virtuoso
 
         public override IStore GetStore(Dictionary<string, string> configurationDictionary )
         {
-            string hostKey = "host";
-            string host = "127.0.0.1";
+            const string hostKey = "host";
+            var host = "127.0.0.1";
 
             if (configurationDictionary.ContainsKey(hostKey))
             {
@@ -53,10 +53,9 @@ namespace Semiodesk.Trinity.Store.Virtuoso
             }
 
 
-            string portKey = "port";
-            int port;
+            const string portKey = "port";
 
-            if (!configurationDictionary.ContainsKey(portKey) ||!int.TryParse(configurationDictionary[portKey], out port))
+            if (!configurationDictionary.ContainsKey(portKey) ||!int.TryParse(configurationDictionary[portKey], out var port))
             {
                 #if !DEBUG 
                 port = 1112;
@@ -65,8 +64,8 @@ namespace Semiodesk.Trinity.Store.Virtuoso
                 #endif
             }
 
-            string userKey = "uid";
-            string user = "dba";
+            const string userKey = "uid";
+            var user = "dba";
 
             if (configurationDictionary.ContainsKey(userKey))
             {
@@ -74,8 +73,8 @@ namespace Semiodesk.Trinity.Store.Virtuoso
             }
 
 
-            string passwordKey = "pw";
-            string password = "dba";
+            const string passwordKey = "pw";
+            var password = "dba";
 
             if (configurationDictionary.ContainsKey(passwordKey))
             {
@@ -88,14 +87,14 @@ namespace Semiodesk.Trinity.Store.Virtuoso
             }
 
             string inferenceRule = null;
-            string ruleKey = "rule";
+            const string ruleKey = "rule";
 
             if (configurationDictionary.ContainsKey(ruleKey))
             {
                 inferenceRule = configurationDictionary[ruleKey];
             }
 
-            VirtuosoStore store = new VirtuosoStore(host, port, user, password, inferenceRule);
+            var store = new VirtuosoStore(host, port, user, password, inferenceRule);
 
             return store;
         }

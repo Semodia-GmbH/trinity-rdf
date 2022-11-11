@@ -73,9 +73,9 @@ namespace Semiodesk.Trinity.Store.Virtuoso
 
         public void Update(VirtuosoStore store)
         {
-            VirtuosoStore virtuosoStore = (store as VirtuosoStore);
+            var virtuosoStore = (store as VirtuosoStore);
 
-            foreach (Ruleset set in Rulesets.RulesetCollection)
+            foreach (var set in Rulesets.RulesetCollection)
             {
                 ClearRuleSet(new Uri(set.Uri), virtuosoStore);
                 foreach (var item in set.GraphCollection)
@@ -89,7 +89,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         {
             try
             {
-                string query = string.Format("delete * from DB.DBA.SYS_RDF_SCHEMA where RS_NAME='{0}';", ruleSet.OriginalString);
+                var query = string.Format("delete * from DB.DBA.SYS_RDF_SCHEMA where RS_NAME='{0}';", ruleSet.OriginalString);
                 store.ExecuteQuery(query);
             }catch(Exception)
             {
@@ -100,7 +100,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         {
             try
             {
-                string query = string.Format("rdfs_rule_set ('{0}', '{1}', 1)", ruleSet, graph);
+                var query = string.Format("rdfs_rule_set ('{0}', '{1}', 1)", ruleSet, graph);
                 store.ExecuteQuery(query);
             }
             catch (Exception)
@@ -110,7 +110,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
 
         private void AddGraphToRuleSet(Uri ruleSet, Uri graph, VirtuosoStore store)
         {
-            string query = string.Format("rdfs_rule_set ('{0}', '{1}')", ruleSet, graph);
+            var query = string.Format("rdfs_rule_set ('{0}', '{1}')", ruleSet, graph);
             store.ExecuteQuery(query);
         }
         
