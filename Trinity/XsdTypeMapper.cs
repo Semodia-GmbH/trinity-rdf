@@ -59,8 +59,8 @@ namespace Semiodesk.Trinity
             public static Uri base64Binary = new Uri(ns, "#base64Binary");
             public static Uri boolean_ = new Uri(ns, "#boolean_");
             public static Uri boolean = new Uri(ns, "#boolean");
-            public static Uri _byte = new Uri(ns, "#byte");
-            public static Uri _sbyte = new Uri(ns, "#unsignedByte");
+            public static Uri _byte = new Uri(ns, "#unsignedByte");
+            public static Uri _sbyte = new Uri(ns, "#byte");
             public static Uri _double = new Uri(ns, "#double");
             public static Uri _float = new Uri(ns, "#float");
             public static Uri _short = new Uri(ns, "#short");
