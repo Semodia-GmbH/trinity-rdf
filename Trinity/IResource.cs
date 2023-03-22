@@ -29,9 +29,6 @@ using System;
 using System.Globalization;
 using System.Collections.Generic;
 using System.ComponentModel;
-#if NET35
-using Semiodesk.Trinity.Utility;
-#endif
 
 namespace Semiodesk.Trinity
 {
@@ -177,6 +174,13 @@ namespace Semiodesk.Trinity
         /// <param name="property">Property the value should be associated with.</param>
         /// <param name="value">A datetime value.</param>
         void AddProperty(Property property, DateTime value);
+
+        /// <summary>
+        /// Adds a new property with the given value to the resource.
+        /// </summary>
+        /// <param name="property">Property the value should be associated with.</param>
+        /// <param name="value">A timespan value.</param>
+        void AddProperty(Property property, TimeSpan value);
 
         /// <summary>
         /// Adds a new property with the given value to the resource.

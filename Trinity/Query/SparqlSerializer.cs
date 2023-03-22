@@ -22,25 +22,25 @@
 //
 //  Moritz Eberl <moritz@semiodesk.com>
 //  Sebastian Faubel <sebastian@semiodesk.com>
+//  Jan Funke <jan.funke@semodia.com>
 //
 // Copyright (c) Semiodesk GmbH 2015-2019
+// Copyright for derived work (c) Semodia GmbH 2022
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Globalization;
-using System.Xml;
-#if NET35
-using Semiodesk.Trinity.Utility;
-#endif
+
 
 namespace Semiodesk.Trinity
 {
     /// <summary>
     /// Provides functionality to perform serialization of native .NET types into SPARQL strings.
     /// </summary>
-    public class SparqlSerializer
+    public static class SparqlSerializer
     {
         #region Methods
 
@@ -51,18 +51,18 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeString(string str)
         {
-            // We need to escape specrial characters: http://www.w3.org/TeamSubmission/turtle/#sec-strings
-            string s = str.Replace(@"\", @"\\");
+            // We need to escape special characters: http://www.w3.org/TeamSubmission/turtle/#sec-strings
+            var s = str.Replace(@"\", @"\\");
 
             if(s.Contains('\n'))
             {
-                return string.Format("'''{0}'''", s);
+                return $"'''{s}'''";
             }
             else
             {
                 s = s.Replace("'", "\\'");
 
-                return string.Format("'{0}'", s);
+                return $"'{s}'";
             }
         }
 
@@ -74,7 +74,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeTranslatedString(string str, string lang)
         {
-            return string.Format("{0}@{1}", SerializeString(str), lang);
+            return $"{SerializeString(str)}@{lang}";
         }
 
         /// <summary>
@@ -85,11 +85,11 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeTypedLiteral(object obj, Uri typeUri)
         {
-            return string.Format("'{0}'^^<{1}>", XsdTypeMapper.SerializeObject(obj), typeUri);
+            return $"'{XsdTypeMapper.SerializeObject(obj)}'^^<{typeUri}>";
         }
 
         /// <summary>
-        /// Serializes a value depdening on its type.
+        /// Serializes a value depending on its type.
         /// </summary>
         /// <param name="obj">An object.</param>
         /// <returns></returns>
@@ -97,60 +97,58 @@ namespace Semiodesk.Trinity
         {
             try
             {
-                if (obj is string)
+                switch (obj)
                 {
-                    return SerializeString(obj as string);
-                }
-                else if (obj is string[])
-                {
+                    case string s:
+                        return SerializeString(s);
                     // string + language
-                    string[] array = obj as string[];
-                    return SerializeTranslatedString(array[0], array[1]);
-                }
-                else if (obj is Tuple<string, CultureInfo>)
-                {
+                    case string[] strings:
+                        return SerializeTranslatedString(strings[0], strings[1]);
                     // string + language
-                    Tuple<string, CultureInfo> array = obj as Tuple<string, CultureInfo>;
-                    return SerializeTranslatedString(array.Item1, array.Item2.Name);
-                }
-                else if (obj is Tuple<string, string>)
-                {
+                    case Tuple<string, CultureInfo> tuple:
+                        return SerializeTranslatedString(tuple.Item1, tuple.Item2.Name);
                     // string + language
-                    Tuple<string, string> array = obj as Tuple<string, string>;
-                    return SerializeTranslatedString(array.Item1, array.Item2);
-                }
-                else if (obj is Uri || typeof(Uri).IsSubclassOf(obj.GetType()))
-                {
-                    return SerializeUri(obj as Uri);
-                }
-                else if (obj.GetType().GetInterface("IResource") != null)
-                {
-                    return SerializeUri((obj as IResource).Uri);
-                }
-                else if (obj.GetType().GetInterface("IModel") != null)
-                {
-                    return SerializeUri((obj as IModel).Uri);
-                }
-                else
-                {
-                    return SerializeTypedLiteral(obj, XsdTypeMapper.GetXsdTypeUri(obj.GetType()));
+                    case Tuple<string, string> array:
+                        return SerializeTranslatedString(array.Item1, array.Item2);
+                    // list of strings + language
+                    case IEnumerable<Tuple<string, CultureInfo>> translatedString:
+                        return SerializeTranslatedString(translatedString);
+                    case Uri uri:
+                        return SerializeUri(uri);
+                    case IResource resource:
+                        return SerializeUri(resource.Uri);
+                    case IModel model:
+                        return SerializeUri(model.Uri);
+                    default:
+                        return SerializeTypedLiteral(obj, XsdTypeMapper.GetXsdTypeUri(obj.GetType()));
                 }
             }
             catch
             {
-                string msg = string.Format("No serializer availabe for object of type {0}.", obj.GetType());
+                var msg = $"No serializer available for object of type {obj.GetType()}.";
                 throw new ArgumentException(msg);
             }
         }
 
         /// <summary>
-        /// Serializes a DateTime object.
+        /// Serializes a translated string collection
         /// </summary>
-        /// <param name="date">A date time object.</param>
-        /// <returns></returns>
-        public static string SerializeDateTime(DateTime date)
+        /// <param name="translatedString">Collection of string translations</param>
+        /// <returns>SPARQL snippet</returns>
+        private static string SerializeTranslatedString(IEnumerable<Tuple<string, CultureInfo>> translatedString)
         {
-            return string.Format("'{0}'^^<http://www.w3.org/2001/XMLSchema#dateTime>", XmlConvert.ToString((DateTime)date, XmlDateTimeSerializationMode.Utc));
+            var translatedStringList = translatedString.ToList();
+            if (translatedStringList.Count == 0) return string.Empty;
+            
+            var result = new StringBuilder();
+            var count = translatedStringList.Count;
+            foreach (var (translation, culture) in translatedStringList)
+            {
+                result.Append(SerializeTranslatedString(translation, culture.Name));
+                if (--count > 0) result.Append(", ");
+            }
+            
+            return result.ToString();
         }
 
         /// <summary>
@@ -160,7 +158,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeUri(Uri uri)
         {
-            return string.Format(@"<{0}>", uri.AbsoluteUri);
+            return uri.OriginalString.StartsWith("_") ? uri.OriginalString : $"<{uri.OriginalString}>";
         }
 
         /// <summary>
@@ -178,17 +176,22 @@ namespace Semiodesk.Trinity
                 return string.Empty;
             }
 
-            StringBuilder result = new StringBuilder(SerializeUri(resource.Uri));
+            var subject = SerializeUri(resource.Uri);
+
+            var result = new StringBuilder(subject);
             result.Append(' ');
 
             foreach (var value in valueList)
             {
-                if (value.Item2 == null)
+                switch (value.Item2)
                 {
-                    continue;
+                    case null:
+                    case IEnumerable list when !list.GetEnumerator().MoveNext():
+                        continue;
+                    default:
+                        result.AppendFormat("{0} {1}; ", SerializeUri(value.Item1.Uri), SerializeValue(value.Item2));
+                        break;
                 }
-
-                result.AppendFormat("{0} {1}; ", SerializeUri(value.Item1.Uri), SerializeValue(value.Item2));
             }
 
             result[result.Length - 2] = '.';
@@ -203,17 +206,15 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string GenerateDatasetClause(IModel model)
         {
-            if (model == null)
+            switch (model)
             {
-                return "";
+                case null:
+                    return "";
+                case IModelGroup group:
+                    return GenerateDatasetClause(group);
+                default:
+                    return $"FROM {SerializeUri(model.Uri)} ";
             }
-
-            if (model is IModelGroup)
-            {
-                return GenerateDatasetClause(model as IModelGroup);
-            }
-
-            return "FROM " + SerializeUri(model.Uri) + " ";
         }
 
         /// <summary>
@@ -223,9 +224,9 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string GenerateDatasetClause(IModelGroup modelGroup)
         {
-            if (modelGroup is ModelGroup)
+            if (modelGroup is ModelGroup group)
             {
-                return (modelGroup as ModelGroup).DatasetClause;
+                return group.DatasetClause;
             }
             else
             {
@@ -245,7 +246,7 @@ namespace Semiodesk.Trinity
                 return "";
             }
 
-            StringBuilder resultBuilder = new StringBuilder();
+            var resultBuilder = new StringBuilder();
 
             foreach (var model in models)
             {
@@ -265,15 +266,15 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeCount(IModel model, ISparqlQuery query)
         {
-            string variable = "?" + query.GetGlobalScopeVariableNames()[0];
-            string from = GenerateDatasetClause(model);
-            string where = query.GetRootGraphPattern();
+            var variable = "?" + query.GetGlobalScopeVariableNames()[0];
+            var from = GenerateDatasetClause(model);
+            var where = query.GetRootGraphPattern();
 
-            StringBuilder queryBuilder = new StringBuilder();
+            var queryBuilder = new StringBuilder();
 
-            queryBuilder.Append("SELECT COUNT(DISTINCT ");
+            queryBuilder.Append("SELECT ( COUNT(DISTINCT ");
             queryBuilder.Append(variable);
-            queryBuilder.Append(") AS ?count ");
+            queryBuilder.Append(") AS ?count )");
             queryBuilder.Append(from);
             queryBuilder.Append(" WHERE { ");
             queryBuilder.Append(where);
@@ -292,14 +293,14 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeFetchUris(IModel model, ISparqlQuery query, int offset = -1, int limit = -1)
         {
-            string variable = "?" + query.GetGlobalScopeVariableNames()[0];
-            string from = GenerateDatasetClause(model);
-            string where = query.GetRootGraphPattern();
-            string orderby = query.GetRootOrderByClause();
+            var variable = "?" + query.GetGlobalScopeVariableNames()[0];
+            var from = GenerateDatasetClause(model);
+            var where = query.GetRootGraphPattern();
+            var orderby = query.GetRootOrderByClause();
 
-            StringBuilder queryBuilder = new StringBuilder();
+            var queryBuilder = new StringBuilder();
             
-            foreach(string prefix in query.GetDeclaredPrefixes())
+            foreach(var prefix in query.GetDeclaredPrefixes())
             {
                 queryBuilder.Append($"PREFIX <{prefix}> ");
             }
@@ -337,11 +338,11 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeOffsetLimit(IModel model, ISparqlQuery query, int offset = -1, int limit = -1)
         {
-            string variable = "?" + query.GetGlobalScopeVariableNames()[0];
-            string from = GenerateDatasetClause(model);
-            string where = query.GetRootGraphPattern();
+            var variable = "?" + query.GetGlobalScopeVariableNames()[0];
+            var from = GenerateDatasetClause(model);
+            var where = query.GetRootGraphPattern();
 
-            StringBuilder resultBuilder = new StringBuilder();
+            var resultBuilder = new StringBuilder();
             resultBuilder.AppendFormat("SELECT {0} ?p ?o {1} WHERE {{ {0} ?p ?o {{", variable, from);
             resultBuilder.AppendFormat("SELECT DISTINCT {0} WHERE {{ {1} }}", variable, where);
 

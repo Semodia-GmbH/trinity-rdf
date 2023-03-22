@@ -27,14 +27,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net;
-using System.Collections.Specialized;
-using System.Web;
 using VDS.RDF.Query;
 using System.IO;
 using VDS.RDF.Parsing;
+using VDS.RDF;
 
 namespace Semiodesk.Trinity.Store
 {
@@ -67,11 +64,12 @@ namespace Semiodesk.Trinity.Store
 
         #region Constructor
 
-        public SparqlEndpointStore(Uri endpointUri, IWebProxy proxy = null, ICredentials credentials = null)
+        public SparqlEndpointStore(Uri endpointUri, IWebProxy proxy = null, NetworkCredential credentials = null)
         {
             _endpoint = new SparqlRemoteEndpoint(endpointUri);
             
-            //_endpoint.Proxy = proxy;
+            _endpoint.Proxy = proxy;
+            _endpoint.Credentials = credentials;
         }
 
         #endregion
@@ -85,7 +83,7 @@ namespace Semiodesk.Trinity.Store
 
         public IModelGroup CreateModelGroup(params Uri[] models)
         {
-            List<IModel> modelList = new List<IModel>();
+            var modelList = new List<IModel>();
 
             foreach (var x in models)
             {
@@ -97,7 +95,7 @@ namespace Semiodesk.Trinity.Store
 
         public IModelGroup CreateModelGroup(params IModel[] models)
         {
-            List<IModel> modelList = new List<IModel>();
+            var modelList = new List<IModel>();
 
             // This approach might seem a bit redundant, but we want to make sure to get the model from the right store.
             foreach (var x in models)
@@ -160,11 +158,11 @@ namespace Semiodesk.Trinity.Store
 
         public ISparqlQueryResult ExecuteQuery(ISparqlQuery query, ITransaction transaction = null)
         {
-            string q = query.ToString();
+            var q = query.ToString();
 
             Log?.Invoke(q);
 
-            SparqlQueryParser p = new SparqlQueryParser();
+            var p = new SparqlQueryParser();
 
             var x = p.ParseFromString(q);
             x.ClearNamedGraphs();
@@ -186,9 +184,14 @@ namespace Semiodesk.Trinity.Store
             return result;
         }
 
-        public void ExecuteNonQuery(SparqlUpdate queryString, ITransaction transaction = null)
+        public void ExecuteNonQuery(ISparqlUpdate update, ITransaction transaction = null)
         {
-            return;
+            throw new NotSupportedException();
+        }
+
+        public Uri Read(string content, Uri url, RdfSerializationFormat format, bool update)
+        {
+            throw new NotSupportedException();
         }
 
         public Uri Read(Uri graphUri, Uri url, RdfSerializationFormat format, bool update)
@@ -196,12 +199,17 @@ namespace Semiodesk.Trinity.Store
             throw new NotSupportedException();
         }
 
-        public Uri Read(Stream stream, Uri graphUri, RdfSerializationFormat format, bool update)
+        public Uri Read(Stream stream, Uri graphUri, RdfSerializationFormat format, bool update, bool leaveOpen = false)
         {
             throw new NotSupportedException();
         }
 
-        public void Write(Stream fs, Uri graphUri, RdfSerializationFormat format)
+        public void Write(Stream stream, Uri graphUri, RdfSerializationFormat format, INamespaceMap namespaces = null, Uri baseUri = null, bool leaveOpen = false)
+        {
+            throw new NotSupportedException();
+        }
+
+        public void Write(Stream stream, Uri graphUri, IRdfWriter formatWriter, bool leaveOpen = false)
         {
             throw new NotSupportedException();
         }
@@ -209,6 +217,52 @@ namespace Semiodesk.Trinity.Store
         public void Dispose()
         {
             return;
+        }
+
+        public void UpdateResource(Resource resource, Uri modelUri, ITransaction transaction = null, bool ignoreUnmappedProperties = false)
+        {
+            throw new NotSupportedException();
+        }
+
+        public void UpdateResources(IEnumerable<Resource> resources, Uri modelUri, ITransaction transaction = null, bool ignoreUnmappedProperties = false)
+        {
+            throw new NotSupportedException();
+        }
+
+        public void DeleteResource(Uri modelUri, Uri resourceUri, ITransaction transaction = null)
+        {
+            throw new NotSupportedException();
+        }
+
+        public void DeleteResource(IResource resource, ITransaction transaction = null)
+        {
+            throw new NotSupportedException();
+        }
+
+        public void DeleteResources(Uri modelUri, IEnumerable<Uri> resources, ITransaction transaction = null)
+        {
+            throw new NotSupportedException();
+        }
+
+        public void DeleteResources(IEnumerable<IResource> resources, ITransaction transaction = null)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Gets a SPARQL query which is used to retrieve all triples about a subject that is
+        /// either referenced using a URI or blank node.
+        /// </summary>
+        /// <param name="modelUri">The graph to be queried.</param>
+        /// <param name="subjectUri">The subject to be described.</param>
+        /// <returns>An instance of <c>ISparqlQuery</c></returns>
+        public ISparqlQuery GetDescribeQuery(Uri modelUri, Uri subjectUri)
+        {
+            ISparqlQuery query = new SparqlQuery("DESCRIBE @subject FROM @model");
+            query.Bind("@model", modelUri);
+            query.Bind("@subject", subjectUri);
+
+            return query;
         }
 
         #endregion

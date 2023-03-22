@@ -4,14 +4,12 @@
     <TargetFramework>net472</TargetFramework>
     <Title>Trinity.Test</Title>
     <Copyright>Copyright © Semiodesk GmbH 2018</Copyright>
-    <Description></Description>
     <Company>Semiodesk GmbH</Company>
-    <Version>1.0.0.0</Version>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
+    <Version>1.1.0</Version>
     <AssemblyName>Semiodesk.Trinity.Tests</AssemblyName>
     <RootNamespace>Semiodesk.Trinity.Tests</RootNamespace>
     <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -22,9 +20,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ini-parser" Version="2.4.0" />
-    <PackageReference Include="NUnit" Version="3.12.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.15.0" />
+    <PackageReference Include="ini-parser" Version="2.5.2" />
+    <PackageReference Include="NUnit" Version="3.13.3" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.2.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.1" />
     <PackageReference Include="TinyVirtuoso" Version="0.3.29" />
     <PackageReference Include="TinyVirtuoso.win" Version="7.2.1" />
   </ItemGroup>
@@ -42,52 +44,7 @@
     <None Update="custom.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Models\rdf-schema.rdf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Models\rdf-syntax.rdf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Models\test-ntriples.nt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Models\test-ppo.rdf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Models\test-tmo.trig">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Models\test-vocab.rdf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="ontologies-test.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="ontologies.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Ontologies\dces.ttl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Ontologies\fo af.rdf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Ontologies\foaf.rdf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Ontologies\nco.trig">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Ontologies\owl.n3">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Ontologies\rdf.rdf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Ontologies\rdfs.n3">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Ontologies\space test ontology.ttl">
+    <None Update="Models/*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="without_store.config">
@@ -95,9 +52,9 @@
     </None>
   </ItemGroup>
 
-
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="$(TargetDir)..\tools\cilg.exe -i $(TargetPath) -o $(TargetPath)" />
+    <Exec Command="$(TargetDir)..\tools\net6.0\cilg.exe -i $(TargetPath) -o $(TargetPath)" Condition="$([MSBuild]::IsOSPlatform('Windows'))"/>
+    <Exec Command="$(TargetDir)..\tools\net6.0\cilg -i $(TargetPath) -o $(TargetPath)" Condition="$([MSBuild]::IsOSPlatform('Windows')) != true"/>
   </Target>
 
 </Project>

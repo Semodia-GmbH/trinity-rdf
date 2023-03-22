@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Text;
 using Microsoft.Build.Framework;
 
 namespace Semiodesk.Trinity.OntologyGenerator
@@ -13,7 +10,8 @@ namespace Semiodesk.Trinity.OntologyGenerator
     public class TaskLogger : ILogger
     {
         #region Members
-        IBuildEngine _buildEngine;
+
+        private IBuildEngine _buildEngine;
         #endregion
 
         #region Constructor
@@ -31,29 +29,17 @@ namespace Semiodesk.Trinity.OntologyGenerator
 
         public void LogWarning(string message, ElementInformation info)
         {
-#if NET35
-            _buildEngine.LogWarningEvent(new BuildWarningEventArgs("Semiodesk.Trinity", "", info.Source, info.LineNumber, 0, info.LineNumber, 0, message, "Semiodesk", "OntologyGenerator"));
-#else
             _buildEngine.LogWarningEvent(new BuildWarningEventArgs("Semiodesk.Trinity", "", info.Source, info.LineNumber, 0, info.LineNumber, 0, message, "Semiodesk", "OntologyGenerator", DateTime.Now));
-#endif
         }
 
         public void LogWarning(string format, params object[] args)
         {
-#if NET35
-            _buildEngine.LogWarningEvent(new BuildWarningEventArgs("Semiodesk.Trinity", "", "", 0, 0, 0, 0, string.Format(format, args), "Semiodesk", "OntologyGenerator"));
-#else
             _buildEngine.LogWarningEvent(new BuildWarningEventArgs("Semiodesk.Trinity", "", "", 0, 0, 0, 0, string.Format(format, args), "Semiodesk", "OntologyGenerator", DateTime.Now));
-#endif
         }
 
         public void LogError(string format, params object[] args)
         {
-#if NET35
-            _buildEngine.LogErrorEvent(new BuildErrorEventArgs("Semiodesk.Trinity", "", "", 0, 0, 0, 0, string.Format(format, args), "Semiodesk", "OntologyGenerator"));
-#else
             _buildEngine.LogErrorEvent(new BuildErrorEventArgs("Semiodesk.Trinity", "", "", 0, 0, 0, 0, string.Format(format, args), "Semiodesk", "OntologyGenerator", DateTime.Now));
-#endif
         }
         #endregion
     }

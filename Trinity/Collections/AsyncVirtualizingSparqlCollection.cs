@@ -25,8 +25,6 @@
 //
 // Copyright (c) Semiodesk GmbH 2015-2019
 
-#if !NET35
-
 namespace Semiodesk.Trinity.Collections
 {
     /// <summary>
@@ -64,5 +62,3 @@ namespace Semiodesk.Trinity.Collections
         #endregion
     }
 }
-
-#endif

@@ -44,7 +44,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         //IModel Model;
         VirtuosoStore RdfStore;
 
-        bool Disposed = false;
+        bool Disposed;
 
         internal VirtuosoTransaction(VirtuosoStore rdfStore)
         {
@@ -53,21 +53,13 @@ namespace Semiodesk.Trinity.Store.Virtuoso
 
         }
 
-        public System.Data.IsolationLevel IsolationLevel
-        {
-            get
-            {
-                return Transaction.IsolationLevel;
-            }
-
-        }
+        public System.Data.IsolationLevel IsolationLevel => Transaction.IsolationLevel;
 
         public void Commit()
         {
             Transaction.Commit();
 
-            if (OnFinishedTransaction != null)
-                OnFinishedTransaction(this, new TransactionEventArgs(true));
+            OnFinishedTransaction?.Invoke(this, new TransactionEventArgs(true));
 
             this.Dispose();
         }
@@ -76,8 +68,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         {
             Transaction.Rollback();
 
-            if (OnFinishedTransaction != null)
-                OnFinishedTransaction(this, new TransactionEventArgs(false));
+            OnFinishedTransaction?.Invoke(this, new TransactionEventArgs(false));
 
             this.Dispose();
         }
@@ -100,7 +91,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
             Transaction.Dispose();
             if (OnFinishedTransaction != null)
             {
-                foreach (Delegate e in OnFinishedTransaction.GetInvocationList())
+                foreach (var e in OnFinishedTransaction.GetInvocationList())
                 {
                     OnFinishedTransaction -= (FinishedTransactionEvent)e;
                 }

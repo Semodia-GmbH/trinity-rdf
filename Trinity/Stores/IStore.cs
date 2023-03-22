@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using VDS.RDF;
 
 namespace Semiodesk.Trinity
 {
@@ -117,7 +118,7 @@ namespace Semiodesk.Trinity
         /// </summary>
         /// <param name="update"></param>
         /// <param name="transaction"></param>
-        void ExecuteNonQuery(SparqlUpdate update, ITransaction transaction = null);
+        void ExecuteNonQuery(ISparqlUpdate update, ITransaction transaction = null);
 
         /// <summary>
         /// Starts a transaction. The resulting transaction handle can be used to chain operations together.
@@ -157,17 +158,42 @@ namespace Semiodesk.Trinity
         /// <param name="graphUri">Uri of the graph in this store</param>
         /// <param name="format">Allowed formats</param>
         /// <param name="update">Pass false if you want to overwrite the existing data. True if you want to add the new data to the existing.</param>
+        /// <param name="leaveOpen">Leaves the stream open</param>
         /// <returns></returns>
-        Uri Read(Stream stream, Uri graphUri, RdfSerializationFormat format, bool update);
+        Uri Read(Stream stream, Uri graphUri, RdfSerializationFormat format, bool update, bool leaveOpen = false);
+
+        /// <summary>
+        /// Loads a serialized graph from the given string into the current store. See allowed <see cref="RdfSerializationFormat">formats</see>.
+        /// </summary>
+        /// <param name="content">String containing a serialized graph</param>
+        /// <param name="graphUri">Uri of the graph in this store</param>
+        /// <param name="format">Allowed formats</param>
+        /// <param name="update">Pass false if you want to overwrite the existing data. True if you want to add the new data to the existing.</param>
+        /// <returns></returns>
+        Uri Read(string content, Uri graphUri, RdfSerializationFormat format, bool update);
 
         /// <summary>
         /// Writes a serialized graph to the given stream. See allowed <see cref="RdfSerializationFormat">formats</see>.
         /// </summary>
         /// <param name="fs">Stream to which the content should be written.</param>
-        /// <param name="graphUri">Uri fo the graph in this store</param>
-        /// <param name="format">Allowed formats</param>
+        /// <param name="graphUri">Uri fo the graph in this store.</param>
+        /// <param name="format">Allowed formats.</param>
+        /// <param name="namespaces">Defines namespace to prefix mappings for the output.</param>
+        /// <param name="baseUri">Base URI for shortening URIs in formats that support it.</param>
+        /// <param name="leaveOpen">Indicates if the stream should be left open after writing completes.</param>
         /// <returns></returns>
-        void Write(Stream fs, Uri graphUri, RdfSerializationFormat format);
+        void Write(Stream fs, Uri graphUri, RdfSerializationFormat format, INamespaceMap namespaces = null, Uri baseUri = null, bool leaveOpen = false);
+
+        /// <summary>
+        /// Writes a serialized graph to the given stream. See allowed <see cref="RdfSerializationFormat">formats</see>.
+        /// </summary>
+        /// <param name="fs">Stream to which the content should be written.</param>
+        /// <param name="graphUri">Uri fo the graph in this store.</param>
+        /// <param name="formatWriter">A RDF writer.</param>
+        /// <param name="leaveOpen">Indicates if the stream should be left open after writing completes.</param>
+        /// <returns></returns>
+        void Write(Stream fs, Uri graphUri, IRdfWriter formatWriter, bool leaveOpen = false);
+
 
         /// <summary>
         /// Initializes the store from the configuration. It uses either the provided file or attempts to load from "ontologies.config" located next to the executing assembly.
@@ -187,6 +213,63 @@ namespace Semiodesk.Trinity
         /// <param name="sourceDir">If given, this function tries to load the ontologies from this folder.</param>
         [Obsolete("This method will be removed in the future. Use InitializeFromConfiguration() instead.")]
         void LoadOntologySettings(string configPath = null, string sourceDir = null);
+
+        /// <summary>
+        /// Updates the properties of a resource in the backing RDF store.
+        /// </summary>
+        /// <param name="resource">Resource that is to be updated in the backing store.</param>
+        /// <param name="modelUri">The uri of the model where the resource should be updated.</param>
+        /// <param name="ignoreUnmappedProperties">Omits unmapped properties from the update query. This essentially deletes triples that do not match the mappings.</param>
+        /// <param name="transaction">Transaction associated with this action.</param>
+        void UpdateResource(Resource resource, Uri modelUri, ITransaction transaction = null, bool ignoreUnmappedProperties = false);
+
+        /// <summary>
+        /// Updates the properties of a resource in the backing RDF store.
+        /// </summary>
+        /// <param name="resources">Resources that is to be updated in the backing store.</param>
+        /// <param name="modelUri">The uri of the model where the resource should be updated.</param>
+        /// <param name="ignoreUnmappedProperties">Omits unmapped properties from the update query. This essentially deletes triples that do not match the mappings.</param>
+        /// <param name="transaction">Transaction associated with this action.</param>
+        void UpdateResources(IEnumerable<Resource> resources, Uri modelUri, ITransaction transaction = null, bool ignoreUnmappedProperties = false);
+
+        /// <summary>
+        /// Deletes a resource from a model.
+        /// </summary>
+        /// <param name="modelUri"></param>
+        /// <param name="resourceUri"></param>
+        /// <param name="transaction"></param>
+        void DeleteResource(Uri modelUri, Uri resourceUri, ITransaction transaction = null);
+
+        /// <summary>
+        /// Deletes a resource from a model.
+        /// </summary>
+        /// <param name="resource"></param>
+        /// <param name="transaction"></param>
+        void DeleteResource(IResource resource, ITransaction transaction = null);
+
+        /// <summary>
+        /// Deletes a list of resource from a model.
+        /// </summary>
+        /// <param name="modelUri"></param>
+        /// <param name="resources"></param>
+        /// <param name="transaction"></param>
+        void DeleteResources(Uri modelUri, IEnumerable<Uri> resources, ITransaction transaction = null);
+
+        /// <summary>
+        /// Deletes a list of resources from a model.
+        /// </summary>
+        /// <param name="resources"></param>
+        /// <param name="transaction"></param>
+        void DeleteResources(IEnumerable<IResource> resources, ITransaction transaction = null);
+
+        /// <summary>
+        /// Gets a SPARQL query which is used to retrieve all triples about a subject that is
+        /// either referenced using a URI or blank node.
+        /// </summary>
+        /// <param name="modelUri">The graph to be queried.</param>
+        /// <param name="subjectUri">The subject to be described.</param>
+        /// <returns>An instance of <c>ISparqlQuery</c></returns>
+        ISparqlQuery GetDescribeQuery(Uri modelUri, Uri subjectUri);
 
         #endregion
     }

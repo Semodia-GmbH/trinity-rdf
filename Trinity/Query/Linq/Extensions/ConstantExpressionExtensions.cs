@@ -95,8 +95,8 @@ namespace Semiodesk.Trinity.Query
             else if (XsdTypeMapper.HasXsdTypeUri(constant.Type) || constant.Value is string)
             {
                 // If we have a literal value, return literal nodes.
-                string value = GetValue(constant);
-                Uri datatype = GetDataType(constant);
+                var value = GetValue(constant);
+                var datatype = GetDataType(constant);
 
                 if (datatype == null)
                 {
@@ -110,14 +110,14 @@ namespace Semiodesk.Trinity.Query
             else if(typeof(Resource).IsAssignableFrom(constant.Type))
             {
                 // If we have a constant of type Resource, return a URI node.
-                Resource resource = constant.Value as Resource;
+                var resource = constant.Value as Resource;
 
                 return new NodeFactory().CreateUriNode(resource.Uri);
             }
             else
             {
                 // We cannot determine the Uri of generic reference types.
-                string msg = string.Format("Unsupported constant type: {0}", constant.Type);
+                var msg = $"Unsupported constant type: {constant.Type}";
                 throw new ArgumentException(msg);
             }
         }

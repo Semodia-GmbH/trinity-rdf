@@ -25,8 +25,6 @@
 //
 // Copyright (c) Semiodesk GmbH 2015-2019
 
-#if !NET35
-
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -136,7 +134,7 @@ namespace Semiodesk.Trinity.Collections
         /// <param name="args">None required.</param>
         private void LoadCountWork(object args)
         {
-            int count = FetchCount();
+            var count = FetchCount();
             SynchronizationContext.Send(LoadCountCompleted, count);
         }
 
@@ -167,8 +165,8 @@ namespace Semiodesk.Trinity.Collections
         /// <param name="args">Index of the page to load.</param>
         private void LoadPageWork(object args)
         {
-            int pageIndex = (int)args;
-            IList<T> page = FetchPage(pageIndex);
+            var pageIndex = (int)args;
+            var page = FetchPage(pageIndex);
             SynchronizationContext.Send(LoadPageCompleted, new object[] { pageIndex, page });
         }
 
@@ -178,8 +176,8 @@ namespace Semiodesk.Trinity.Collections
         /// <param name="args">object[] { int pageIndex, IList(T) page }</param>
         private void LoadPageCompleted(object args)
         {
-            int pageIndex = (int)((object[])args)[0];
-            IList<T> page = (IList<T>)((object[])args)[1];
+            var pageIndex = (int)((object[])args)[0];
+            var page = (IList<T>)((object[])args)[1];
 
             PopulatePage(pageIndex, page);
 
@@ -220,5 +218,3 @@ namespace Semiodesk.Trinity.Collections
         #endregion
     }
 }
-
-#endif

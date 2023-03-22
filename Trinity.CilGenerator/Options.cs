@@ -132,7 +132,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
@@ -176,25 +175,25 @@ namespace Mono.Options
                 yield return string.Empty;
                 yield break;
             }
-            using (IEnumerator<int> ewidths = widths.GetEnumerator())
+            using (var ewidths = widths.GetEnumerator())
             {
                 bool? hw = null;
-                int width = GetNextWidth(ewidths, int.MaxValue, ref hw);
+                var width = GetNextWidth(ewidths, int.MaxValue, ref hw);
                 int start = 0, end;
                 do
                 {
                     end = GetLineEnd(start, width, self);
-                    char c = self[end - 1];
+                    var c = self[end - 1];
                     if (char.IsWhiteSpace(c))
                         --end;
-                    bool needContinuation = end != self.Length && !IsEolChar(c);
-                    string continuation = "";
+                    var needContinuation = end != self.Length && !IsEolChar(c);
+                    var continuation = "";
                     if (needContinuation)
                     {
                         --end;
                         continuation = "-";
                     }
-                    string line = self.Substring(start, end - start) + continuation;
+                    var line = self.Substring(start, end - start) + continuation;
                     yield return line;
                     start = end;
                     if (char.IsWhiteSpace(c))
@@ -227,9 +226,9 @@ namespace Mono.Options
 
         private static int GetLineEnd(int start, int length, string description)
         {
-            int end = System.Math.Min(start + length, description.Length);
-            int sep = -1;
-            for (int i = start; i < end; ++i)
+            var end = System.Math.Min(start + length, description.Length);
+            var sep = -1;
+            for (var i = start; i < end; ++i)
             {
                 if (description[i] == '\n')
                     return i + 1;
@@ -255,8 +254,9 @@ namespace Mono.Options
 
         #region ICollection
         void ICollection.CopyTo(Array array, int index) { (values as ICollection).CopyTo(array, index); }
-        bool ICollection.IsSynchronized { get { return (values as ICollection).IsSynchronized; } }
-        object ICollection.SyncRoot { get { return (values as ICollection).SyncRoot; } }
+        bool ICollection.IsSynchronized => (values as ICollection).IsSynchronized;
+        object ICollection.SyncRoot => (values as ICollection).SyncRoot;
+
         #endregion
 
         #region ICollection<T>
@@ -265,8 +265,9 @@ namespace Mono.Options
         public bool Contains(string item) { return values.Contains(item); }
         public void CopyTo(string[] array, int arrayIndex) { values.CopyTo(array, arrayIndex); }
         public bool Remove(string item) { return values.Remove(item); }
-        public int Count { get { return values.Count; } }
-        public bool IsReadOnly { get { return false; } }
+        public int Count => values.Count;
+        public bool IsReadOnly => false;
+
         #endregion
 
         #region IEnumerable
@@ -284,8 +285,10 @@ namespace Mono.Options
         void IList.Insert(int index, object value) { (values as IList).Insert(index, value); }
         void IList.Remove(object value) { (values as IList).Remove(value); }
         void IList.RemoveAt(int index) { (values as IList).RemoveAt(index); }
-        bool IList.IsFixedSize { get { return false; } }
-        object IList.this[int index] { get { return this[index]; } set { (values as IList)[index] = value; } }
+        bool IList.IsFixedSize => false;
+        object IList.this[int index] { get => this[index];
+            set => (values as IList)[index] = value;
+        }
         #endregion
 
         #region IList<T>
@@ -313,10 +316,7 @@ namespace Mono.Options
                 AssertValid(index);
                 return index >= values.Count ? null : values[index];
             }
-            set
-            {
-                values[index] = value;
-            }
+            set => values[index] = value;
         }
         #endregion
 
@@ -352,31 +352,25 @@ namespace Mono.Options
 
         public Option Option
         {
-            get { return option; }
-            set { option = value; }
+            get => option;
+            set => option = value;
         }
 
         public string OptionName
         {
-            get { return name; }
-            set { name = value; }
+            get => name;
+            set => name = value;
         }
 
         public int OptionIndex
         {
-            get { return index; }
-            set { index = value; }
+            get => index;
+            set => index = value;
         }
 
-        public OptionSet OptionSet
-        {
-            get { return set; }
-        }
+        public OptionSet OptionSet => set;
 
-        public OptionValueCollection OptionValues
-        {
-            get { return c; }
-        }
+        public OptionValueCollection OptionValues => c;
     }
 
     enum OptionValueType
@@ -446,11 +440,11 @@ namespace Mono.Options
                                 "prototype");
         }
 
-        public string Prototype { get { return prototype; } }
-        public string Description { get { return description; } }
-        public OptionValueType OptionValueType { get { return type; } }
-        public int MaxValueCount { get { return count; } }
-        public bool Hidden { get { return hidden; } }
+        public string Prototype => prototype;
+        public string Description => description;
+        public OptionValueType OptionValueType => type;
+        public int MaxValueCount => count;
+        public bool Hidden => hidden;
 
         public string[] GetNames()
         {
@@ -466,13 +460,13 @@ namespace Mono.Options
 
         protected static T Parse<T>(string value, OptionContext c)
         {
-            Type tt = typeof(T);
-            bool nullable = tt.IsValueType && tt.IsGenericType &&
-                    !tt.IsGenericTypeDefinition &&
-                    tt.GetGenericTypeDefinition() == typeof(Nullable<>);
-            Type targetType = nullable ? tt.GetGenericArguments()[0] : typeof(T);
-            TypeConverter conv = TypeDescriptor.GetConverter(targetType);
-            T t = default(T);
+            var tt = typeof(T);
+            var nullable = tt.IsValueType && tt.IsGenericType &&
+                           !tt.IsGenericTypeDefinition &&
+                           tt.GetGenericTypeDefinition() == typeof(Nullable<>);
+            var targetType = nullable ? tt.GetGenericArguments()[0] : typeof(T);
+            var conv = TypeDescriptor.GetConverter(targetType);
+            var t = default(T);
             try
             {
                 if (value != null)
@@ -489,22 +483,22 @@ namespace Mono.Options
             return t;
         }
 
-        internal string[] Names { get { return names; } }
-        internal string[] ValueSeparators { get { return separators; } }
+        internal string[] Names => names;
+        internal string[] ValueSeparators => separators;
 
         static readonly char[] NameTerminator = new char[] { '=', ':' };
 
         private OptionValueType ParsePrototype()
         {
-            char type = '\0';
-            List<string> seps = new List<string>();
-            for (int i = 0; i < names.Length; ++i)
+            var type = '\0';
+            var seps = new List<string>();
+            for (var i = 0; i < names.Length; ++i)
             {
-                string name = names[i];
+                var name = names[i];
                 if (name.Length == 0)
                     throw new ArgumentException("Empty option names are not supported.", "prototype");
 
-                int end = name.IndexOfAny(NameTerminator);
+                var end = name.IndexOfAny(NameTerminator);
                 if (end == -1)
                     continue;
                 names[i] = name.Substring(0, end);
@@ -539,8 +533,8 @@ namespace Mono.Options
 
         private static void AddSeparators(string name, int end, ICollection<string> seps)
         {
-            int start = -1;
-            for (int i = end + 1; i < name.Length; ++i)
+            var start = -1;
+            for (var i = end + 1; i < name.Length; ++i)
             {
                 switch (name[i])
                 {
@@ -613,20 +607,20 @@ namespace Mono.Options
         {
             try
             {
-                StringBuilder arg = new StringBuilder();
+                var arg = new StringBuilder();
 
                 string line;
                 while ((line = reader.ReadLine()) != null)
                 {
-                    int t = line.Length;
+                    var t = line.Length;
 
-                    for (int i = 0; i < t; i++)
+                    for (var i = 0; i < t; i++)
                     {
-                        char c = line[i];
+                        var c = line[i];
 
                         if (c == '"' || c == '\'')
                         {
-                            char end = c;
+                            var end = c;
 
                             for (i++; i < t; i++)
                             {
@@ -671,10 +665,7 @@ namespace Mono.Options
             return new string[] { "@file" };
         }
 
-        public override string Description
-        {
-            get { return "Read response file for more options."; }
-        }
+        public override string Description => "Read response file for more options.";
 
         public override bool GetArguments(string value, out IEnumerable<string> replacement)
         {
@@ -715,10 +706,7 @@ namespace Mono.Options
             this.option = info.GetString("OptionName");
         }
 
-        public string OptionName
-        {
-            get { return this.option; }
-        }
+        public string OptionName => this.option;
 
         [SecurityPermission(SecurityAction.LinkDemand, SerializationFormatter = true)]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -745,18 +733,12 @@ namespace Mono.Options
 
         Converter<string, string> localizer;
 
-        public Converter<string, string> MessageLocalizer
-        {
-            get { return localizer; }
-        }
+        public Converter<string, string> MessageLocalizer => localizer;
 
         List<ArgumentSource> sources = new List<ArgumentSource>();
         ReadOnlyCollection<ArgumentSource> roSources;
 
-        public ReadOnlyCollection<ArgumentSource> ArgumentSources
-        {
-            get { return roSources; }
-        }
+        public ReadOnlyCollection<ArgumentSource> ArgumentSources => roSources;
 
 
         protected override string GetKeyForItem(Option item)
@@ -793,10 +775,10 @@ namespace Mono.Options
 
         protected override void RemoveItem(int index)
         {
-            Option p = Items[index];
+            var p = Items[index];
             base.RemoveItem(index);
             // KeyedCollection.RemoveItem() handles the 0th item
-            for (int i = 1; i < p.Names.Length; ++i)
+            for (var i = 1; i < p.Names.Length; ++i)
             {
                 Dictionary.Remove(p.Names[i]);
             }
@@ -812,11 +794,11 @@ namespace Mono.Options
         {
             if (option == null)
                 throw new ArgumentNullException("option");
-            List<string> added = new List<string>(option.Names.Length);
+            var added = new List<string>(option.Names.Length);
             try
             {
                 // KeyedCollection.InsertItem/SetItem handle the 0th name.
-                for (int i = 1; i < option.Names.Length; ++i)
+                for (var i = 1; i < option.Names.Length; ++i)
                 {
                     Dictionary.Add(option.Names[i], option);
                     added.Add(option.Names[i]);
@@ -824,7 +806,7 @@ namespace Mono.Options
             }
             catch (Exception)
             {
-                foreach (string name in added)
+                foreach (var name in added)
                     Dictionary.Remove(name);
                 throw;
             }
@@ -1000,13 +982,13 @@ namespace Mono.Options
         {
             if (arguments == null)
                 throw new ArgumentNullException("arguments");
-            OptionContext c = CreateOptionContext();
+            var c = CreateOptionContext();
             c.OptionIndex = -1;
-            bool process = true;
-            List<string> unprocessed = new List<string>();
-            Option def = Contains("<>") ? this["<>"] : null;
-            ArgumentEnumerator ae = new ArgumentEnumerator(arguments);
-            foreach (string argument in ae)
+            var process = true;
+            var unprocessed = new List<string>();
+            var def = Contains("<>") ? this["<>"] : null;
+            var ae = new ArgumentEnumerator(arguments);
+            foreach (var argument in ae)
             {
                 ++c.OptionIndex;
                 if (argument == "--")
@@ -1047,7 +1029,7 @@ namespace Mono.Options
             {
                 do
                 {
-                    IEnumerator<string> c = sources[sources.Count - 1];
+                    var c = sources[sources.Count - 1];
                     if (c.MoveNext())
                         yield return c.Current;
                     else
@@ -1066,7 +1048,7 @@ namespace Mono.Options
 
         bool AddSource(ArgumentEnumerator ae, string argument)
         {
-            foreach (ArgumentSource source in sources)
+            foreach (var source in sources)
             {
                 IEnumerable<string> replacement;
                 if (!source.GetArguments(argument, out replacement))
@@ -1099,7 +1081,7 @@ namespace Mono.Options
                 throw new ArgumentNullException("argument");
 
             flag = name = sep = value = null;
-            Match m = ValueOption.Match(argument);
+            var m = ValueOption.Match(argument);
             if (!m.Success)
             {
                 return false;
@@ -1158,7 +1140,7 @@ namespace Mono.Options
         private void ParseValue(string option, OptionContext c)
         {
             if (option != null)
-                foreach (string o in c.Option.ValueSeparators != null
+                foreach (var o in c.Option.ValueSeparators != null
                                 ? option.Split(c.Option.ValueSeparators, c.Option.MaxValueCount - c.OptionValues.Count, StringSplitOptions.None)
                                 : new string[] { option })
                 {
@@ -1184,7 +1166,7 @@ namespace Mono.Options
                             Contains((rn = n.Substring(0, n.Length - 1))))
             {
                 p = this[rn];
-                string v = n[n.Length - 1] == '+' ? option : null;
+                var v = n[n.Length - 1] == '+' ? option : null;
                 c.OptionName = option;
                 c.Option = p;
                 c.OptionValues.Add(v);
@@ -1198,11 +1180,11 @@ namespace Mono.Options
         {
             if (f != "-")
                 return false;
-            for (int i = 0; i < n.Length; ++i)
+            for (var i = 0; i < n.Length; ++i)
             {
                 Option p;
-                string opt = f + n[i].ToString();
-                string rn = n[i].ToString();
+                var opt = f + n[i].ToString();
+                var rn = n[i].ToString();
                 if (!Contains(rn))
                 {
                     if (i == 0)
@@ -1219,7 +1201,7 @@ namespace Mono.Options
                     case OptionValueType.Optional:
                     case OptionValueType.Required:
                         {
-                            string v = n.Substring(i + 1);
+                            var v = n.Substring(i + 1);
                             c.Option = p;
                             c.OptionName = opt;
                             ParseValue(v.Length != 0 ? v : null, c);
@@ -1246,14 +1228,14 @@ namespace Mono.Options
 
         public void WriteOptionDescriptions(TextWriter o)
         {
-            foreach (Option p in this)
+            foreach (var p in this)
             {
-                int written = 0;
+                var written = 0;
 
                 if (p.Hidden)
                     continue;
 
-                Category c = p as Category;
+                var c = p as Category;
                 if (c != null)
                 {
                     WriteDescription(o, p.Description, "", 80, 80);
@@ -1275,17 +1257,17 @@ namespace Mono.Options
                                 Description_FirstWidth, Description_RemWidth);
             }
 
-            foreach (ArgumentSource s in sources)
+            foreach (var s in sources)
             {
-                string[] names = s.GetNames();
+                var names = s.GetNames();
                 if (names == null || names.Length == 0)
                     continue;
 
-                int written = 0;
+                var written = 0;
 
                 Write(o, ref written, " ");
                 Write(o, ref written, names[0]);
-                for (int i = 1; i < names.Length; ++i)
+                for (var i = 1; i < names.Length; ++i)
                 {
                     Write(o, ref written, ", ");
                     Write(o, ref written, names[i]);
@@ -1306,8 +1288,8 @@ namespace Mono.Options
 
         void WriteDescription(TextWriter o, string value, string prefix, int firstWidth, int remWidth)
         {
-            bool indent = false;
-            foreach (string line in GetLines(localizer(GetDescription(value)), firstWidth, remWidth))
+            var indent = false;
+            foreach (var line in GetLines(localizer(GetDescription(value)), firstWidth, remWidth))
             {
                 if (indent)
                     o.Write(prefix);
@@ -1318,9 +1300,9 @@ namespace Mono.Options
 
         bool WriteOptionPrototype(TextWriter o, Option p, ref int written)
         {
-            string[] names = p.Names;
+            var names = p.Names;
 
-            int i = GetNextOptionIndex(names, 0);
+            var i = GetNextOptionIndex(names, 0);
             if (i == names.Length)
                 return false;
 
@@ -1351,10 +1333,10 @@ namespace Mono.Options
                     Write(o, ref written, localizer("["));
                 }
                 Write(o, ref written, localizer("=" + GetArgumentName(0, p.MaxValueCount, p.Description)));
-                string sep = p.ValueSeparators != null && p.ValueSeparators.Length > 0
+                var sep = p.ValueSeparators != null && p.ValueSeparators.Length > 0
                         ? p.ValueSeparators[0]
                         : " ";
-                for (int c = 1; c < p.MaxValueCount; ++c)
+                for (var c = 1; c < p.MaxValueCount; ++c)
                 {
                     Write(o, ref written, localizer(sep + GetArgumentName(c, p.MaxValueCount, p.Description)));
                 }
@@ -1390,7 +1372,7 @@ namespace Mono.Options
                 nameStart = new string[] { "{0:", "{" };
             else
                 nameStart = new string[] { "{" + index + ":" };
-            for (int i = 0; i < nameStart.Length; ++i)
+            for (var i = 0; i < nameStart.Length; ++i)
             {
                 int start, j = 0;
                 do
@@ -1399,7 +1381,7 @@ namespace Mono.Options
                 } while (start >= 0 && j != 0 ? description[j++ - 1] == '{' : false);
                 if (start == -1)
                     continue;
-                int end = description.IndexOf("}", start);
+                var end = description.IndexOf("}", start);
                 if (end == -1)
                     continue;
                 return description.Substring(start + nameStart[i].Length, end - start - nameStart[i].Length);
@@ -1411,9 +1393,9 @@ namespace Mono.Options
         {
             if (description == null)
                 return string.Empty;
-            StringBuilder sb = new StringBuilder(description.Length);
-            int start = -1;
-            for (int i = 0; i < description.Length; ++i)
+            var sb = new StringBuilder(description.Length);
+            var start = -1;
+            for (var i = 0; i < description.Length; ++i)
             {
                 switch (description[i])
                 {

@@ -29,7 +29,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections;
-using System.Diagnostics;
 
 namespace Semiodesk.Trinity
 {
@@ -64,9 +63,9 @@ namespace Semiodesk.Trinity
             }
             else
             {
-                HashSet<Uri> cache = Cache[mapping];
+                var cache = Cache[mapping];
 
-                foreach (Uri value in values)
+                foreach (var value in values)
                 {
                     cache.Add(value);
                 }
@@ -81,7 +80,7 @@ namespace Semiodesk.Trinity
             }
             else
             {
-                HashSet<Uri> cache = Cache[mapping];
+                var cache = Cache[mapping];
 
                 cache.Add(value);
             }
@@ -100,57 +99,54 @@ namespace Semiodesk.Trinity
                 return;
             }
 
-            Type baseType = (mapping.IsList) ? mapping.GenericType : mapping.DataType;
+            var baseType = (mapping.IsList) ? mapping.GenericType : mapping.DataType;
 
-            HashSet<Uri> cachedUris = Cache[mapping];
+            var cachedUris = Cache[mapping];
 
             if (!mapping.IsList && cachedUris.Count > 1)
             {
-                throw new Exception(string.Format("An error occured while loading the cached resources for property {0}. Found {1} elements but it is mapped to a non-list property. Try to map to a list of objects.", mapping.PropertyName, cachedUris.Count));
+                throw new Exception(
+                    $"An error occured while loading the cached resources for property {mapping.PropertyName}. Found {cachedUris.Count} elements but it is mapped to a non-list property. Try to map to a list of objects.");
             }
 
-            foreach (Uri uri in cachedUris)
+            var res = Model.GetResources(cachedUris, baseType);
+
+            foreach (IResource resource in res)
             {
-                object resource = null;
+                cachedUris.Remove(resource.Uri);
+                AddToMapping(mapping, resource);
+            }
 
-                #if DEBUG
-                if (Model == null)
-                {
-                    Debugger.Break();
-                }
-                #endif
-
-                if (Model.ContainsResource(uri))
-                {
-                    resource = Model.GetResource(uri, baseType);
-                }
-                else
-                {
-                    resource = Activator.CreateInstance(baseType, uri);
-                }
-
-                if (mapping.IsList)
-                {
-                    // Getting the reference to the mapped list object
-                    IList list = mapping.GetValueObject() as IList;
-
-                    if (list != null)
-                    {
-                        // Make sure the resource exits only one time
-                        if (list.Contains(resource))
-                            list.Remove(resource);
-
-                        // Add ther resource to the mapped list
-                        list.Add(resource);
-                    }
-                }
-                else
-                {
-                    mapping.SetOrAddMappedValue(resource);
-                }
+            foreach( var uri in cachedUris)
+            {
+                var resource = Activator.CreateInstance(baseType, uri) as IResource;
+                AddToMapping(mapping, resource);
             }
 
             Cache.Remove(mapping);
+        }
+
+        private void AddToMapping(IPropertyMapping mapping, IResource resource)
+        {
+            if (mapping.IsList)
+            {
+                // Getting the reference to the mapped list object
+                var list = mapping.GetValueObject() as IList;
+
+                if (list != null)
+                {
+                    // Make sure the resource exits only one time
+                    if (list.Contains(resource))
+                        list.Remove(resource);
+
+                    // Add their resource to the mapped list
+                    list.Add(resource);
+                }
+            }
+            else
+            {
+                mapping.SetOrAddMappedValue(resource);
+            }
         }
 
         /// <summary>

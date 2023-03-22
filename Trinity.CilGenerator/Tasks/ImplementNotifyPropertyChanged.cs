@@ -26,7 +26,6 @@
 // Copyright (c) Semiodesk GmbH 2015-2019
 
 using Semiodesk.Trinity.CilGenerator.Extensions;
-using Semiodesk.Trinity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +37,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
 {
     public class ImplementNotifyPropertyChangedTask : GeneratorTaskBase
     {
-        #region Memebers
+        #region Members
 
         public bool IsMappedProperty;
 
@@ -54,24 +53,24 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
 
         public override bool CanExecute(object parameter = null)
         {
-            PropertyDefinition property = parameter as PropertyDefinition;
+            var property = parameter as PropertyDefinition;
 
             return property != null && property.SetMethod != null;
         }
 
         public override bool Execute(object parameter = null)
         {
-            PropertyDefinition property = parameter as PropertyDefinition;
+            var property = parameter as PropertyDefinition;
 
             if (property == null) return false;
 
             if (!property.SetMethod.HasCustomAttribute<CompilerGeneratedAttribute>() && !property.SetMethod.IsCompilerControlled)
             {
-                string msg = "{0}.{1}: Getter and setter of property must be compiler generated.";
+                var msg = "{0}.{1}: Getter and setter of property must be compiler generated.";
                 throw new Exception(string.Format(msg, property.DeclaringType.FullName, property.Name));
             }
 
-            MethodDefinition raisePropertyChanged = Type.TryGetInheritedMethod("RaisePropertyChanged", typeof(string));
+            var raisePropertyChanged = Type.TryGetInheritedMethod("RaisePropertyChanged", typeof(string));
 
             if (raisePropertyChanged == null)
             {
@@ -90,7 +89,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
 
         private bool ImplementBackingField(PropertyDefinition property, MethodDefinition raisePropertyChanged)
         {
-            FieldReference backingField = property.TryGetBackingField();
+            var backingField = property.TryGetBackingField();
 
             if (backingField == null)
             {
@@ -99,7 +98,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
                 return false;
             }
 
-            ILProcessor setProcessor = property.SetMethod.Body.GetILProcessor();
+            var setProcessor = property.SetMethod.Body.GetILProcessor();
 
             // 1. Generate the instructions for setting the new property value.
             IList<Instruction> spv = GetSetBackingFieldValueInstructions(setProcessor, backingField).ToList();
@@ -111,8 +110,8 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
                 return false;
             }
 
-            Instruction ret = setProcessor.Create(OpCodes.Ret);
-            Instruction set = spv.First();
+            var ret = setProcessor.Create(OpCodes.Ret);
+            var set = spv.First();
 
             // 2. Generate the instructions for raising the PropertyChanged event.
             IList<Instruction> rpc = GetRaisePropertyChangedInstructions(setProcessor, property, raisePropertyChanged).ToList();
@@ -139,13 +138,13 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
             setProcessor.Body.MaxStackSize = IsMappedProperty ? 4 : 2;
 
             // Return on equal values.
-            foreach (Instruction i in roe) setProcessor.Append(i);
+            foreach (var i in roe) setProcessor.Append(i);
 
             // Set property value.
-            foreach (Instruction i in spv) setProcessor.Append(i);
+            foreach (var i in spv) setProcessor.Append(i);
 
             // Raise the PropertyChanged event.
-            foreach (Instruction i in rpc) setProcessor.Append(i);
+            foreach (var i in rpc) setProcessor.Append(i);
 
             setProcessor.Append(ret);
 
@@ -156,28 +155,28 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
 
         private bool ImplementPropertyMapping(PropertyDefinition property, MethodDefinition raisePropertyChanged)
         {
-            ImplementRdfPropertyTask subtask = new ImplementRdfPropertyTask(Generator, Type);
+            var subtask = new ImplementRdfPropertyTask(Generator, Type);
 
-            FieldDefinition mappingField = subtask.ImplementMappingField(property);
+            var mappingField = subtask.ImplementMappingField(property);
 
-            PropertyGeneratorTaskHelper p = new PropertyGeneratorTaskHelper(property, mappingField);
+            var p = new PropertyGeneratorTaskHelper(property, mappingField);
 
-            MethodGeneratorTask getValueGenerator = subtask.GetGetValueGenerator(p);
-            MethodGeneratorTask setValueGenerator = subtask.GetSetValueGenerator(p);
+            var getValueGenerator = subtask.GetGetValueGenerator(p);
+            var setValueGenerator = subtask.GetSetValueGenerator(p);
 
             if (!getValueGenerator.CanExecute())
             {
-                string msg = "{0}.{1}: Failed to implement property getter.";
+                var msg = "{0}.{1}: Failed to implement property getter.";
                 throw new Exception(string.Format(msg, property.DeclaringType.FullName, property.Name));
             }
 
             if (!setValueGenerator.CanExecute())
             {
-                string msg = "{0}.{1}: Failed to implement property setter.";
+                var msg = "{0}.{1}: Failed to implement property setter.";
                 throw new Exception(string.Format(msg, property.DeclaringType.FullName, property.Name));
             }
 
-            Instruction ret = setValueGenerator.Processor.Create(OpCodes.Ret);
+            var ret = setValueGenerator.Processor.Create(OpCodes.Ret);
 
             // Instructions for calling SetValue()
             IList<Instruction> sv = new List<Instruction>(setValueGenerator.Instructions);
@@ -185,7 +184,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
             sv.RemoveAt(sv.Count - 1); // Remove the ret-Instruction..
 
             // Instructions for return on equal values.
-            MethodReference getValue = Type.TryGetGetValueMethod(Assembly, property.PropertyType);
+            var getValue = Type.TryGetGetValueMethod(Assembly, property.PropertyType);
 
             IList<Instruction> roe = GetReturnOnEqualsInstructionsForMapping(setValueGenerator.Processor, mappingField, getValue, sv.First(), ret).ToList();
 
@@ -215,7 +214,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
         private IEnumerable<Instruction> GetReturnOnEqualsInstructionsForBackingField(ILProcessor processor, FieldReference backingField, Instruction cont, Instruction ret)
         {
             // Get a reference to the equality operator for the field type.
-            TypeReference type = backingField.FieldType;
+            var type = backingField.FieldType;
 
             // We need to initialize the local variables.
             processor.Body.Variables.Add(new VariableDefinition(MainModule.ImportReference(typeof(bool))));
@@ -232,11 +231,11 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
             }
             else
             {
-                MethodReference equals = type.TryGetMethodReference(Assembly, "Equals", type, type);
+                var equals = type.TryGetMethodReference(Assembly, "Equals", type, type);
 
                 if (equals == null)
                 {
-                    MethodDefinition equalsDefinition = Assembly.GetSystemObjectEqualsMethodReference();
+                    var equalsDefinition = Assembly.GetSystemObjectEqualsMethodReference();
 
                     equals = MainModule.ImportReference(equalsDefinition);
                 }
@@ -255,10 +254,10 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
         private IEnumerable<Instruction> GetReturnOnEqualsInstructionsForMapping(ILProcessor processor, FieldDefinition backingField, MethodReference getValue, Instruction cont, Instruction ret)
         {
             // The PropertyMapping field type is a generic instance type.
-            GenericInstanceType mappingType = backingField.FieldType as GenericInstanceType;
+            var mappingType = backingField.FieldType as GenericInstanceType;
 
             // Get a reference to the equality operator for the generic instance type argument.
-            TypeReference type = mappingType.GenericArguments.First();
+            var type = mappingType.GenericArguments.First();
 
             // We need to initialize the local variables.
             processor.Body.Variables.Add(new VariableDefinition(MainModule.ImportReference(typeof(bool))));
@@ -277,11 +276,11 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
             }
             else
             {
-                MethodReference equals = type.TryGetMethodReference(Assembly, "Equals", type, type);
+                var equals = type.TryGetMethodReference(Assembly, "Equals", type, type);
 
                 if (equals == null)
                 {
-                    MethodDefinition equalsDefinition = Assembly.GetSystemObjectEqualsMethodReference();
+                    var equalsDefinition = Assembly.GetSystemObjectEqualsMethodReference();
 
                     equals = MainModule.ImportReference(equalsDefinition);
                 }

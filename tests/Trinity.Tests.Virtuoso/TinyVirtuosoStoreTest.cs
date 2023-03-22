@@ -41,7 +41,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [SetUp]
         public void SetUp()
         {
-            string connectionString = SetupClass.ConnectionString;
+            var connectionString = SetupClass.ConnectionString;
 
             Store = StoreFactory.CreateStore(string.Format("{0};rule=urn:semiodesk/test/ruleset", connectionString));
             Store.InitializeFromConfiguration();
@@ -49,7 +49,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         }
 
         [TearDown]
-        public void TearDown()
+        public new void TearDown()
         {
             Store.Dispose();
             Store = null;
@@ -67,7 +67,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void AddModelTest()
         {
-            IModel m = Store.CreateModel(_testModel);
+            var m = Store.CreateModel(_testModel);
 
             Assert.IsNotNull(m);
         }
@@ -87,7 +87,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
             Store.RemoveModel(_testModel);
             model = Store.GetModel(_testModel);
             Assert.IsTrue(model.IsEmpty);
-            IModel m = Store.CreateModel(_testModel);
+            var m = Store.CreateModel(_testModel);
 
             var res = m.CreateResource(new Uri("ex:test:resource"));
 
@@ -96,7 +96,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
 
             model = Store.GetModel(_testModel);
             Assert.IsFalse(model.IsEmpty);
-            IModel model2 = Store.GetModel(_testModel);
+            var model2 = Store.GetModel(_testModel);
             Assert.AreEqual(_testModel, model2.Uri);
 
             Assert.IsTrue(model2.ContainsResource(res));
@@ -110,7 +110,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
 
             model = Store.GetModel(_testModel);
             Assert.IsTrue(model.IsEmpty);
-            IModel m = Store.CreateModel(_testModel);
+            var m = Store.CreateModel(_testModel);
 
             var res = m.CreateResource(new Uri("ex:test:resource"));
 

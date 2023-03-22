@@ -84,7 +84,7 @@ namespace Semiodesk.Trinity
                 RdfBaseClasses = rdfBaseClasses.ToArray();
                 BaseClassCount = 0;
 
-                Type t = mappingClassType;
+                var t = mappingClassType;
 
                 while( t.BaseType != typeof(object))
                 {
@@ -130,7 +130,7 @@ namespace Semiodesk.Trinity
         /// <param name="list"></param>
         public static void AddMappingClasses(IList<Type> list)
         {
-            foreach (Type o in list)
+            foreach (var o in list)
             {
                 AddMappingClass(o);
             }
@@ -147,13 +147,13 @@ namespace Semiodesk.Trinity
                 if (_class.IsAbstract)
                     return; 
 
-                Resource r = (Resource)Activator.CreateInstance(_class, new UriRef("semio:empty"));
+                var r = (Resource)Activator.CreateInstance(_class, new UriRef("semio:empty"));
 
-                List<Class> baseTypes = new List<Class>(r.GetTypes());
+                var baseTypes = new List<Class>(r.GetTypes());
 
                 GetBaseTypes(_class, ref baseTypes);
 
-                MappingClass c = new MappingClass(_class, r.GetTypes(), baseTypes);
+                var c = new MappingClass(_class, r.GetTypes(), baseTypes);
 
                 if (MappingClasses.Contains(c)) return;
 
@@ -161,13 +161,14 @@ namespace Semiodesk.Trinity
             }
             catch (Exception e)
             {
-                throw new Exception(string.Format("Initialisation of mapping class {0} failed. For the reason please consult the inner exception.", _class.ToString()), e);
+                throw new Exception(
+                    $"Initialisation of mapping class {_class.ToString()} failed. For the reason please consult the inner exception.", e);
             }
         }
 
         internal static IEnumerable<IPropertyMapping> ListMappings(Type _class)
         {
-            Type propertyMappingType = typeof(IPropertyMapping);
+            var propertyMappingType = typeof(IPropertyMapping);
             
             Resource resource;
             
@@ -177,7 +178,8 @@ namespace Semiodesk.Trinity
             }
             catch (Exception e)
             {
-                throw new Exception(string.Format("Initialisation of mapping class {0} failed. For the reason please consult the inner exception.", _class.ToString()), e);
+                throw new Exception(
+                    $"Initialisation of mapping class {_class.ToString()} failed. For the reason please consult the inner exception.", e);
             }
             
             foreach (var x in _class.GetFields())
@@ -203,7 +205,7 @@ namespace Semiodesk.Trinity
 
             try
             { 
-                Resource r = (Resource)Activator.CreateInstance(type.BaseType, new UriRef("urn:"));
+                var r = (Resource)Activator.CreateInstance(type.BaseType, new UriRef("urn:"));
 
                 baseTypes.AddRange(r.GetTypes());
 
@@ -219,7 +221,7 @@ namespace Semiodesk.Trinity
         /// </summary>
         public static void RegisterCallingAssembly()
         {
-            Assembly a = Assembly.GetCallingAssembly();
+            var a = Assembly.GetCallingAssembly();
 
             if (!RegisteredAssemblies.Contains(a.GetName().FullName))
             {
@@ -233,7 +235,7 @@ namespace Semiodesk.Trinity
         /// </summary>
         public static void RegisterAllCurrentAssemblies()
         {
-            foreach (Assembly a in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (var a in AppDomain.CurrentDomain.GetAssemblies())
             {
                 if (!RegisteredAssemblies.Contains(a.GetName().FullName))
                 {
@@ -253,7 +255,7 @@ namespace Semiodesk.Trinity
                 return;
             RegisteredAssemblies.Add(name);
 
-            IList<Type> l = GetMappingClasses(asm);
+            var l = GetMappingClasses(asm);
 
             AddMappingClasses(l);
         }

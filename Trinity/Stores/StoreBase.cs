@@ -29,12 +29,16 @@ using Semiodesk.Trinity.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
+using VDS.RDF;
+using VDS.RDF.Writing;
 
 namespace Semiodesk.Trinity
 {
     /// <summary>
     /// This class encapsulates the functionality of an abstract triple store. Cannot be used directly. 
-    /// Use StoreFactory to get a concret implementation.
+    /// Use StoreFactory to get a concrete implementation.
     /// </summary>
     public abstract class StoreBase : IStore
     {
@@ -102,11 +106,21 @@ namespace Semiodesk.Trinity
         public abstract ISparqlQueryResult ExecuteQuery(ISparqlQuery query, ITransaction transaction = null);
 
         /// <summary>
+        /// Executes a string query directly on the store.
+        /// </summary>
+        /// <param name="query">SPARQL query to be executed.</param>
+        /// <returns>A native return value is possible here.</returns>
+        public virtual object ExecuteQuery(string query)
+        {
+            return null;
+        }
+
+        /// <summary>
         /// Executes a query on the store which does not expect a result.
         /// </summary>
         /// <param name="update">SPARQL Update to be executed.</param>
         /// <param name="transaction">An optional transaction.</param>
-        public abstract void ExecuteNonQuery(SparqlUpdate update, ITransaction transaction = null);
+        public abstract void ExecuteNonQuery(ISparqlUpdate update, ITransaction transaction = null);
 
         /// <summary>
         /// Starts a transaction. The resulting transaction handle can be used to chain operations together.
@@ -133,7 +147,17 @@ namespace Semiodesk.Trinity
         /// <param name="format">Allowed formats</param>
         /// <param name="update">Pass false if you want to overwrite the existing data. True if you want to add the new data to the existing.</param>
         /// <returns></returns>
-        public abstract Uri Read(Stream stream, Uri graphUri, RdfSerializationFormat format, bool update);
+        public abstract Uri Read(Stream stream, Uri graphUri, RdfSerializationFormat format, bool update, bool leaveOpen=false);
+
+        /// <summary>
+        /// Loads a serialized graph from the given string into the current store. See allowed <see cref="RdfSerializationFormat">formats</see>.
+        /// </summary>
+        /// <param name="content">string containing a serialized graph</param>
+        /// <param name="graphUri">Uri of the graph in this store</param>
+        /// <param name="format">Allowed formats</param>
+        /// <param name="update">Pass false if you want to overwrite the existing data. True if you want to add the new data to the existing.</param>
+        /// <returns></returns>
+        public abstract Uri Read(string content, Uri graphUri, RdfSerializationFormat format, bool update);
 
         /// <summary>
         /// Writes a serialized graph to the given stream. See allowed <see cref="RdfSerializationFormat">formats</see>.
@@ -141,8 +165,21 @@ namespace Semiodesk.Trinity
         /// <param name="fs">Stream to which the content should be written.</param>
         /// <param name="graphUri">Uri fo the graph in this store</param>
         /// <param name="format">Allowed formats</param>
+        /// <param name="namespaces">Defines namespace to prefix mappings for the output.</param>
+        /// <param name="baseUri">Base URI for shortening URIs in formats that support it.</param>
+        /// <param name="leaveOpen">Indicates if the stream should be left open after the writing finished.</param>
         /// <returns></returns>
-        public abstract void Write(Stream fs, Uri graphUri, RdfSerializationFormat format);
+        public abstract void Write(Stream fs, Uri graphUri, RdfSerializationFormat format, INamespaceMap namespaces = null, Uri baseUri = null, bool leaveOpen = false);
+
+        /// <summary>
+        /// Writes a serialized graph to the given stream. See allowed <see cref="RdfSerializationFormat">formats</see>.
+        /// </summary>
+        /// <param name="fs">Stream to which the content should be written.</param>
+        /// <param name="graphUri">Uri fo the graph in this store</param>
+        /// <param name="writer">A RDF writer.</param>
+        /// <param name="leaveOpen">Indicates if the stream should be left open after the writing finished.</param>
+        /// <returns></returns>
+        public abstract void Write(Stream fs, Uri graphUri, IRdfWriter writer, bool leaveOpen = false);
 
         /// <summary>
         /// Initializes the store from the configuration. It uses either the provided file or attempts to load from "ontologies.config" located next to the executing assembly.
@@ -209,7 +246,7 @@ namespace Semiodesk.Trinity
                 srcDir = new DirectoryInfo(sourceDir);
             }
 
-            StoreUpdater updater = new StoreUpdater(this, srcDir);
+            var updater = new StoreUpdater(this, srcDir);
 
             updater.UpdateOntologies(configuration.ListOntologies());
         }
@@ -247,7 +284,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public virtual IModelGroup CreateModelGroup(params Uri[] models)
         {
-            List<IModel> result = new List<IModel>();
+            var result = new List<IModel>();
 
             foreach (var model in models)
             {
@@ -264,7 +301,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public virtual IModelGroup CreateModelGroup(params IModel[] models)
         {
-            List<IModel> result = new List<IModel>();
+            var result = new List<IModel>();
 
             foreach (var model in models)
             {
@@ -272,6 +309,258 @@ namespace Semiodesk.Trinity
             }
 
             return new ModelGroup(this, result);
+        }
+
+
+        /// <summary>
+        /// Updates the properties of a resource in the backing RDF store.
+        /// </summary>
+        /// <param name="resource">Resource that is to be updated in the backing store.</param>
+        /// <param name="modelUri">Uri of the model where the resource will be updated</param>
+        /// <param name="transaction">Transaction associated with this action.</param>
+        /// <param name="ignoreUnmappedProperties">Set this to true to update only mapped properties.</param>
+        public virtual void UpdateResource(Resource resource, Uri modelUri, ITransaction transaction = null, bool ignoreUnmappedProperties = false)
+        {
+            string updateString;
+
+            if (resource.IsNew)
+            {
+                if (resource.Uri.IsBlankId)
+                {
+                    var queryString = $@"SELECT BNODE() AS ?x FROM <{modelUri.OriginalString}> WHERE {{}}";
+
+                    var result = ExecuteQuery(new SparqlQuery(queryString), transaction);
+                    var id = result.GetBindings().First()["x"] as UriRef;
+
+                    resource.Uri = id;
+                }
+
+                updateString = $@"
+                    WITH <{modelUri.OriginalString}>
+                    INSERT {{ {SparqlSerializer.SerializeResource(resource, ignoreUnmappedProperties)} }} 
+                    WHERE {{}}";
+            }
+            else
+            {
+                updateString = string.Format(@"
+                    WITH <{0}>
+                    DELETE {{ {1} ?p ?o. }}
+                    INSERT {{ {2} }}
+                    WHERE {{ OPTIONAL {{ {1} ?p ?o. }} }} ",
+                modelUri.OriginalString,
+                SparqlSerializer.SerializeUri(resource.Uri),
+                SparqlSerializer.SerializeResource(resource, ignoreUnmappedProperties));
+            }
+
+            ExecuteNonQuery(new SparqlUpdate(updateString), transaction);
+
+            resource.IsNew = false;
+            resource.IsSynchronized = true;
+        }
+
+        /// <summary>
+        /// Updates the properties of multiple resources in the backing RDF store.
+        /// </summary>
+        /// <param name="resources">Resources that are to be updated in the backing store.</param>
+        /// <param name="modelUri">Uri of the model where the resource will be updated</param>
+        /// <param name="transaction">Transaction associated with this action.</param>
+        /// <param name="ignoreUnmappedProperties">Set this to true to update only mapped properties.</param>
+        public virtual void UpdateResources(IEnumerable<Resource> resources, Uri modelUri, ITransaction transaction = null, bool ignoreUnmappedProperties = false)
+        {
+            var WITH = $"{SparqlSerializer.SerializeUri(modelUri)} ";
+            var INSERT = new StringBuilder();
+            var DELETE = new StringBuilder();
+            var OPTIONAL = new StringBuilder();
+
+            var count = 0;
+            foreach (var res in resources)
+            {
+                DELETE.Append($" {SparqlSerializer.SerializeUri(res.Uri)} ?p{count} ?o{count}. ");
+                OPTIONAL.Append($" {SparqlSerializer.SerializeUri(res.Uri)} ?p{count} ?o{count}. ");
+                INSERT.Append($" {SparqlSerializer.SerializeResource(res, ignoreUnmappedProperties)} ");
+                count++;
+            }
+            var updateString = $"WITH {WITH} DELETE {{ {DELETE} }} INSERT {{ {INSERT} }} WHERE {{ OPTIONAL {{ {OPTIONAL} }} }}";
+            var update = new SparqlUpdate(updateString);
+
+            ExecuteNonQuery(update, transaction);
+
+            foreach (var resource in resources)
+            {
+                resource.IsNew = false;
+                resource.IsSynchronized = true;
+            }
+        }
+
+        public void Write(Stream stream, IGraph graph, RdfSerializationFormat format, bool leaveOpen)
+        {
+            var writer = new StreamWriter(stream);
+            
+            switch (format)
+            {
+                case RdfSerializationFormat.GZippedJsonLd:
+                    {
+                        var w = new GZippedJsonLdWriter();
+                        var sgWriter = new SingleGraphWriter(w);
+                        sgWriter.Save(graph, writer, leaveOpen);
+                        break;
+                    }
+                case RdfSerializationFormat.GZippedN3:
+                    {
+                        var w = new GZippedNotation3Writer();
+                        w.Save(graph, writer, leaveOpen);
+                        break;
+                    }
+                case RdfSerializationFormat.GZippedNQuads:
+                    {
+                        var w = new GZippedNQuadsWriter();
+                        var sgWriter = new SingleGraphWriter(w);
+                        sgWriter.Save(graph, writer, leaveOpen);
+                        break;
+                    }
+                case RdfSerializationFormat.GZippedRdfXml:
+                    {
+                        var w = new GZippedRdfXmlWriter();
+                        w.Save(graph, writer, leaveOpen);
+                        break;
+                    }
+                case RdfSerializationFormat.GZippedTrig:
+                    {
+                        var w = new GZippedTriGWriter();
+                        var sgWriter = new SingleGraphWriter(w);
+                        sgWriter.Save(graph, writer, leaveOpen);
+                        break;
+                    }
+                case RdfSerializationFormat.GZippedTurtle:
+                    {
+                        var w = new GZippedTurtleWriter();
+                        w.Save(graph, writer, leaveOpen);
+                        break;
+                    }
+                case RdfSerializationFormat.Json:
+                    {
+                        var w = new RdfJsonWriter();
+                        w.Save(graph, writer, leaveOpen);
+                        break;
+                    }
+
+                case RdfSerializationFormat.JsonLd:
+                    {
+                        var w = new JsonLdWriter();
+                        var sgWriter = new SingleGraphWriter(w);
+                        sgWriter.Save(graph, writer, leaveOpen);
+                        break;
+                    }
+                case RdfSerializationFormat.N3:
+                    {
+                        var w = new Notation3Writer();
+                        w.Save(graph, writer, leaveOpen);
+                        break;
+                    }
+                case RdfSerializationFormat.NQuads:
+                    {
+                        var w = new NQuadsWriter();
+                        var sgWriter = new SingleGraphWriter(w);
+                        sgWriter.Save(graph, writer, leaveOpen);
+                        break;
+                    }
+                case RdfSerializationFormat.NTriples:
+                    {
+                        var w = new NTriplesWriter();
+                        w.Save(graph, writer, leaveOpen);
+                        break;
+                    }
+
+                
+                case RdfSerializationFormat.RdfXml:
+                    {
+                        var w = new RdfXmlWriter();
+                        w.Save(graph, writer, leaveOpen);
+                        break;
+                    }
+                case RdfSerializationFormat.Trig:
+                    {
+                        var w = new TriGWriter();
+                        var sgWriter = new SingleGraphWriter(w);
+                        sgWriter.Save(graph, writer, leaveOpen);
+                        break;
+                    }
+                default:
+                case RdfSerializationFormat.Turtle:
+                    {
+                        var w = new CompressingTurtleWriter();
+                        w.Save(graph, writer, leaveOpen);
+                        break;
+                    }
+            }
+
+            if(leaveOpen)
+            {
+                writer.Flush();
+            }
+        }
+
+        public void Write(Stream stream, IGraph graph, IRdfWriter formatWriter, bool leaveOpen)
+        {
+            var streamWriter = new StreamWriter(stream);
+
+            formatWriter.Save(graph, streamWriter, leaveOpen);
+
+            if(leaveOpen)
+            {
+                streamWriter.Flush();
+            }
+        }
+
+        public virtual void DeleteResource(Uri modelUri, Uri resourceUri, ITransaction transaction = null)
+        {
+            // NOTE: Regrettably, dotNetRDF does not support the full SPARQL 1.1 update syntax. To be precise,
+            // it does not support FILTERs or OPTIONAL in Modify clauses.
+
+            var delete = new SparqlUpdate(@"
+                DELETE WHERE { GRAPH @graph { @subject ?p ?o . } }; 
+                DELETE WHERE { GRAPH @graph { ?s ?p @object . } }");
+            delete.Bind("@graph", modelUri);
+            delete.Bind("@subject", resourceUri);
+            delete.Bind("@object", resourceUri);
+
+            ExecuteNonQuery(delete, transaction);
+        }
+
+        /// <inheritdoc/>
+        public virtual void DeleteResource(IResource resource, ITransaction transaction = null)
+        {
+            DeleteResource(resource.Model.Uri, resource.Uri, transaction);
+        }
+
+        /// <inheritdoc/>
+        public virtual void DeleteResources(Uri modelUri, IEnumerable<Uri> resources, ITransaction transaction = null)
+        {
+            foreach (var resource in resources)
+                DeleteResource(modelUri, resource, transaction);
+        }
+
+        /// <inheritdoc/>
+        public virtual void DeleteResources(IEnumerable<IResource> resources, ITransaction transaction = null)
+        {
+            foreach (var resource in resources)
+                DeleteResource(resource, transaction);
+        }
+
+        /// <summary>
+        /// Gets a SPARQL query which is used to retrieve all triples about a subject that is
+        /// either referenced using a URI or blank node.
+        /// </summary>
+        /// <param name="modelUri">The graph to be queried.</param>
+        /// <param name="subjectUri">The subject to be described.</param>
+        /// <returns>An instance of <c>ISparqlQuery</c></returns>
+        public virtual ISparqlQuery GetDescribeQuery(Uri modelUri, Uri subjectUri)
+        {
+            ISparqlQuery query = new SparqlQuery("DESCRIBE @subject FROM @model");
+            query.Bind("@model", modelUri);
+            query.Bind("@subject", subjectUri);
+
+            return query;
         }
 
         #endregion

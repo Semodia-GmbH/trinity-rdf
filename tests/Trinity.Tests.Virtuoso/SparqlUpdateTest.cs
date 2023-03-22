@@ -36,12 +36,12 @@ namespace Semiodesk.Trinity.Test.Virtuoso
     {
         private IStore _store;
 
-        private IModel _model = null;
+        private IModel _model;
 
         [SetUp]
         public void SetUp()
         {
-            string connectionString = SetupClass.ConnectionString;
+            var connectionString = SetupClass.ConnectionString;
 
             _store = StoreFactory.CreateStore(string.Format("{0};rule=urn:semiodesk/test/ruleset", connectionString));
             _model = _store.GetModel(new Uri("ex:TestModel"));
@@ -58,7 +58,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         }
 
         [TearDown]
-        public void TearDown()
+        public new void TearDown()
         {
             _model.Clear();
             _store.Dispose();
@@ -67,21 +67,33 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void TestInsert()
         {
-            SparqlUpdate update = new SparqlUpdate(@"INSERT DATA INTO <ex:TestModel> { ex:book dc:title 'This is an example title' . }");
+            var update = new SparqlUpdate(@"INSERT DATA INTO <ex:TestModel> { ex:book dc:title 'This is an example title' . }");
 
             _model.ExecuteUpdate(update);
 
-            SparqlQuery query = new SparqlQuery(@"ASK WHERE { ?s dc:title 'This is an example title' . }");
+            var query = new SparqlQuery(@"ASK WHERE { ?s dc:title 'This is an example title' . }");
 
-            ISparqlQueryResult result = _model.ExecuteQuery(query);
+            var result = _model.ExecuteQuery(query);
 
-            Assert.AreEqual(true, result.GetAnwser());
+            Assert.AreEqual(true, result.GetAnswer());
+
+            /// TEST WITH LANGUAGE TAG
+            /// 
+            update = new SparqlUpdate(@"INSERT DATA INTO <ex:TestModel> { ex:book dc:title 'This is an example title'@en . }");
+
+            _model.ExecuteUpdate(update);
+
+            query = new SparqlQuery(@"ASK WHERE { ?s dc:title 'This is an example title'@en . }");
+
+            result = _model.ExecuteQuery(query);
+
+            Assert.AreEqual(true, result.GetAnswer());
         }
 
         [Test]
         public void TestModify()
         {
-            SparqlUpdate update = new SparqlUpdate(@"
+            var update = new SparqlUpdate(@"
                 INSERT DATA INTO <ex:TestModel> { ex:book dc:title 'This is an example title' . }");
 
             _model.ExecuteUpdate(update);
@@ -92,21 +104,42 @@ namespace Semiodesk.Trinity.Test.Virtuoso
 
             _model.ExecuteUpdate(update);
 
-            SparqlQuery query = new SparqlQuery(@"
+            var query = new SparqlQuery(@"
                 ASK WHERE { ?s dc:title 'This is an example title' . }");
 
-            Assert.AreEqual(false, _model.ExecuteQuery(query).GetAnwser());
+            Assert.AreEqual(false, _model.ExecuteQuery(query).GetAnswer());
 
             query = new SparqlQuery(@"
                 ASK WHERE { ?s dc:title 'This is an example title too' . }");
 
-            Assert.AreEqual(true, _model.ExecuteQuery(query).GetAnwser());
+            Assert.AreEqual(true, _model.ExecuteQuery(query).GetAnswer());
         }
+
+        [Test]
+        public void TestMultipleModify()
+        {
+            var update = new SparqlUpdate(@"
+                INSERT DATA INTO <ex:TestModel> { ex:book dc:title 'This is an example title' . };
+                INSERT DATA INTO <ex:TestModel> { ex:book2 dc:title 'This is an example title2' . }");
+
+            _model.ExecuteUpdate(update);
+
+            var query = new SparqlQuery(@"
+                ASK WHERE { ?s dc:title 'This is an example title' . }");
+
+            Assert.AreEqual(true, _model.ExecuteQuery(query).GetAnswer());
+
+            query = new SparqlQuery(@"
+                ASK WHERE { ?s dc:title 'This is an example title2' . }");
+
+            Assert.AreEqual(true, _model.ExecuteQuery(query).GetAnswer());
+        }
+
 
         [Test]
         public void TestDelete()
         {
-            SparqlUpdate update = new SparqlUpdate(@"
+            var update = new SparqlUpdate(@"
                 INSERT DATA INTO <ex:TestModel> { ex:book dc:title 'This is an example title' . }");
 
             _model.ExecuteUpdate(update);
@@ -116,21 +149,21 @@ namespace Semiodesk.Trinity.Test.Virtuoso
 
             _model.ExecuteUpdate(update);
 
-            SparqlQuery query = new SparqlQuery(@"
+            var query = new SparqlQuery(@"
                 ASK WHERE { ?s dc:title 'This is an example title' . }");
 
-            Assert.AreEqual(false, _model.ExecuteQuery(query).GetAnwser());
+            Assert.AreEqual(false, _model.ExecuteQuery(query).GetAnswer());
         }
 
         [Test]
         public void TestLoad()
         {
             Assert.Inconclusive();
-            SparqlUpdate update = new SparqlUpdate(@"LOAD <http://eurostat.linked-statistics.org/sparql> INTO <ex:TestModel>");
+            var update = new SparqlUpdate(@"LOAD <http://eurostat.linked-statistics.org/sparql> INTO <ex:TestModel>");
 
             _model.ExecuteUpdate(update);
 
-            SparqlQuery query = new SparqlQuery(@"SELECT * WHERE { ?s ?p ?o . }");
+            var query = new SparqlQuery(@"SELECT * WHERE { ?s ?p ?o . }");
 
             Assert.Greater(_model.ExecuteQuery(query).GetBindings().Count(), 0);
         }
@@ -138,7 +171,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void TestClear()
         {
-            SparqlUpdate update = new SparqlUpdate(@"INSERT DATA INTO <ex:TestModel> { ex:book dc:title 'This is an example title' . }");
+            var update = new SparqlUpdate(@"INSERT DATA INTO <ex:TestModel> { ex:book dc:title 'This is an example title' . }");
 
             _model.ExecuteUpdate(update);
 
@@ -146,15 +179,15 @@ namespace Semiodesk.Trinity.Test.Virtuoso
 
             _model.ExecuteUpdate(update);
 
-            SparqlQuery query = new SparqlQuery(@"ASK WHERE { ?s dc:title 'This is an example title' . }");
+            var query = new SparqlQuery(@"ASK WHERE { ?s dc:title 'This is an example title' . }");
 
-            Assert.AreEqual(false, _model.ExecuteQuery(query).GetAnwser());
+            Assert.AreEqual(false, _model.ExecuteQuery(query).GetAnswer());
         }
 
         [Test]
         public void TestUpdateParameters()
         {
-            SparqlUpdate update = new SparqlUpdate(@"
+            var update = new SparqlUpdate(@"
                 DELETE { ?s ?p @oldValue . }
                 INSERT { ?s ?p @newValue . }
                 WHERE { ?s ?p ?o . }");
@@ -162,7 +195,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
             update.Bind("@oldValue", "Fail");
             update.Bind("@newValue", "Success");
 
-            string updateString = update.ToString();
+            var updateString = update.ToString();
 
             Assert.IsFalse(string.IsNullOrEmpty(updateString));
 

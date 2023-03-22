@@ -64,7 +64,7 @@ namespace Semiodesk.Trinity
         /// Returns the bool value from ASK query forms.
         /// </summary>
         /// <returns>True on success, False otherwise.</returns>
-        bool GetAnwser();
+        bool GetAnswer();
 
         /// <summary>
         /// Returns marshalled Resource objects returned from DESCRIBE, CONSTRUCT 
@@ -72,6 +72,14 @@ namespace Semiodesk.Trinity
         /// </summary>
         /// <returns>An enumeration of Resource objects.</returns>
         IEnumerable<Resource> GetResources();
+
+        /// <summary>
+        /// Returns marshalled Resource objects returned from DESCRIBE, CONSTRUCT 
+        /// or interpretable SELECT query forms.
+        /// </summary>
+        /// <param name="type">The type that is required.</param>
+        /// <returns>An enumeration of Resource objects.</returns>
+        IEnumerable<Resource> GetResources(Type type);
 
         /// <summary>
         /// Returns marshalled instances of the given Resource type which were 

@@ -26,9 +26,7 @@
 // Copyright (c) Semiodesk GmbH 2015-2019
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Reflection;
 
 namespace Semiodesk.Trinity.Test
@@ -38,10 +36,10 @@ namespace Semiodesk.Trinity.Test
        [STAThread]
        static void Main(string[] args)
        { 
-            string[] nunitArg = new string[args.Count() + 1];
+            var nunitArg = new string[args.Count() + 1];
 
-            int i = 0;
-            foreach (string arg in args)
+            var i = 0;
+            foreach (var arg in args)
             {
                 nunitArg[i] = arg;
                 i++;

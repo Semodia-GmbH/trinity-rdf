@@ -36,9 +36,6 @@ using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using VDS.RDF.Query;
 using VDS.RDF.Query.Builder;
-#if NET35
-using Semiodesk.Trinity.Utility;
-#endif
 
 namespace Semiodesk.Trinity.Query
 {
@@ -68,14 +65,14 @@ namespace Semiodesk.Trinity.Query
 
         private void HandleRegexMethodCallExpression(Expression expression, string regex, bool ignoreCase)
         {
-            ISparqlQueryGenerator currentGenerator = QueryGeneratorTree.CurrentGenerator;
+            var currentGenerator = QueryGeneratorTree.CurrentGenerator;
 
             // For method calls like !x.Name.Contains(x) we need to implement the operator on the FILTER.
-            bool unaryNot = Trace.Any(e => e.NodeType == ExpressionType.Not);
+            var unaryNot = Trace.Any(e => e.NodeType == ExpressionType.Not);
 
             if (expression is MemberExpression)
             {
-                MemberExpression member = expression as MemberExpression;
+                var member = expression as MemberExpression;
 
                 if (unaryNot)
                 {
@@ -103,7 +100,7 @@ namespace Semiodesk.Trinity.Query
         {
             // Some expressions such as a call to the .Equals() method can be more easily implemented as a binary expression.
             // Therefore, we can apply transformations to the expressions before actually handling them.
-            Expression e = ExpressionTransformer.Transform(expression);
+            var e = ExpressionTransformer.Transform(expression);
 
             Trace.Insert(0, e);
 
@@ -122,13 +119,13 @@ namespace Semiodesk.Trinity.Query
 
         private void VisitBinaryOrElseExpression(BinaryExpression expression)
         {
-            ISparqlQueryGenerator currentGenerator = QueryGeneratorTree.CurrentGenerator;
+            var currentGenerator = QueryGeneratorTree.CurrentGenerator;
 
             // Get the currently active pattern builder so that we can reset it after we're done.
             // This will build nested UNIONS ({{x} UNION {y}} UNION {z}) for multiple alternative 
             // OR expressions. While this is not elegant, it is logically correct and can be optimized 
             // by the storage backend.
-            IGraphPatternBuilder patternBuilder = currentGenerator.PatternBuilder;
+            var patternBuilder = currentGenerator.PatternBuilder;
 
             currentGenerator.Union(
                 (left) =>
@@ -149,29 +146,29 @@ namespace Semiodesk.Trinity.Query
 
         private void VisitBinaryConstantExpression(BinaryExpression expression)
         {
-            ConstantExpression constant = expression.TryGetExpressionOfType<ConstantExpression>();
+            var constant = expression.TryGetExpressionOfType<ConstantExpression>();
 
             if (expression.HasExpressionOfType<MemberExpression>())
             {
-                MemberExpression member = expression.TryGetExpressionOfType<MemberExpression>();
+                var member = expression.TryGetExpressionOfType<MemberExpression>();
 
                 VisitBinaryMemberExpression(expression.NodeType, member, constant);
             }
             else if (expression.HasExpressionOfType<SubQueryExpression>())
             {
-                SubQueryExpression subQuery = expression.TryGetExpressionOfType<SubQueryExpression>();
+                var subQuery = expression.TryGetExpressionOfType<SubQueryExpression>();
 
                 VisitBinarySubQueryExpression(expression.NodeType, subQuery, constant);
             }
             else if (expression.HasExpressionOfType<QuerySourceReferenceExpression>())
             {
-                QuerySourceReferenceExpression querySource = expression.TryGetExpressionOfType<QuerySourceReferenceExpression>();
+                var querySource = expression.TryGetExpressionOfType<QuerySourceReferenceExpression>();
 
                 VisitBinaryQuerySourceReferenceExpression(expression.NodeType, querySource, constant);
             }
             else if(expression.HasExpressionOfType<MethodCallExpression>())
             {
-                MethodCallExpression methodCall = expression.TryGetExpressionOfType<MethodCallExpression>();
+                var methodCall = expression.TryGetExpressionOfType<MethodCallExpression>();
 
                 VisitBinaryMethodCallExpression(expression.NodeType, methodCall, constant);
             }
@@ -179,9 +176,9 @@ namespace Semiodesk.Trinity.Query
 
         private void VisitBinaryQuerySourceReferenceExpression(ExpressionType type, QuerySourceReferenceExpression sourceExpression, ConstantExpression constant)
         {
-            ISparqlQueryGenerator g = QueryGeneratorTree.CurrentGenerator;
+            var g = QueryGeneratorTree.CurrentGenerator;
 
-            SparqlVariable s = g.VariableGenerator.TryGetSubjectVariable(sourceExpression) ?? g.VariableGenerator.GlobalSubject;
+            var s = g.VariableGenerator.TryGetSubjectVariable(sourceExpression) ?? g.VariableGenerator.GlobalSubject;
 
             switch (type)
             {
@@ -198,7 +195,7 @@ namespace Semiodesk.Trinity.Query
 
         private void VisitBinaryMemberExpression(ExpressionType type, MemberExpression member, ConstantExpression constant)
         {
-            ISparqlQueryGenerator g = QueryGeneratorTree.CurrentGenerator;
+            var g = QueryGeneratorTree.CurrentGenerator;
 
             switch (type)
             {
@@ -232,7 +229,7 @@ namespace Semiodesk.Trinity.Query
                 VisitSubQuery(subQuery);
             }
 
-            ISparqlQueryGenerator g = QueryGeneratorTree.GetQueryGenerator(subQuery);
+            var g = QueryGeneratorTree.GetQueryGenerator(subQuery);
 
             // Note: We write the filter into the sub query generator which is writing into it's
             // enclosing graph group pattern rather than the query itself. This is required for
@@ -264,16 +261,16 @@ namespace Semiodesk.Trinity.Query
 
         private void VisitBinaryMethodCallExpression(ExpressionType type, MethodCallExpression methodCall, ConstantExpression constant)
         {
-            string method = methodCall.Method.Name;
+            var method = methodCall.Method.Name;
 
             switch (method)
             {
                 case "GetType":
                     {
-                        ISparqlQueryGenerator g = QueryGeneratorTree.CurrentGenerator;
+                        var g = QueryGeneratorTree.CurrentGenerator;
 
                         // Make sure that the method call object (i.e. a MemberExpression) has been visited before.
-                        SparqlVariable o = g.VariableGenerator.TryGetObjectVariable(methodCall.Object);
+                        var o = g.VariableGenerator.TryGetObjectVariable(methodCall.Object);
 
                         if(o == null)
                         {
@@ -365,9 +362,9 @@ namespace Semiodesk.Trinity.Query
 
         protected override Expression VisitMember(MemberExpression member)
         {
-            ISparqlQueryGenerator g = QueryGeneratorTree.CurrentGenerator;
+            var g = QueryGeneratorTree.CurrentGenerator;
 
-            SparqlVariable o = g.VariableGenerator.TryGetObjectVariable(member);
+            var o = g.VariableGenerator.TryGetObjectVariable(member);
 
             if (o == null)
             {
@@ -380,7 +377,7 @@ namespace Semiodesk.Trinity.Query
                 }
                 else if (member.Type == typeof(bool))
                 {
-                    ConstantExpression constantExpression = Expression.Constant(true);
+                    var constantExpression = Expression.Constant(true);
 
                     g.WhereEqual(member, constantExpression);
                 }
@@ -401,14 +398,14 @@ namespace Semiodesk.Trinity.Query
 
         protected override Expression VisitMethodCall(MethodCallExpression methodCall)
         {
-            string method = methodCall.Method.Name;
+            var method = methodCall.Method.Name;
 
             switch (method)
             {
                 case "Contains":
                     {
-                        Expression o = methodCall.Object;
-                        string pattern = methodCall.GetArgumentValue<string>(0);
+                        var o = methodCall.Object;
+                        var pattern = methodCall.GetArgumentValue<string>(0);
 
                         HandleRegexMethodCallExpression(o, pattern, false);
 
@@ -416,16 +413,16 @@ namespace Semiodesk.Trinity.Query
                     }
                 case "StartsWith":
                     {
-                        object[] args = new object[]
+                        var args = new object[]
                         {
                             true,
                             StringComparison.CurrentCultureIgnoreCase,
                             StringComparison.InvariantCultureIgnoreCase
                         };
 
-                        Expression o = methodCall.Object;
-                        string pattern = "^" + methodCall.GetArgumentValue<string>(0);
-                        bool ignoreCase = methodCall.HasArgumentValueFromAlternatives(1, args);
+                        var o = methodCall.Object;
+                        var pattern = "^" + methodCall.GetArgumentValue<string>(0);
+                        var ignoreCase = methodCall.HasArgumentValueFromAlternatives(1, args);
 
                         HandleRegexMethodCallExpression(o, pattern, ignoreCase);
 
@@ -433,16 +430,16 @@ namespace Semiodesk.Trinity.Query
                     }
                 case "EndsWith":
                     {
-                        object[] args = new object[]
+                        var args = new object[]
                         {
                             true,
                             StringComparison.CurrentCultureIgnoreCase,
                             StringComparison.InvariantCultureIgnoreCase
                         };
 
-                        Expression o = methodCall.Object;
-                        string pattern = methodCall.GetArgumentValue<string>(0) + "$";
-                        bool ignoreCase = methodCall.HasArgumentValueFromAlternatives(1, args);
+                        var o = methodCall.Object;
+                        var pattern = methodCall.GetArgumentValue<string>(0) + "$";
+                        var ignoreCase = methodCall.HasArgumentValueFromAlternatives(1, args);
 
                         HandleRegexMethodCallExpression(o, pattern, ignoreCase);
 
@@ -452,9 +449,9 @@ namespace Semiodesk.Trinity.Query
                     {
                         if (methodCall.Method.DeclaringType == typeof(Regex))
                         {
-                            Expression o = methodCall.Arguments[0];
-                            string pattern = methodCall.GetArgumentValue<string>(1) + "$";
-                            RegexOptions options = methodCall.GetArgumentValue(2, RegexOptions.None);
+                            var o = methodCall.Arguments[0];
+                            var pattern = methodCall.GetArgumentValue<string>(1);
+                            var options = methodCall.GetArgumentValue(2, RegexOptions.None);
 
                             HandleRegexMethodCallExpression(o, pattern, options.HasFlag(RegexOptions.IgnoreCase));
 
@@ -495,12 +492,12 @@ namespace Semiodesk.Trinity.Query
             {
                 // We currently do not support First, FirstOrDefault, Last and LastOrDefault on sub queries.
                 // There are no fundamental issues, but needs extensive testing.
-                string msg = "First, FirstOrDefault, Last and LastOrDfault are not supported in sub-queries.";
+                var msg = "First, FirstOrDefault, Last and LastOrDfault are not supported in sub-queries.";
                 throw new NotSupportedException(msg);
             }
 
-            ISparqlQueryGenerator g = QueryGeneratorTree.CurrentGenerator;
-            ISparqlQueryGenerator sg = QueryGeneratorTree.CreateSubQueryGenerator(g, subQuery);
+            var g = QueryGeneratorTree.CurrentGenerator;
+            var sg = QueryGeneratorTree.CreateSubQueryGenerator(g, subQuery);
 
             // Set the sub query generator as the current query generator to implement the sub query.
             QueryGeneratorTree.CurrentGenerator = sg;
@@ -512,7 +509,7 @@ namespace Semiodesk.Trinity.Query
             if (sg.ObjectVariable != null && sg.ObjectVariable.IsResultVariable)
             {
                 // Note: We make a copy of the variable here so that aggregate variables are selected by their names only.
-                SparqlVariable o = new SparqlVariable(sg.ObjectVariable.Name);
+                var o = new SparqlVariable(sg.ObjectVariable.Name);
 
                 g.VariableGenerator.SetObjectVariable(subQuery, o);
             }
@@ -528,7 +525,7 @@ namespace Semiodesk.Trinity.Query
 
         protected override Expression VisitTypeBinary(TypeBinaryExpression typeBinary)
         {
-            ISparqlQueryGenerator g = QueryGeneratorTree.CurrentGenerator;
+            var g = QueryGeneratorTree.CurrentGenerator;
 
             g.WhereResourceOfType(g.SubjectVariable, typeBinary.TypeOperand);
 
@@ -547,7 +544,7 @@ namespace Semiodesk.Trinity.Query
                 else if (unary.Operand is MethodCallExpression)
                 {
                     // Let VisitMethodCall decide if the operand is supported.
-                    MethodCallExpression methodCall = unary.Operand as MethodCallExpression;
+                    var methodCall = unary.Operand as MethodCallExpression;
 
                     return Visit(methodCall);
                 }
@@ -571,10 +568,10 @@ namespace Semiodesk.Trinity.Query
         {
             Visit(ordering.Expression);
 
-            ISparqlQueryGenerator g = QueryGeneratorTree.CurrentGenerator;
+            var g = QueryGeneratorTree.CurrentGenerator;
 
             // Either the member or aggregate variable has already been created previously by a SubQuery or a SelectClause..
-            SparqlVariable o = g.VariableGenerator.TryGetObjectVariable(ordering.Expression);
+            var o = g.VariableGenerator.TryGetObjectVariable(ordering.Expression);
 
             if (o != null)
             {
@@ -600,18 +597,18 @@ namespace Semiodesk.Trinity.Query
 
         public Expression VisitFromExpression(Expression expression, string itemName, Type itemType)
         {
-            ISparqlQueryGenerator g = QueryGeneratorTree.CurrentGenerator;
+            var g = QueryGeneratorTree.CurrentGenerator;
 
             g.VariableGenerator.AddVariableMapping(expression, itemName);
 
             if (expression is MemberExpression)
             {
-                MemberExpression memberExpression = expression as MemberExpression;
+                var memberExpression = expression as MemberExpression;
 
                 if (memberExpression.Expression is SubQueryExpression)
                 {
                     // First, implement the subquery..
-                    SubQueryExpression subQueryExpression = memberExpression.Expression as SubQueryExpression;
+                    var subQueryExpression = memberExpression.Expression as SubQueryExpression;
 
                     Visit(subQueryExpression);
                 }

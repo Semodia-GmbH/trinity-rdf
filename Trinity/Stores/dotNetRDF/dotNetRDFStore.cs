@@ -25,6 +25,7 @@
 //
 // Copyright (c) Semiodesk GmbH 2015-2019
 
+using Semiodesk.Trinity.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,7 +36,6 @@ using VDS.RDF.Parsing.Handlers;
 using VDS.RDF.Query;
 using VDS.RDF.Query.Inference;
 using VDS.RDF.Update;
-using VDS.RDF.Writing;
 
 namespace Semiodesk.Trinity.Store
 {
@@ -77,12 +77,12 @@ namespace Semiodesk.Trinity.Store
                 _reasoner = new RdfsReasoner();
                 _store.AddInferenceEngine(_reasoner);
 
-                foreach (string s in schemes)
+                foreach (var s in schemes)
                 {
                     var directory = new FileInfo(Assembly.GetExecutingAssembly().Location).Directory;
                     var file = new FileInfo(Path.Combine(directory.FullName, s));
 
-                    IGraph schemaGraph = LoadSchema(file.FullName);
+                    var schemaGraph = LoadSchema(file.FullName);
 
                     _store.Add(schemaGraph);
                     _reasoner.Initialise(schemaGraph);
@@ -100,9 +100,9 @@ namespace Semiodesk.Trinity.Store
 
             graph.LoadFromFile(schema);
 
-            string queryString = "SELECT ?s WHERE { ?s a <http://www.w3.org/2002/07/owl#Ontology>. }";
+            var queryString = "SELECT ?s WHERE { ?s a <http://www.w3.org/2002/07/owl#Ontology>. }";
 
-            SparqlResultSet result = (SparqlResultSet)graph.ExecuteQuery(queryString);
+            var result = (SparqlResultSet)graph.ExecuteQuery(queryString);
 
             graph.BaseUri = (result[0]["s"] as UriNode).Uri;
 
@@ -138,13 +138,13 @@ namespace Semiodesk.Trinity.Store
         /// </summary>
         /// <param name="query">The update query</param>
         /// <param name="transaction">An associated transaction</param>
-        public override void ExecuteNonQuery(SparqlUpdate query, ITransaction transaction = null)
+        public override void ExecuteNonQuery(ISparqlUpdate query, ITransaction transaction = null)
         {
-            string q = query.ToString();
+            var q = query.ToString();
 
             Log?.Invoke(q);
 
-            SparqlUpdateCommandSet cmds = _parser.ParseFromString(q);
+            var cmds = _parser.ParseFromString(q);
 
             _updateProcessor.ProcessCommandSet(cmds);
         }
@@ -157,18 +157,9 @@ namespace Semiodesk.Trinity.Store
         /// <returns></returns>
         public override ISparqlQueryResult ExecuteQuery(ISparqlQuery query, ITransaction transaction = null)
         {
-            if (query.IsInferenceEnabled && _reasoner != null)
-            {
-                _store.AddInferenceEngine(_reasoner);
-            }
-            else
-            {
-                _store.ClearInferenceEngines();
-            }
+            var q = query.ToString();
 
-            string q = query.ToString();
-
-            object results = ExecuteQuery(q);
+            var results = ExecuteQuery(q);
 
             if (results is IGraph)
             {
@@ -187,11 +178,11 @@ namespace Semiodesk.Trinity.Store
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        public object ExecuteQuery(string query)
+        public override object ExecuteQuery(string query)
         {
             Log?.Invoke(query);
 
-            SparqlQueryParser parser = new SparqlQueryParser();
+            var parser = new SparqlQueryParser();
 
             var q = parser.ParseFromString(query);
 
@@ -243,40 +234,30 @@ namespace Semiodesk.Trinity.Store
 
                 case RdfSerializationFormat.NTriples:
                     new NTriplesParser().Load(graph, reader); break;
-
-#if !NET35
                 case RdfSerializationFormat.NQuads:
                     new NQuadsParser().Load(new GraphHandler(graph), reader); break;
-#endif
-
                 case RdfSerializationFormat.Turtle:
                     new TurtleParser().Load(graph, reader); break;
-
                 case RdfSerializationFormat.Json:
                     new RdfJsonParser().Load(graph, reader); break;
-
-#if !NET35
                 case RdfSerializationFormat.JsonLd:
                     new JsonLdParser().Load(new GraphHandler(graph), reader); break;
-#endif
-
                 default:
-                case RdfSerializationFormat.RdfXml:
                     new RdfXmlParser().Load(graph, reader); break;
             }
         }
 
         /// <summary>
-        /// Loads a serialized graph from the given stream into the current store. See allowed <see cref="RdfSerializationFormat">formats</see>.
+        /// Loads a serialized graph from the given String into the current store. See allowed <see cref="RdfSerializationFormat">formats</see>.
         /// </summary>
-        /// <param name="stream">Stream containing a serialized graph</param>
+        /// <param name="content">String containing a serialized graph</param>
         /// <param name="graphUri">Uri of the graph in this store</param>
         /// <param name="format">Allowed formats</param>
         /// <param name="update">Pass false if you want to overwrite the existing data. True if you want to add the new data to the existing.</param>
         /// <returns></returns>
-        public override Uri Read(Stream stream, Uri graphUri, RdfSerializationFormat format, bool update)
+        public override Uri Read(string content, Uri graphUri, RdfSerializationFormat format, bool update)
         {
-            using (TextReader reader = new StreamReader(stream))
+            using (var reader = new StringReader(content))
             {
                 IGraph graph = new Graph();
 
@@ -293,6 +274,39 @@ namespace Semiodesk.Trinity.Store
 
                 return graphUri;
             }
+        }
+
+        /// <summary>
+        /// Loads a serialized graph from the given stream into the current store. See allowed <see cref="RdfSerializationFormat">formats</see>.
+        /// </summary>
+        /// <param name="stream">Stream containing a serialized graph</param>
+        /// <param name="graphUri">Uri of the graph in this store</param>
+        /// <param name="format">Allowed formats</param>
+        /// <param name="update">Pass false if you want to overwrite the existing data. True if you want to add the new data to the existing.</param>
+        /// <returns></returns>
+        public override Uri Read(Stream stream, Uri graphUri, RdfSerializationFormat format, bool update, bool leaveOpen = false)
+        {
+            using (TextReader reader = new StreamReader(stream))
+            {
+                IGraph graph = new Graph();
+
+                TryParse(reader, graph, format);
+
+                graph.BaseUri = graphUri;
+
+                if (!update)
+                {
+                    _store.Remove(graphUri);
+                }
+
+                _store.Add(graph, update);
+
+                if (!leaveOpen)
+                    stream.Close();
+
+                return graphUri;
+            }
+            
         }
 
         /// <summary>
@@ -324,7 +338,7 @@ namespace Semiodesk.Trinity.Store
                 {
                     if (format == RdfSerializationFormat.Trig)
                     {
-                        TripleStore s = new TripleStore();
+                        var s = new TripleStore();
                         s.LoadFromFile(path, new TriGParser());
 
                         foreach (Graph g in s.Graphs)
@@ -373,46 +387,47 @@ namespace Semiodesk.Trinity.Store
         /// Writes a serialized graph to the given stream. See allowed <see cref="RdfSerializationFormat">formats</see>.
         /// </summary>
         /// <param name="stream">Stream to which the content should be written.</param>
-        /// <param name="graphUri">Uri fo the graph in this store</param>
-        /// <param name="format">Allowed formats</param>
+        /// <param name="graphUri">Uri fo the graph in this store.</param>
+        /// <param name="format">Allowed formats.</param>
+        /// <param name="namespaces">Defines namespace to prefix mappings for the output.</param>
+        /// <param name="baseUri">Base URI for shortening URIs in formats that support it.</param>
+        /// <param name="leaveOpen">Indicates if the stream should be left open after writing completes.</param>
         /// <returns></returns>
-        public override void Write(Stream stream, Uri graphUri, RdfSerializationFormat format)
+        public override void Write(Stream stream, Uri graphUri, RdfSerializationFormat format, INamespaceMap namespaces = null, Uri baseUri = null, bool leaveOpen = false)
         {
             if (_store.HasGraph(graphUri))
             {
-                IGraph graph = _store.Graphs[graphUri];
+                var graph = _store.Graphs[graphUri];
 
-                using (StreamWriter writer = new StreamWriter(stream))
+                if (namespaces != null)
                 {
-                    switch (format)
-                    {
-                        case RdfSerializationFormat.N3:
-                            graph.SaveToStream(writer, new Notation3Writer()); break;
-
-                        case RdfSerializationFormat.NTriples:
-                            graph.SaveToStream(writer, new NTriplesWriter()); break;
-
-#if !NET35
-                        case RdfSerializationFormat.NQuads:
-                            graph.SaveToStream(writer, new NQuadsWriter()); break;
-#endif
-
-                        case RdfSerializationFormat.Turtle:
-                            graph.SaveToStream(writer, new CompressingTurtleWriter()); break;
-
-                        case RdfSerializationFormat.Json:
-                            graph.SaveToStream(writer, new RdfJsonWriter()); break;
-
-#if !NET35
-                        case RdfSerializationFormat.JsonLd:
-                            graph.SaveToStream(writer, new JsonLdWriter()); break;
-#endif
-
-                        default:
-                        case RdfSerializationFormat.RdfXml:
-                            graph.SaveToStream(writer, new RdfXmlWriter()); break;
-                    }
+                    graph.NamespaceMap.ImportNamespaces(namespaces);
                 }
+
+                if (baseUri != null)
+                {
+                    graph.BaseUri = baseUri;
+                }
+
+                Write(stream, graph, format, leaveOpen);
+            }
+        }
+
+        /// <summary>
+        /// Writes a serialized graph to the given stream. See allowed <see cref="RdfSerializationFormat">formats</see>.
+        /// </summary>
+        /// <param name="stream">Stream to which the content should be written.</param>
+        /// <param name="graphUri">Uri fo the graph in this store</param>
+        /// <param name="formatWriter">A RDF format writer.</param>
+        /// <param name="leaveOpen">Indicates if the stream should be left open after writing completes.</param>
+        /// <returns></returns>
+        public override void Write(Stream stream, Uri graphUri, IRdfWriter formatWriter, bool leaveOpen = false)
+        {
+            if (_store.HasGraph(graphUri))
+            {
+                var graph = _store.Graphs[graphUri];
+
+                Write(stream, graph, formatWriter, leaveOpen);
             }
         }
 
@@ -433,7 +448,7 @@ namespace Semiodesk.Trinity.Store
         /// <returns></returns>
         public override IModelGroup CreateModelGroup(params Uri[] models)
         {
-            List<IModel> modelList = new List<IModel>();
+            var modelList = new List<IModel>();
 
             foreach (var x in models)
             {
@@ -450,7 +465,7 @@ namespace Semiodesk.Trinity.Store
         /// <returns></returns>
         public new IModelGroup CreateModelGroup(params IModel[] models)
         {
-            List<IModel> modelList = new List<IModel>();
+            var modelList = new List<IModel>();
 
             // This approach might seem a bit redundant, but we want to make sure to get the model from the right store.
             foreach (var x in models)
@@ -471,6 +486,22 @@ namespace Semiodesk.Trinity.Store
             _store.Dispose();
         }
 
-#endregion
+        /// <summary>
+        /// Gets a SPARQL query which is used to retrieve all triples about a subject that is
+        /// either referenced using a URI or blank node.
+        /// </summary>
+        /// <param name="modelUri">The graph to be queried.</param>
+        /// <param name="subjectUri">The subject to be described.</param>
+        /// <returns>An instance of <c>ISparqlQuery</c></returns>
+        public override ISparqlQuery GetDescribeQuery(Uri modelUri, Uri subjectUri)
+        {
+            ISparqlQuery query = new SparqlQuery("DESCRIBE ?s FROM @model WHERE { ?s ?p ?o . VALUES ?s { @subject } }");
+            query.Bind("@model", modelUri);
+            query.Bind("@subject", subjectUri);
+
+            return query;
+        }
+
+        #endregion
     }
 }

@@ -27,13 +27,10 @@
 
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using Mono.Cecil.Rocks;
 using Semiodesk.Trinity.CilGenerator.Extensions;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 
 namespace Semiodesk.Trinity.CilGenerator.Tasks
 {
@@ -96,7 +93,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
             Property = property;
             BackingField = backingField;
 
-            CustomAttribute defaultValue = property.CustomAttributes.FirstOrDefault(a => a.Is(typeof(DefaultValueAttribute)));
+            var defaultValue = property.CustomAttributes.FirstOrDefault(a => a.Is(typeof(DefaultValueAttribute)));
 
             HasDefaultValue = defaultValue != null && defaultValue.HasConstructorArguments;
 

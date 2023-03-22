@@ -23,13 +23,10 @@
 //  Moritz Eberl <moritz@semiodesk.com>
 //  Sebastian Faubel <sebastian@semiodesk.com>
 //
-// Copyright (c) Semiodesk GmbH 2015-2019
+// Copyright (c) Semiodesk GmbH 2015-2021
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using VDS.RDF.Parsing;
 
 namespace Semiodesk.Trinity
@@ -39,7 +36,7 @@ namespace Semiodesk.Trinity
     /// query strings by automatically setting PREFIX declarations from a given
     /// namespace manager.
     /// </summary>
-    public class SparqlUpdate
+    public class SparqlUpdate : ISparqlUpdate
     {
         #region Properties
 
@@ -47,11 +44,6 @@ namespace Semiodesk.Trinity
         /// Get or set the model used for this query.
         /// </summary>
         public IModel Model { get; set; }
-
-        /// <summary>
-        /// Get or set the resource being updated.
-        /// </summary>
-        public IResource Resource { get; set; }
 
         /// <summary>
         /// The SPARQL processor used to determine the prefixes and statement variables in the query.
@@ -86,11 +78,11 @@ namespace Semiodesk.Trinity
         }
 
         /// <summary>
-        /// Set the value for a query parameter which is preceeded by '@'.
+        /// Set the value for a query parameter which is preceded by '@'.
         /// </summary>
         /// <param name="parameter">The parameter name including the '@'.</param>
-        /// <param name="value">The paramter value.</param>
-        public void Bind(string parameter, object value)
+        /// <param name="value">The parameter value.</param>
+        public ISparqlUpdate Bind(string parameter, object value)
         {
             if (Preprocessor == null)
             {
@@ -98,6 +90,8 @@ namespace Semiodesk.Trinity
             }
 
             Preprocessor.Bind(parameter, value);
+
+            return this;
         }
 
         /// <summary>

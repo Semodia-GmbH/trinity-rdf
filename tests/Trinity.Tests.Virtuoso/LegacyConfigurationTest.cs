@@ -25,9 +25,7 @@
 //
 // Copyright (c) Semiodesk GmbH 2015-2019
 
-using System.Linq;
 using NUnit.Framework;
-using Semiodesk.Trinity.Configuration;
 
 namespace Semiodesk.Trinity.Test.Virtuoso
 {
@@ -38,7 +36,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void TestInitialize()
         {
-            string connectionString = SetupClass.ConnectionString;
+            var connectionString = SetupClass.ConnectionString;
 
             var store = StoreFactory.CreateStore(string.Format("{0};rule=urn:semiodesk/test/ruleset", connectionString));
             store.InitializeFromConfiguration();

@@ -37,10 +37,11 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestDBPediaQuery()
         {
-            IStore store = StoreFactory.CreateSparqlEndpointStore(new Uri("http://live.dbpedia.org/sparql"));
-            IModel model = store.GetModel(new Uri("http://dbpedia.org"));
+            Assert.Inconclusive("Endpoint doesn't seem to exist anymore.");
+            var store = StoreFactory.CreateSparqlEndpointStore(new Uri("http://live.dbpedia.org/sparql"));
+            var model = store.GetModel(new Uri("http://dbpedia.org"));
 
-            SparqlQuery query = new SparqlQuery(@"SELECT ?s ?p ?o WHERE { ?s ?p ?o . ?s <http://dbpedia.org/ontology/wikiPageID> @id . }");
+            var query = new SparqlQuery(@"SELECT ?s ?p ?o WHERE { ?s ?p ?o . ?s <http://dbpedia.org/ontology/wikiPageID> @id . }");
             query.Bind("@id", 445980);
 
             Assert.AreEqual(1, model.ExecuteQuery(query).GetResources().Count());
@@ -49,10 +50,11 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestDBPediaGetResource()
         {
-            IStore store = StoreFactory.CreateSparqlEndpointStore(new Uri("http://live.dbpedia.org/sparql"));
-            IModel model = store.GetModel(new Uri("http://dbpedia.org"));
+            Assert.Inconclusive("Endpoint doesn't seem to exist anymore.");
+            var store = StoreFactory.CreateSparqlEndpointStore(new Uri("http://live.dbpedia.org/sparql"));
+            var model = store.GetModel(new Uri("http://dbpedia.org"));
 
-            IResource r = model.GetResource(new Uri("http://dbpedia.org/resource/Munich"));
+            var r = model.GetResource(new Uri("http://dbpedia.org/resource/Munich"));
 
             Assert.Greater(r.ListProperties().Count(), 0);
         }

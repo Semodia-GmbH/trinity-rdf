@@ -45,13 +45,13 @@ namespace Semiodesk.Trinity.CilGenerator.Extensions
         /// <returns>A method reference on success, <c>null</c> otherwise.</returns>
         public static MethodReference TryGetMethodReference(this TypeReference type, AssemblyDefinition assembly, string name, params TypeReference[] arguments)
         {
-            TypeDefinition t = type.Resolve();
+            var t = type.Resolve();
 
-            foreach (MethodDefinition m in t.Methods)
+            foreach (var m in t.Methods)
             {
                 if (!m.Name.Equals(name) || m.Parameters.Count != arguments.Count()) continue;
 
-                bool match = !m.Parameters.Where((t1, i) => !t1.ParameterType.FullName.Equals(arguments[i].FullName)).Any();
+                var match = !m.Parameters.Where((t1, i) => !t1.ParameterType.FullName.Equals(arguments[i].FullName)).Any();
 
                 // Return a reference to the method in the correct module.
                 if (match) return assembly.MainModule.ImportReference(m);

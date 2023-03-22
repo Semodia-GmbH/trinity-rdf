@@ -42,18 +42,18 @@ namespace Semiodesk.Trinity.Query
 
         public IEnumerable<T> ExecuteCollection<T>(QueryModel queryModel)
         {
-            Type t = queryModel.SelectClause.Selector.Type;
+            var t = queryModel.SelectClause.Selector.Type;
 
             if(typeof(Resource).IsAssignableFrom(t))
             {
                 // Handle queries which return instances of resources.
-                SparqlQueryModelVisitor<T> visitor = new SparqlQueryModelVisitor<T>(new SelectTriplesQueryGenerator());
+                var visitor = new SparqlQueryModelVisitor<T>(new SelectTriplesQueryGenerator());
                 visitor.VisitQueryModel(queryModel);
 
-                MethodInfo getResources = _getResourceMethod.MakeGenericMethod(typeof(T));
-                object[] args = new object[] { visitor.GetQuery(), _inferenceEnabled, null };
+                var getResources = _getResourceMethod.MakeGenericMethod(typeof(T));
+                var args = new object[] { visitor.GetQuery(), _inferenceEnabled, null };
 
-                foreach (T value in getResources.Invoke(Model, args) as IEnumerable<T>)
+                foreach (var value in getResources.Invoke(Model, args) as IEnumerable<T>)
                 {
                     yield return value;
                 }
@@ -61,14 +61,14 @@ namespace Semiodesk.Trinity.Query
             else
             {
                 // Handle queries which return value type objects.
-                SparqlQueryModelVisitor<T> visitor = new SparqlQueryModelVisitor<T>(new SelectBindingsQueryGenerator());
+                var visitor = new SparqlQueryModelVisitor<T>(new SelectBindingsQueryGenerator());
                 visitor.VisitQueryModel(queryModel);
 
-                ISparqlQuery query = visitor.GetQuery();
-                ISparqlQueryResult result = Model.ExecuteQuery(query, _inferenceEnabled);
+                var query = visitor.GetQuery();
+                var result = Model.ExecuteQuery(query, _inferenceEnabled);
 
                 // TODO: This works correctly for single bindings, check with multiple bindings.
-                foreach(BindingSet bindings in result.GetBindings())
+                foreach(var bindings in result.GetBindings())
                 {
                     foreach(var value in bindings.Values.OfType<T>())
                     {
@@ -87,28 +87,28 @@ namespace Semiodesk.Trinity.Query
 
         public T ExecuteScalar<T>(QueryModel queryModel)
         {
-            Type t = typeof(T);
+            var t = typeof(T);
 
             if(t == typeof(bool))
             {
                 // Generate and execute ASK query.
-                SparqlQueryModelVisitor<T> visitor = new SparqlQueryModelVisitor<T>(new AskQueryGenerator());
+                var visitor = new SparqlQueryModelVisitor<T>(new AskQueryGenerator());
                 visitor.VisitQueryModel(queryModel);
 
-                ISparqlQuery query = visitor.GetQuery();
-                ISparqlQueryResult result = Model.ExecuteQuery(query, _inferenceEnabled);
+                var query = visitor.GetQuery();
+                var result = Model.ExecuteQuery(query, _inferenceEnabled);
 
-                return new object[] { result.GetAnwser() }.OfType<T>().First();
+                return new object[] { result.GetAnswer() }.OfType<T>().First();
             }
             else if(queryModel.ResultOperators.Any(o => o is CountResultOperator))
             {
-                SparqlQueryModelVisitor<T> visitor = new SparqlQueryModelVisitor<T>(new SelectBindingsQueryGenerator());
+                var visitor = new SparqlQueryModelVisitor<T>(new SelectBindingsQueryGenerator());
                 visitor.VisitQueryModel(queryModel);
 
-                ISparqlQuery query = visitor.GetQuery();
-                ISparqlQueryResult result = Model.ExecuteQuery(query, _inferenceEnabled);
+                var query = visitor.GetQuery();
+                var result = Model.ExecuteQuery(query, _inferenceEnabled);
 
-                BindingSet b = result.GetBindings().FirstOrDefault();
+                var b = result.GetBindings().FirstOrDefault();
 
                 if(b != null && b.Any())
                 {

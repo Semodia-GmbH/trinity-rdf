@@ -82,9 +82,9 @@ namespace Semiodesk.Trinity
 
                     if (value is IModelGroup)
                     {
-                        IModelGroup group = value as IModelGroup;
+                        var group = value as IModelGroup;
 
-                        foreach (IModel m in group)
+                        foreach (var m in group)
                         {
                             _preprocessor.AddDefaultGraph(m.Uri);
                         }
@@ -147,11 +147,11 @@ namespace Semiodesk.Trinity
         }
 
         /// <summary>
-        /// Set the value for a query parameter which is preceeded by '@'.
+        /// Set the value for a query parameter which is preceded by '@'.
         /// </summary>
         /// <param name="parameter">The parameter name including the '@'.</param>
-        /// <param name="value">The paramter value.</param>
-        public void Bind(string parameter, object value)
+        /// <param name="value">The parameter value.</param>
+        public ISparqlQuery Bind(string parameter, object value)
         {
             if(_preprocessor == null)
             {
@@ -161,6 +161,8 @@ namespace Semiodesk.Trinity
             _preprocessor.Bind(parameter, value);
 
             _isModified = true;
+
+            return this;
         }
 
         /// <summary>

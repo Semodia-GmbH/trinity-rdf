@@ -1,5 +1,4 @@
-﻿using Semiodesk.TinyVirtuoso;
-using Semiodesk.Trinity.Store.Virtuoso;
+﻿using Semiodesk.Trinity.Store.Virtuoso;
 using System.Reflection;
 using System.IO;
 using NUnit.Framework;
@@ -29,8 +28,8 @@ namespace Semiodesk.Trinity.Test.Virtuoso
             OntologyDiscovery.AddAssembly(typeof(AbstractMappingClass).Assembly);
             MappingDiscovery.RegisterAssembly(typeof(AbstractMappingClass).Assembly);
 
-            FileInfo location = new FileInfo(Assembly.GetExecutingAssembly().Location);
-            DirectoryInfo folder = new DirectoryInfo(Path.Combine(location.DirectoryName, "nunit"));
+            var location = new FileInfo(Assembly.GetExecutingAssembly().Location);
+            var folder = new DirectoryInfo(Path.Combine(location.DirectoryName, "nunit"));
 
             if (folder.Exists)
             {

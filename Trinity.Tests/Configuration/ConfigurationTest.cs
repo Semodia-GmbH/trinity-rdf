@@ -38,9 +38,9 @@ namespace Semiodesk.Trinity.Test
         [Test]
         public void TestAppConfig()
         {
-            FileInfo configFile = new FileInfo("ontologies-test.config");
+            var configFile = new FileInfo("ontologies-test.config");
 
-            IConfiguration config = ConfigurationLoader.LoadConfiguration(configFile);
+            var config = ConfigurationLoader.LoadConfiguration(configFile);
 
             Assert.AreEqual("Semiodesk.Trinity.Test", config.Namespace);
 

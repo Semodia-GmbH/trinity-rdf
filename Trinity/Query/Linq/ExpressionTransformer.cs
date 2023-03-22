@@ -39,13 +39,13 @@ namespace Semiodesk.Trinity.Query
         {
             if (expression is MethodCallExpression)
             {
-                MethodCallExpression methodCall = expression as MethodCallExpression;
+                var methodCall = expression as MethodCallExpression;
 
                 return TransformMethodCall(methodCall);
             }
             else if(expression is UnaryExpression)
             {
-                UnaryExpression unary = expression as UnaryExpression;
+                var unary = expression as UnaryExpression;
 
                 return TransformUnary(unary);
             }
@@ -61,7 +61,7 @@ namespace Semiodesk.Trinity.Query
                 if (methodCall.Arguments[0] is ConstantExpression)
                 {
                     // We transform calls to .Equals into an equivalent binary expression.
-                    ConstantExpression arg0 = methodCall.Arguments[0] as ConstantExpression;
+                    var arg0 = methodCall.Arguments[0] as ConstantExpression;
 
                     return Expression.Equal(methodCall.Object, arg0);
                 }
@@ -81,12 +81,12 @@ namespace Semiodesk.Trinity.Query
                 if (unary.Operand is MemberExpression)
                 {
                     // Handle expression like !x.IsEnabled
-                    MemberExpression member = unary.Operand as MemberExpression;
+                    var member = unary.Operand as MemberExpression;
 
                     if (member.Type.IsValueType)
                     {
                         // TODO: The default value for a property may be overridden with the DefaultValue attribute.
-                        object defaultValue = TypeHelper.GetDefaultValue(member.Type);
+                        var defaultValue = TypeHelper.GetDefaultValue(member.Type);
 
                         // Note that a BinaryEqualsExpression with the default value will generate SPARQL that includes unbound values.
                         return Expression.Equal(unary.Operand, Expression.Constant(defaultValue));
@@ -98,7 +98,7 @@ namespace Semiodesk.Trinity.Query
                 }
                 else if(unary.Operand is MethodCallExpression)
                 {
-                    MethodCallExpression methodCall = unary.Operand as MethodCallExpression;
+                    var methodCall = unary.Operand as MethodCallExpression;
 
                     if (methodCall.Method.Name == "Equals")
                     {
@@ -106,7 +106,7 @@ namespace Semiodesk.Trinity.Query
                         if (methodCall.Arguments[0] is ConstantExpression)
                         {
                             // We transform calls to .Equals into an equivalent binary expression.
-                            ConstantExpression arg0 = methodCall.Arguments[0] as ConstantExpression;
+                            var arg0 = methodCall.Arguments[0] as ConstantExpression;
 
                             return Expression.NotEqual(methodCall.Object, arg0);
                         }
@@ -118,9 +118,9 @@ namespace Semiodesk.Trinity.Query
                 }
                 else if (unary.Operand is SubQueryExpression)
                 {
-                    SubQueryExpression subQuery = unary.Operand as SubQueryExpression;
+                    var subQuery = unary.Operand as SubQueryExpression;
 
-                    QueryModel queryModel = subQuery.QueryModel.Clone();
+                    var queryModel = subQuery.QueryModel.Clone();
 
                     // Transform sub-query calls to .Any() into .Count(x) = 0
                     if (queryModel.ResultOperators.Count == 1 && subQuery.QueryModel.HasResultOperator<AnyResultOperator>())

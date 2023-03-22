@@ -28,9 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections;
-#if NET35
-using Semiodesk.Trinity.Utility;
-#endif
+using System.Globalization;
 
 namespace Semiodesk.Trinity
 {
@@ -184,13 +182,24 @@ namespace Semiodesk.Trinity
                 _genericType = null;
             }
 
-            #if DEBUG
+#if DEBUG
 
             // Test if the given type is valid
-            HashSet<Type> allowed = new HashSet<Type>{ typeof(string), typeof(bool), typeof(float), typeof(double), typeof(decimal),
-                                                 typeof(Int16), typeof(Int32), typeof(Int64), 
-                                                 typeof(UInt16),typeof(UInt32), typeof(UInt64), 
-                                                 typeof(DateTime), typeof(System.Uri)};
+            var allowed = new HashSet<Type>{ typeof(string), 
+                                                 typeof(bool),typeof(bool?), 
+                                                 typeof(float), typeof(float?), 
+                                                 typeof(double), typeof(double?),
+                                                 typeof(decimal), typeof(decimal?),
+                                                 typeof(byte), typeof(sbyte),
+                                                 typeof(Int16), typeof(Int16?),
+                                                 typeof(Int32), typeof(Int32?),
+                                                 typeof(Int64), typeof(Int64?),
+                                                 typeof(UInt16), typeof(UInt16?),
+                                                 typeof(UInt32), typeof(UInt32?),
+                                                 typeof(UInt64), typeof(UInt64?),
+                                                 typeof(DateTime), typeof(DateTime?),
+                                                 typeof(TimeSpan), typeof(TimeSpan?),
+                                                 typeof(System.Uri), typeof(Tuple<string, CultureInfo>)};
 
             if (!allowed.Contains(_dataType) && _dataType.GetInterface("IResource") == null && !typeof(Resource).IsAssignableFrom(_dataType))
             {
@@ -207,7 +216,7 @@ namespace Semiodesk.Trinity
                 throw new Exception(string.Format("The property '{0}' with type {1} mapped on RDF property '<{2}>' is not compatible.", propertyName, _dataType, property));
             }
 
-            #endif
+#endif
         }
 
         /// <summary>
@@ -284,7 +293,7 @@ namespace Semiodesk.Trinity
             {
                 if (_value is IList list)
                 {
-                    Type t = value.GetType();
+                    var t = value.GetType();
 
                     if (t == _genericType || _genericType.IsAssignableFrom(t))
                     {
@@ -311,7 +320,7 @@ namespace Semiodesk.Trinity
             }
             else
             {
-                Type t = value.GetType();
+                var t = value.GetType();
 
                 if (t == _dataType || _dataType.IsAssignableFrom(t))
                 {
@@ -347,7 +356,7 @@ namespace Semiodesk.Trinity
                 typeString = typeof(T).ToString();
             }
 
-            string message = string.Format("Provided argument value was not of type {0}", typeString);
+            var message = $"Provided argument value was not of type {typeString}";
 
             throw new Exception(message);
         }
@@ -387,7 +396,7 @@ namespace Semiodesk.Trinity
                 typeString = typeof(T).ToString();
             }
 
-            string message = string.Format("Provided argument value was not of type {0}", typeString);
+            var message = $"Provided argument value was not of type {typeString}";
             
             throw new Exception(message);
         }
@@ -421,9 +430,9 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         IList ToLanguageList()
         {
-            List<Tuple<string, string>> result = new List<Tuple<string, string>>();
+            var result = new List<Tuple<string, string>>();
 
-            foreach (string v in _value as IList<string>)
+            foreach (var v in _value as IList<string>)
             {
                 result.Add(new Tuple<string, string>(v, Language));
             }
@@ -438,7 +447,7 @@ namespace Semiodesk.Trinity
         /// <returns>True if the type is compatible</returns>
         bool IPropertyMapping.IsTypeCompatible(Type type)
         {
-            Type mappingType = _dataType;
+            var mappingType = _dataType;
 
             if (_isList)
             {
@@ -534,11 +543,11 @@ namespace Semiodesk.Trinity
 
             if (_value != null && _isList)
             {
-                IList collection = (IList)_value;
+                var collection = (IList)_value;
 
                 collection.Clear();
 
-                IList otherCollection = (IList) other.GetValueObject();
+                var otherCollection = (IList) other.GetValueObject();
 
                 foreach (var v in otherCollection)
                 {

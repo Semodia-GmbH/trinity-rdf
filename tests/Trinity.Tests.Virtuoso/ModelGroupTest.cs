@@ -37,14 +37,14 @@ namespace Semiodesk.Trinity.Test.Virtuoso
     {
         protected IStore Store;
 
-        protected IModel Model = null;
+        protected IModel Model;
 
-        protected IModel Model2 = null;
+        protected IModel Model2;
 
         [SetUp]
         public void SetUp()
         {
-            string connectionString = SetupClass.ConnectionString;
+            var connectionString = SetupClass.ConnectionString;
 
             Store = StoreFactory.CreateStore(string.Format("{0};rule=urn:semiodesk/test/ruleset", connectionString));
 
@@ -64,7 +64,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         }
 
         [TearDown]
-        public void TearDown()
+        public new void TearDown()
         {
             Model.Clear();
             Model2.Clear();
@@ -74,13 +74,13 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void ContainsResourceTest()
         {
-            Uri uri = new Uri("http://example.com/testResource");
+            var uri = new Uri("http://example.com/testResource");
 
-            IModelGroup group = Store.CreateModelGroup(Model.Uri, Model2.Uri);
+            var group = Store.CreateModelGroup(Model.Uri, Model2.Uri);
 
             Assert.IsFalse(group.ContainsResource(uri));
 
-            IResource resource = Model.CreateResource(uri);
+            var resource = Model.CreateResource(uri);
             resource.AddProperty(rdf.type, nco.Contact);
             resource.Commit();
             
@@ -102,7 +102,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         {
             var uri = new Uri("ex:Resource2");
 
-            IResource resource = Model.CreateResource(uri);
+            var resource = Model.CreateResource(uri);
             resource.AddProperty(rdf.type, nco.Contact);
             resource.Commit();
 
@@ -116,17 +116,17 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void GetResourceTest()
         {
-            Uri resourceUri = new Uri("http://example.com/testResource");
+            var resourceUri = new Uri("http://example.com/testResource");
 
-            IModelGroup g = Store.CreateModelGroup(Model.Uri, Model2.Uri);
+            var g = Store.CreateModelGroup(Model.Uri, Model2.Uri);
             
             Assert.Throws<ResourceNotFoundException>(new TestDelegate( () => g.GetResource(resourceUri)));
             
-            IResource resource = Model.CreateResource(resourceUri);
+            var resource = Model.CreateResource(resourceUri);
             resource.AddProperty(rdf.type, nco.Contact);
             resource.Commit();
 
-            IResource res = g.GetResource(resourceUri);
+            var res = g.GetResource(resourceUri);
             Assert.IsNotNull(res);
             Assert.IsTrue(res.IsReadOnly);
             Assert.AreEqual(resourceUri, res.Uri);
@@ -149,20 +149,20 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         [Test]
         public void LazyLoadResourceTest()
         {
-            IModel model = Model;
-            IModelGroup modelGroup = Store.CreateModelGroup(Model.Uri, Model2.Uri);
+            var model = Model;
+            var modelGroup = Store.CreateModelGroup(Model.Uri, Model2.Uri);
             model.Clear();
 
-            Uri testRes1 = new Uri("semio:test:testInstance");
-            Uri testRes2 = new Uri("semio:test:testInstance2");
-            MappingTestClass t1 = model.CreateResource<MappingTestClass>(testRes1);
-            MappingTestClass2 t2 = model.CreateResource<MappingTestClass2>(new Uri("semio:test:testInstance2"));
+            var testRes1 = new Uri("semio:test:testInstance");
+            var testRes2 = new Uri("semio:test:testInstance2");
+            var t1 = model.CreateResource<MappingTestClass>(testRes1);
+            var t2 = model.CreateResource<MappingTestClass2>(new Uri("semio:test:testInstance2"));
 
             t1.uniqueResourceTest = t2;
             // TODO: Debug messsage, because t2 was not commited
             t1.Commit();
 
-            MappingTestClass p1 = modelGroup.GetResource<MappingTestClass>(testRes1);
+            var p1 = modelGroup.GetResource<MappingTestClass>(testRes1);
             //Assert.AreEqual(null, p1.uniqueResourceTest);
 
             var v = p1.ListValues(TestOntology.uniqueResourceTest);
@@ -183,7 +183,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
             var tt1 = modelGroup.GetResource<MappingTestClass>(testRes1);
             Assert.AreEqual(t2, tt1.uniqueResourceTest);
 
-            IResource tr1 = modelGroup.GetResource(testRes1);
+            var tr1 = modelGroup.GetResource(testRes1);
             Assert.AreEqual(typeof(MappingTestClass), tr1.GetType());
         }
     }

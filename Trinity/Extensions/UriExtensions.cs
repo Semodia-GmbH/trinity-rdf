@@ -37,11 +37,21 @@ namespace Semiodesk.Trinity
         /// <summary>
         /// Create a UriRef from this Uri.
         /// </summary>
-        /// <param name="uri"></param>
-        /// <returns></returns>
+        /// <param name="uri">A uniform resource identifier (URI)</param>
+        /// <returns>A UriRef instance.</returns>
         public static UriRef ToUriRef(this Uri uri)
         {
-            return new UriRef(uri);
+            return uri is UriRef ? uri as UriRef : new UriRef(uri);
+        }
+
+        /// <summary>
+        /// Indicates if the given URI is a UriRef instance and a blank node identifier.
+        /// </summary>
+        /// <param name="uri">A uniform resource identifier (URI)</param>
+        /// <returns><c>true</c> if the Uri is a UriRef and a blank node identifier.</returns>
+        public static bool IsBlankId(this Uri uri)
+        {
+            return uri is UriRef && (uri as UriRef).IsBlankId;
         }
     }
 }

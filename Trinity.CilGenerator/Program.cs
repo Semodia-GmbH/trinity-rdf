@@ -26,13 +26,9 @@
 // Copyright (c) Semiodesk GmbH 2015-2019
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Diagnostics;
 using System.IO;
 using Mono.Options;
-using Semiodesk.Trinity.CilGenerator;
 using Semiodesk.Trinity.CilGenerator.Loggers;
 
 namespace Semiodesk.Trinity.CilGenerator
@@ -40,18 +36,16 @@ namespace Semiodesk.Trinity.CilGenerator
     class Program
     {
         #region Methods
-
-        [STAThread]
         static int Main(string[] args)
         {
-            string input = "";
-            string output = "";
+            var input = "";
+            var output = "";
 
-            bool help = false;
-            bool writeSymbols = true;
-            bool overwriteInput = false;
+            var help = false;
+            var writeSymbols = true;
+            var overwriteInput = false;
 
-            OptionSet options = new OptionSet()
+            var options = new OptionSet()
             {
                 { "i|input=", "Input assembly.", v => input = v },
                 { "o|output=", "Output assembly.", v => output = v },
@@ -73,7 +67,7 @@ namespace Semiodesk.Trinity.CilGenerator
                         return -1;
                     }
 
-                    ILGenerator generator = new ILGenerator(new ConsoleLogger(), writeSymbols);
+                    var generator = new ILGenerator(new ConsoleLogger(), writeSymbols);
 
                     if (generator.ProcessFile(input, output))
                     {

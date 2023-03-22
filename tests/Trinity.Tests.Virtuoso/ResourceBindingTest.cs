@@ -25,10 +25,8 @@
 //
 // Copyright (c) Semiodesk GmbH 2015-2019
 
-using Semiodesk.Trinity.Ontologies;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Text;
 using NUnit.Framework;
 
@@ -52,9 +50,9 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         IModel GetModel()
         {
 
-            Uri testModelUri = new Uri("http://localhost:8899/model/TestModel");
+            var testModelUri = new Uri("http://localhost:8899/model/TestModel");
 
-            IModel model = _store.GetModel(testModelUri);
+            var model = _store.GetModel(testModelUri);
             return model;
         }
 
@@ -62,7 +60,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         {
             m.Clear();
 
-            ContactList l = m.CreateResource<ContactList>(contactListUri);
+            var l = m.CreateResource<ContactList>(contactListUri);
 
             l.ContainsContact.Add(CreateContact(m, "Hans", new List<string>{"Anton"}, "Meiser", new DateTime(1980, 11, 2), "meiser@test.de", "Deutschland", "Sackgasse 3", "85221", "Dachau"));
             l.ContainsContact.Add(CreateContact(m, "Peter", new List<string>{"Judith", "Ludwig"}, "Meiser", new DateTime(1981, 12, 7), "p.meiser@t-online.de", "Deutschland", "Blubweg 6", "12345", "München"));
@@ -81,9 +79,9 @@ namespace Semiodesk.Trinity.Test.Virtuoso
         {
             m.Clear();
 
-            ContactList l = m.CreateResource<ContactList>(contactListUri);
+            var l = m.CreateResource<ContactList>(contactListUri);
 
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 l.ContainsContact.Add(GenerateContact(m));
             }
@@ -106,12 +104,12 @@ namespace Semiodesk.Trinity.Test.Virtuoso
                 _minLength = minLength;
 
                 //split comma delimited lines
-                foreach (string line in sampleNames)
+                foreach (var line in sampleNames)
                 {
-                    string[] tokens = line.Split(',');
-                    foreach (string word in tokens)
+                    var tokens = line.Split(',');
+                    foreach (var word in tokens)
                     {
-                        string upper = word.Trim().ToUpper();
+                        var upper = word.Trim().ToUpper();
                         if (upper.Length < order + 1)
                             continue;
                         _samples.Add(upper);
@@ -119,11 +117,11 @@ namespace Semiodesk.Trinity.Test.Virtuoso
                 }
 
                 //Build chains            
-                foreach (string word in _samples)
+                foreach (var word in _samples)
                 {
-                    for (int letter = 0; letter < word.Length - order; letter++)
+                    for (var letter = 0; letter < word.Length - order; letter++)
                     {
-                        string token = word.Substring(letter, order);
+                        var token = word.Substring(letter, order);
                         List<char> entry = null;
                         if (_chains.ContainsKey(token))
                             entry = _chains[token];
@@ -143,16 +141,16 @@ namespace Semiodesk.Trinity.Test.Virtuoso
                 get
                 {
                     //get a random token somewhere in middle of sample word                
-                    string s = "";
+                    var s = "";
                     do
                     {
-                        int n = _rnd.Next(_samples.Count);
-                        int nameLength = _samples[n].Length;
+                        var n = _rnd.Next(_samples.Count);
+                        var nameLength = _samples[n].Length;
                         s = _samples[n].Substring(_rnd.Next(0, _samples[n].Length - _order), _order);
                         while (s.Length < nameLength)
                         {
-                            string token = s.Substring(s.Length - _order, _order);
-                            char c = GetLetter(token);
+                            var token = s.Substring(s.Length - _order, _order);
+                            var c = GetLetter(token);
                             if (c != '?')
                                 s += GetLetter(token);
                             else
@@ -161,9 +159,9 @@ namespace Semiodesk.Trinity.Test.Virtuoso
 
                         if (s.Contains(" "))
                         {
-                            string[] tokens = s.Split(' ');
+                            var tokens = s.Split(' ');
                             s = "";
-                            for (int t = 0; t < tokens.Length; t++)
+                            for (var t = 0; t < tokens.Length; t++)
                             {
                                 if (tokens[t] == "")
                                     continue;
@@ -204,43 +202,43 @@ namespace Semiodesk.Trinity.Test.Virtuoso
             {
                 if (!_chains.ContainsKey(token))
                     return '?';
-                List<char> letters = _chains[token];
-                int n = _rnd.Next(letters.Count);
+                var letters = _chains[token];
+                var n = _rnd.Next(letters.Count);
                 return letters[n];
             }
         }
 
         Contact GenerateContact(IModel m)
         {
-            Random rng = new Random();
+            var rng = new Random();
 
-            MarkovNameGenerator firstNameGenerator = new MarkovNameGenerator( new List<string>{"Hans", "Peter", "Marie", "Maria", "Tina", "Tim", "Lukas", "Emma", "Tom", "Alina", "Mia", "Emma", "Siegfried", "Judith", "Karl", "Stefan", "Markus", "Martin", "Alfred", "Anton"}, 3, 5);
-            string firstName = firstNameGenerator.NextName;
+            var firstNameGenerator = new MarkovNameGenerator( new List<string>{"Hans", "Peter", "Marie", "Maria", "Tina", "Tim", "Lukas", "Emma", "Tom", "Alina", "Mia", "Emma", "Siegfried", "Judith", "Karl", "Stefan", "Markus", "Martin", "Alfred", "Anton"}, 3, 5);
+            var firstName = firstNameGenerator.NextName;
 
-            List<string> additionalNames = new List<string>();
-            for (int i = rng.Next(0, 3); i > 0; i--)
+            var additionalNames = new List<string>();
+            for (var i = rng.Next(0, 3); i > 0; i--)
             {
                 additionalNames.Add(firstNameGenerator.NextName);
             }
 
-            MarkovNameGenerator lastNameGenerator = new MarkovNameGenerator(new List<string> { "Maier", "Meier", "Schmied", "Schmidt", "Schulz", "Roßman", "Müller", "Klein", "Fischer", "Schwarz", "Weber", "Hofman", "Hartman", "Braun", "Koch", "Krüger", "Schröder", "Wolf", "Mayer", "Jung", "Vogel", "Lang", "Fuchs", "Huber" }, 3, 5);
-            string lastName = lastNameGenerator.NextName;
+            var lastNameGenerator = new MarkovNameGenerator(new List<string> { "Maier", "Meier", "Schmied", "Schmidt", "Schulz", "Roßman", "Müller", "Klein", "Fischer", "Schwarz", "Weber", "Hofman", "Hartman", "Braun", "Koch", "Krüger", "Schröder", "Wolf", "Mayer", "Jung", "Vogel", "Lang", "Fuchs", "Huber" }, 3, 5);
+            var lastName = lastNameGenerator.NextName;
 
-            DateTime start = new DateTime(1950, 1, 1);
-            int range = ((TimeSpan)(new DateTime(1995, 1, 1) - start)).Days;
-            DateTime birthDate = start.AddDays(rng.Next(range));
+            var start = new DateTime(1950, 1, 1);
+            var range = ((TimeSpan)(new DateTime(1995, 1, 1) - start)).Days;
+            var birthDate = start.AddDays(rng.Next(range));
 
-            string emailAddress = string.Format("{0}.{1}@gmx.de", firstName, lastName);
+            var emailAddress = string.Format("{0}.{1}@gmx.de", firstName, lastName);
 
             return CreateContact(m, firstName, additionalNames, lastName, birthDate, emailAddress, "Deutschland", "Teststraße 27", "123456", "Testhausen"); 
         }
 
         Contact CreateContact(IModel m, string nameGiven, List<string> nameAdditional, string nameFamily, DateTime birthDate, string emailAddress, string country, string street, string pocode, string city)
         {
-            Uri contactUri = new Uri("semio:"+nameGiven+":" + Guid.NewGuid().ToString());
-            PersonContact c = m.CreateResource<PersonContact>(contactUri);
-            StringBuilder b = new StringBuilder();
-            foreach( string n in nameAdditional )
+            var contactUri = new Uri("semio:"+nameGiven+":" + Guid.NewGuid().ToString());
+            var c = m.CreateResource<PersonContact>(contactUri);
+            var b = new StringBuilder();
+            foreach( var n in nameAdditional )
             {
                 b.Append(n);
                 b.Append(" ");
@@ -263,8 +261,8 @@ namespace Semiodesk.Trinity.Test.Virtuoso
 
         EmailAddress CreateEmailAddress(IModel m, string emailAddress)
         {
-            Uri contactUri = new Uri("semio:" + Guid.NewGuid().ToString());
-            EmailAddress c = m.CreateResource<EmailAddress>(contactUri);
+            var contactUri = new Uri("semio:" + Guid.NewGuid().ToString());
+            var c = m.CreateResource<EmailAddress>(contactUri);
             c.Address = emailAddress;
             c.Commit();
             return c;
@@ -272,8 +270,8 @@ namespace Semiodesk.Trinity.Test.Virtuoso
 
         PostalAddress CreatePostalAddress(IModel m, string country, string street, string pocode, string city)
         {
-            Uri contactUri = new Uri("semio:" + Guid.NewGuid().ToString());
-            PostalAddress c = m.CreateResource<PostalAddress>(contactUri);
+            var contactUri = new Uri("semio:" + Guid.NewGuid().ToString());
+            var c = m.CreateResource<PostalAddress>(contactUri);
             c.Country = country;
             c.StreetAddress = street;
             c.PostalCode = pocode;

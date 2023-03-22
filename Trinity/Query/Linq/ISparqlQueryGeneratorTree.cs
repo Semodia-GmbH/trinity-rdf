@@ -25,8 +25,6 @@
 //
 // Copyright (c) Semiodesk GmbH 2015-2019
 
-using Remotion.Linq;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace Semiodesk.Trinity.Query

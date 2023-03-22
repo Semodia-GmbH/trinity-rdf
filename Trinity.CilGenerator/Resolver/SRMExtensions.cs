@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Reflection;
 using System.Reflection.Metadata;
 using SRM = System.Reflection.Metadata;
-using System.Reflection.PortableExecutable;
 using ICSharpCode.Decompiler.TypeSystem;
-using ICSharpCode.Decompiler.Util;
 using System.Reflection.Metadata.Ecma335;
 using ICSharpCode.Decompiler.Metadata;
 
@@ -101,7 +95,7 @@ namespace ICSharpCode.Decompiler
 
         public static string SplitTypeParameterCountFromReflectionName(string reflectionName, out int typeParameterCount)
         {
-            int pos = reflectionName.LastIndexOf('`');
+            var pos = reflectionName.LastIndexOf('`');
             if (pos < 0)
             {
                 typeParameterCount = 0;
@@ -109,7 +103,7 @@ namespace ICSharpCode.Decompiler
             }
             else
             {
-                string typeCount = reflectionName.Substring(pos + 1);
+                var typeCount = reflectionName.Substring(pos + 1);
                 if (int.TryParse(typeCount, out typeParameterCount))
                     return reflectionName.Substring(0, pos);
                 else
@@ -127,9 +121,9 @@ namespace ICSharpCode.Decompiler
 		public static FullTypeName GetFullTypeName(this TypeDefinition td, MetadataReader reader)
 		{
 			TypeDefinitionHandle declaringTypeHandle;
-			string name = SplitTypeParameterCountFromReflectionName(reader.GetString(td.Name), out var typeParameterCount);
+			var name = SplitTypeParameterCountFromReflectionName(reader.GetString(td.Name), out var typeParameterCount);
 			if ((declaringTypeHandle = td.GetDeclaringType()).IsNil) {
-				string @namespace = td.Namespace.IsNil ? "" : reader.GetString(td.Namespace);
+				var @namespace = td.Namespace.IsNil ? "" : reader.GetString(td.Namespace);
 				return new FullTypeName(new TopLevelTypeName(@namespace, name, typeParameterCount));
 			} else {
 				return declaringTypeHandle.GetFullTypeName(reader).NestedType(name, typeParameterCount);
@@ -138,8 +132,8 @@ namespace ICSharpCode.Decompiler
 
 		public static FullTypeName GetFullTypeName(this ExportedType type, MetadataReader metadata)
 		{
-			string ns = type.Namespace.IsNil ? "" : metadata.GetString(type.Namespace);
-			string name = SplitTypeParameterCountFromReflectionName(metadata.GetString(type.Name), out int typeParameterCount);
+			var ns = type.Namespace.IsNil ? "" : metadata.GetString(type.Namespace);
+			var name = SplitTypeParameterCountFromReflectionName(metadata.GetString(type.Name), out var typeParameterCount);
 			return new TopLevelTypeName(ns, name, typeParameterCount);
 		}
 

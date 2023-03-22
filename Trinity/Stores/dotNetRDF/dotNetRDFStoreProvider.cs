@@ -26,20 +26,12 @@
 // Copyright (c) Semiodesk GmbH 2015-2019
 
 using System.Collections.Generic;
-#if NETSTANDARD2_0
-using System.Composition;
-#elif !NET35
-using System.ComponentModel.Composition;
-#endif
 
 namespace Semiodesk.Trinity.Store
 {
     /// <summary>
     /// A store provider for dotNetRDF triple store adapters.
     /// </summary>
-#if !NET35
-    [Export(typeof(StoreProvider))]
-#endif
     public class dotNetRDFStoreProvider : StoreProvider
     {
         #region Constructor
@@ -63,7 +55,7 @@ namespace Semiodesk.Trinity.Store
         /// <returns></returns>
         public override IStore GetStore(Dictionary<string, string> configurationDictionary)
         {
-            string schemaKey = "schema";
+            const string schemaKey = "schema";
             string[] schema = null;
 
             if (configurationDictionary.ContainsKey(schemaKey))

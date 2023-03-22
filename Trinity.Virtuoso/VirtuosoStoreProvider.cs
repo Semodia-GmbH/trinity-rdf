@@ -37,7 +37,6 @@ namespace Semiodesk.Trinity.Store.Virtuoso
 
     public class VirtuosoStoreProvider : StoreProvider
     {
-
         public VirtuosoStoreProvider()
         {
             Name = "virtuoso";
@@ -45,16 +44,18 @@ namespace Semiodesk.Trinity.Store.Virtuoso
 
         public override IStore GetStore(Dictionary<string, string> configurationDictionary )
         {
-            string hostKey = "host";
-            string host = "127.0.0.1";
-                          
-            if(configurationDictionary.ContainsKey(hostKey))
+            const string hostKey = "host";
+            var host = "127.0.0.1";
+
+            if (configurationDictionary.ContainsKey(hostKey))
+            {
                 host = configurationDictionary[hostKey];
+            }
 
 
-            string portKey = "port";
-            int port;
-            if (!configurationDictionary.ContainsKey(portKey) ||!int.TryParse(configurationDictionary[portKey], out port))
+            const string portKey = "port";
+
+            if (!configurationDictionary.ContainsKey(portKey) ||!int.TryParse(configurationDictionary[portKey], out var port))
             {
                 #if !DEBUG 
                 port = 1112;
@@ -63,31 +64,39 @@ namespace Semiodesk.Trinity.Store.Virtuoso
                 #endif
             }
 
-            string userKey = "uid";
-            string user = "dba";
-            if(configurationDictionary.ContainsKey(userKey))
-                 user= configurationDictionary["uid"];
+            const string userKey = "uid";
+            var user = "dba";
+
+            if (configurationDictionary.ContainsKey(userKey))
+            {
+                user = configurationDictionary["uid"];
+            }
 
 
-            string passwordKey = "pw";
-            string password = "dba";
+            const string passwordKey = "pw";
+            var password = "dba";
+
             if (configurationDictionary.ContainsKey(passwordKey))
+            {
                 password = configurationDictionary[passwordKey];
+            }
 
             if (string.IsNullOrEmpty(host) || string.IsNullOrEmpty(user) || string.IsNullOrEmpty(password))
-               return null;
+            {
+                return null;
+            }
 
             string inferenceRule = null;
-            string ruleKey = "rule";
+            const string ruleKey = "rule";
+
             if (configurationDictionary.ContainsKey(ruleKey))
             {
                 inferenceRule = configurationDictionary[ruleKey];
             }
 
+            var store = new VirtuosoStore(host, port, user, password, inferenceRule);
 
-            VirtuosoStore store = new VirtuosoStore(host, port, user, password, inferenceRule);
             return store;
         }
-
     }
 }

@@ -29,7 +29,6 @@ using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using System;
 using System.Diagnostics;
-using VDS.RDF.Query.Optimisation;
 
 namespace Semiodesk.Trinity.Query
 {
@@ -71,7 +70,11 @@ namespace Semiodesk.Trinity.Query
 
         public override void VisitAdditionalFromClause(AdditionalFromClause fromClause, QueryModel queryModel, int index)
         {
-            throw new NotSupportedException();
+            var currentGenerator = QueryGeneratorTree.CurrentGenerator;
+
+            currentGenerator.OnBeforeFromClauseVisited(fromClause.FromExpression);
+
+            ExpressionVisitor.VisitFromExpression(fromClause.FromExpression, fromClause.ItemName, fromClause.ItemType);
         }
 
         public override void VisitGroupJoinClause(GroupJoinClause groupJoinClause, QueryModel queryModel, int index)
@@ -91,7 +94,7 @@ namespace Semiodesk.Trinity.Query
 
         public override void VisitMainFromClause(MainFromClause fromClause, QueryModel queryModel)
         {
-            ISparqlQueryGenerator currentGenerator = QueryGeneratorTree.CurrentGenerator;
+            var currentGenerator = QueryGeneratorTree.CurrentGenerator;
 
             currentGenerator.OnBeforeFromClauseVisited(fromClause.FromExpression);
 
@@ -102,7 +105,7 @@ namespace Semiodesk.Trinity.Query
 
         public override void VisitQueryModel(QueryModel queryModel)
         {
-            ISparqlQueryGenerator g = QueryGeneratorTree.CurrentGenerator;
+            var g = QueryGeneratorTree.CurrentGenerator;
 
             g.SetQueryContext(QueryGeneratorTree, queryModel);
 
@@ -115,7 +118,7 @@ namespace Semiodesk.Trinity.Query
 
         public override void VisitResultOperator(ResultOperatorBase resultOperator, QueryModel queryModel, int index)
         {
-            ISparqlQueryGenerator generator = QueryGeneratorTree.CurrentGenerator;
+            var generator = QueryGeneratorTree.CurrentGenerator;
 
             // If we are in a sub query, apply the operator on the query object.
             if(generator.ObjectVariable != null)
@@ -130,20 +133,20 @@ namespace Semiodesk.Trinity.Query
 
         public override void VisitSelectClause(SelectClause selectClause, QueryModel queryModel)
         {
-            ISparqlQueryGenerator currentGenerator = QueryGeneratorTree.CurrentGenerator;
+            var currentGenerator = QueryGeneratorTree.CurrentGenerator;
 
             currentGenerator.OnBeforeSelectClauseVisited(selectClause.Selector);
 
-            for (int i = 0; i < queryModel.BodyClauses.Count; i++)
+            for (var i = 0; i < queryModel.BodyClauses.Count; i++)
             {
-                IBodyClause c = queryModel.BodyClauses[i];
+                var c = queryModel.BodyClauses[i];
 
                 c.Accept(this, queryModel, i);
             }
 
-            for(int i = 0; i < queryModel.ResultOperators.Count; i++)
+            for(var i = 0; i < queryModel.ResultOperators.Count; i++)
             {
-                ResultOperatorBase o = queryModel.ResultOperators[i];
+                var o = queryModel.ResultOperators[i];
 
                 o.Accept(this, queryModel, i);
             }
@@ -165,7 +168,7 @@ namespace Semiodesk.Trinity.Query
 
         public ISparqlQuery GetQuery()
         {
-            string queryString = QueryGeneratorTree.RootGenerator.BuildQuery();
+            var queryString = QueryGeneratorTree.RootGenerator.BuildQuery();
 
             ISparqlQuery query = new SparqlQuery(queryString);
 

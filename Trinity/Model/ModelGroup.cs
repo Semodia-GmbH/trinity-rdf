@@ -34,6 +34,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
+using VDS.RDF;
 
 namespace Semiodesk.Trinity
 {
@@ -51,7 +53,7 @@ namespace Semiodesk.Trinity
 
         private MethodInfo _getResourceMethod;
 
-        private string _datasetClause = null;
+        private string _datasetClause;
 
         /// <summary>
         /// All unampped properties will be ignored for update and thus deleted. 
@@ -90,8 +92,8 @@ namespace Semiodesk.Trinity
         {
             get
             {
-                SparqlQuery query = new SparqlQuery("ASK " + DatasetClause + " { ?s ?p ?o . }");
-                return !ExecuteQuery(query).GetAnwser();
+                var query = new SparqlQuery("ASK " + DatasetClause + " { ?s ?p ?o . }");
+                return !ExecuteQuery(query).GetAnswer();
             }
         }
 
@@ -115,7 +117,7 @@ namespace Semiodesk.Trinity
 
             UpdateDatasetClause();
 
-            foreach (MethodInfo methodInfo in GetType().GetMethods())
+            foreach (var methodInfo in GetType().GetMethods())
             {
                 if (methodInfo.Name == "GetResource" && methodInfo.IsGenericMethod)
                 {
@@ -246,6 +248,7 @@ namespace Semiodesk.Trinity
             throw new NotSupportedException();
         }
 
+
         /// <summary>
         /// Not supported. ModelGroups are read-only.
         /// </summary>
@@ -265,6 +268,58 @@ namespace Semiodesk.Trinity
         {
             throw new NotSupportedException();
         }
+
+
+        /// <summary>
+        /// Not supported. ModelGroups are read-only.
+        /// </summary>
+        /// <param name="resources"></param>
+        /// <param name="transaction"></param>
+        public void DeleteResources(IEnumerable<Uri> resources, ITransaction transaction = null)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Not supported. ModelGroups are read-only.
+        /// </summary>
+        /// <param name="resources"></param>
+        /// <param name="transaction"></param>
+        public void DeleteResources(IEnumerable<IResource> resources, ITransaction transaction = null)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Not supported. ModelGroups are read-only.
+        /// </summary>
+        /// <param name="resources"></param>
+        /// <param name="transaction"></param>
+        public void DeleteResources(ITransaction transaction = null, params IResource[] resources)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Not supported. ModelGroups are read-only.
+        /// </summary>
+        /// <param name="resources"></param>
+        /// <param name="transaction"></param>
+        public void UpdateResources(IEnumerable<Resource> resources, ITransaction transaction = null)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Not supported. ModelGroups are read-only.
+        /// </summary>
+        /// <param name="resources"></param>
+        /// <param name="transaction"></param>
+        public void UpdateResources(ITransaction transaction = null, params Resource[] resources)
+        {
+            throw new NotSupportedException();
+        }
+
 
         /// <summary>
         /// Not supported. ModelGroups are read-only.
@@ -289,7 +344,7 @@ namespace Semiodesk.Trinity
         /// </summary>
         /// <param name="update"></param>
         /// <param name="transaction"></param>
-        public void ExecuteUpdate(SparqlUpdate update, ITransaction transaction = null)
+        public void ExecuteUpdate(ISparqlUpdate update, ITransaction transaction = null)
         {
             throw new NotSupportedException();
         }
@@ -314,9 +369,8 @@ namespace Semiodesk.Trinity
         /// <returns>True if the resource is part of the model, False if not.</returns>
         public bool ContainsResource(Uri uri, ITransaction transaction = null)
         {
-            return ExecuteQuery(new SparqlQuery(string.Format(@"ASK {0} {{ {1} ?p ?o . }}",
-                DatasetClause,
-                SparqlSerializer.SerializeUri(uri))), transaction: transaction).GetAnwser();
+            return ExecuteQuery(new SparqlQuery(
+                $@"ASK {DatasetClause} {{ {SparqlSerializer.SerializeUri(uri)} ?p ?o . }}"), transaction: transaction).GetAnswer();
         }
 
         /// <summary>
@@ -356,13 +410,13 @@ namespace Semiodesk.Trinity
             ISparqlQuery query = new SparqlQuery("SELECT DISTINCT ?s ?p ?o " + DatasetClause + " WHERE { ?s ?p ?o. FILTER (?s = @subject) }");
             query.Bind("@subject", uri);
 
-            ISparqlQueryResult result = ExecuteQuery(query, transaction: transaction);
+            var result = ExecuteQuery(query, transaction: transaction);
 
             IList resources = result.GetResources().ToList();
 
             if (resources.Count > 0)
             {
-                Resource r = resources[0] as Resource;
+                var r = resources[0] as Resource;
                 r.IsNew = false;
                 r.IsReadOnly = true;
                 r.IsSynchronized = true;
@@ -398,13 +452,13 @@ namespace Semiodesk.Trinity
             ISparqlQuery query = new SparqlQuery("SELECT DISTINCT ?s ?p ?o " + DatasetClause + " WHERE { ?s ?p ?o. FILTER (?s = @subject) }");
             query.Bind("@subject", uri);
 
-            ISparqlQueryResult result = ExecuteQuery(query, transaction: transaction);
+            var result = ExecuteQuery(query, transaction: transaction);
 
             IList resources = result.GetResources<T>().ToList();
 
             if (resources.Count > 0)
             {
-                T r = resources[0] as T;
+                var r = resources[0] as T;
                 r.IsNew = false;
                 r.IsSynchronized = true;
                 r.IsReadOnly = true;
@@ -442,9 +496,9 @@ namespace Semiodesk.Trinity
             {
                 if (typeof(IResource).IsAssignableFrom(type))
                 {
-                    MethodInfo getResource = _getResourceMethod.MakeGenericMethod(type);
+                    var getResource = _getResourceMethod.MakeGenericMethod(type);
 
-                    Resource r = getResource.Invoke(this, new object[] { uri, transaction }) as Resource;
+                    var r = getResource.Invoke(this, new object[] { uri, transaction }) as Resource;
                     r.IsNew = false;
                     r.IsReadOnly = true;
                     r.IsSynchronized = true;
@@ -454,13 +508,13 @@ namespace Semiodesk.Trinity
                 }
                 else
                 {
-                    string msg = string.Format("The given type {0} does not implement the IResource interface.", type);
+                    var msg = $"The given type {type} does not implement the IResource interface.";
                     throw new ArgumentException(msg);
                 }
             }
             else
             {
-                string msg = string.Format("No handle to the generic method T GetResource<T>(Uri)");
+                var msg = "No handle to the generic method T GetResource<T>(Uri)";
                 throw new InvalidOperationException(msg);
             }
         }
@@ -474,11 +528,11 @@ namespace Semiodesk.Trinity
         /// <returns>An enumeration of resources that match the given query.</returns>
         public IEnumerable<Resource> GetResources(ISparqlQuery query, bool inferenceEnabled = false, ITransaction transaction = null)
         {
-            IEnumerable<Resource> result = ExecuteQuery(query, inferenceEnabled, transaction).GetResources<Resource>();
+            var result = ExecuteQuery(query, inferenceEnabled, transaction).GetResources<Resource>();
 
             if (result != null)
             {
-                foreach (Resource r in result)
+                foreach (var r in result)
                 {
                     r.SetModel(this);
                     r.IsNew = false;
@@ -491,6 +545,49 @@ namespace Semiodesk.Trinity
         }
 
         /// <summary>
+        /// Retrieves resources from the model. Provides resources object of the given type.
+        /// </summary>
+        /// <param name="uris">A List Uniform Resource Identifier.</param>
+        /// <param name="type">The type the resource should have.</param>
+        /// <param name="transaction">Transaction associated with this action.</param>
+        /// <returns>A resource with all asserted properties.</returns>
+        public IEnumerable<object> GetResources(IEnumerable<Uri> uris, Type type, ITransaction transaction = null)
+        {
+            if (typeof(IResource).IsAssignableFrom(type))
+            {
+                var queryString = new StringBuilder();
+                queryString.Append("SELECT ?s ?p ?o WHERE { ?s ?p ?o. FILTER ( ");
+                queryString.Append(string.Join("||", from s in uris select $"?s = <{s}>"));
+                queryString.Append(")}");
+                var query = new SparqlQuery(queryString.ToString());
+
+                var result = ExecuteQuery(query, transaction: transaction);
+
+                var resources = result.GetResources(type);
+
+                foreach (var r in resources)
+                {
+                    // NOTE: This safeguard is required because of a bug in ExecuteQuery where 
+                    // it returns null objects when a rdf:type triple is missing..
+                    if (r == null) continue;
+
+                    r.SetModel(this);
+                    r.IsNew = false;
+                    r.IsSynchronized = true;
+                    r.IsReadOnly = true;
+
+                    yield return r;
+                }
+
+            }
+            else
+            {
+                var msg = $"Error: The given type {type} does not implement the IResource interface.";
+                throw new ArgumentException(msg);
+            }
+        }
+
+        /// <summary>
         /// Executes a SPARQL query and provides an enumeration of matching resources.
         /// </summary>
         /// <param name="query">A SparqlQuery object.</param>
@@ -499,14 +596,14 @@ namespace Semiodesk.Trinity
         /// <returns>An enumeration of resources that match the given query.</returns>
         public IEnumerable<T> GetResources<T>(ISparqlQuery query, bool inferenceEnabled = false, ITransaction transaction = null) where T : Resource
         {
-            IEnumerable<T> result = ExecuteQuery(query, inferenceEnabled, transaction).GetResources<T>();
+            var result = ExecuteQuery(query, inferenceEnabled, transaction).GetResources<T>();
 
             // TODO: Could be done in the SparqlQueryResult for increased performance.
             if (result != null)
             {
                 foreach (object r in result)
                 {
-                    T t = r as T;
+                    var t = r as T;
 
                     // NOTE: This safeguard is required because of a bug in ExecuteQuery where 
                     // it returns null objects when a rdf:type triple is missing..
@@ -540,9 +637,9 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public IQueryable<T> AsQueryable<T>(bool inferenceEnabled = false) where T : Resource
         {
-            SparqlQueryExecutor executor = new SparqlQueryExecutor(this, inferenceEnabled);
+            var executor = new SparqlQueryExecutor(this, inferenceEnabled);
 
-            QueryParser queryParser = QueryParser.CreateDefault();
+            var queryParser = QueryParser.CreateDefault();
 
             return new SparqlQueryable<T>(queryParser, executor);
         }
@@ -564,20 +661,47 @@ namespace Semiodesk.Trinity
         /// </summary>
         /// <param name="fs">The file stream to write to.</param>
         /// <param name="format">The serialization format.</param>
+        /// <param name="namespaces">Defines namespace to prefix mappings for the output.</param>
+        /// <param name="baseUri">Base URI for shortening URIs in formats that support it.</param>
+        /// <param name="leaveOpen">Indicates if the stream should be left open after writing completes.</param>
         /// <returns>A serialization of the models contents.</returns>
-        public void Write(Stream fs, RdfSerializationFormat format)
+        public void Write(Stream fs, RdfSerializationFormat format, INamespaceMap namespaces = null, Uri baseUri = null, bool leaveOpen = false)
         {
             throw new NotSupportedException();
         }
 
         /// <summary>
-        /// Imports the contents of a graph serialized in the stream to this model.
+        /// Serializes the contents of the model and provides a memory stream.
+        /// </summary>
+        /// <param name="fs">The file stream to write to.</param>
+        /// <param name="formatWriter">A RDF writer.</param>
+        /// <param name="leaveOpen">Indicates if the stream should be left open after writing completes.</param>
+        /// <returns>A serialization of the models contents.</returns>
+        public void Write(Stream fs, IRdfWriter formatWriter, bool leaveOpen = false)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Not supported with Model Groups
         /// </summary>
         /// <param name="stream">The stream containing the serialization</param>
         /// <param name="format">Format of the serialization</param>
         /// <param name="update">True to update the model, false to replace the data.</param>
         /// <returns>True if the contents of the model were imported, False if not.</returns>
         public bool Read(Stream stream, RdfSerializationFormat format, bool update)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Not supported with Model Groups
+        /// </summary>
+        /// <param name="content">The string containing the serialization</param>
+        /// <param name="format">Format of the serialization</param>
+        /// <param name="update">True to update the model, false to replace the data.</param>
+        /// <returns>True if the contents of the model were imported, False if not.</returns>
+        public bool Read(string content, RdfSerializationFormat format, bool update)
         {
             throw new NotSupportedException();
         }
@@ -774,6 +898,7 @@ namespace Semiodesk.Trinity
         {
             return _set.GetEnumerator();
         }
+
 
         #endregion
     }

@@ -9,7 +9,7 @@
                 return s;
             }
 
-            string result = s.Substring(0, 1).ToLowerInvariant();
+            var result = s.Substring(0, 1).ToLowerInvariant();
 
             if(s.Length > 1)
             {

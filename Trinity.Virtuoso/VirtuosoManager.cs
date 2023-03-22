@@ -98,10 +98,10 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// <summary>
         /// Default Database for Virtuoso Server Quad Store
         /// </summary>
-        public const String DefaultDB = "DB";
+        public const string DefaultDB = "DB";
 
-        private const String SubjectColumn = "S", PredicateColumn = "P", ObjectColumn = "O";
-        private const String VirtuosoRelativeBaseString = "virtuoso-relative:";
+        private const string SubjectColumn = "S", PredicateColumn = "P", ObjectColumn = "O";
+        private const string VirtuosoRelativeBaseString = "virtuoso-relative:";
         private readonly Uri VirtuosoRelativeBase = new Uri(VirtuosoRelativeBaseString);
 
         #region Variables & Constructors
@@ -110,15 +110,15 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         private OpenLink.Data.Virtuoso.VirtuosoTransaction _dbtrans;
         private readonly ITripleFormatter _formatter = new VirtuosoFormatter();
 
-        private readonly String _dbserver, _dbname, _dbuser, _dbpwd;
-        private readonly int _dbport, _timeout = 0;
+        private readonly string _dbserver, _dbname, _dbuser, _dbpwd;
+        private readonly int _dbport, _timeout;
 
         /// <summary>
         /// Indicates whether the Database Connection is currently being kept open
         /// </summary>
-        private bool _keepOpen = false;
+        private bool _keepOpen;
 
-        private readonly bool _customConnString = false;
+        private readonly bool _customConnString;
 
         /// <summary>
         /// Creates a Manager for a Virtuoso Native Quad Store
@@ -132,35 +132,35 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// <remarks>
         /// Timeouts less than equal to zero are ignored and treated as using the default timeout which is dictated by the underlying Virtuoso ADO.Net provider
         /// </remarks>
-        public VirtuosoManager(String server, int port, String db, String user, String password, int timeout)
+        public VirtuosoManager(string server, int port, string db, string user, string password, int timeout)
         {
             //Set the Connection Properties
-            this._dbserver = server;
-            this._dbname = db;
-            this._dbuser = user;
-            this._dbpwd = password;
-            this._dbport = port;
-            this._timeout = timeout;
+            _dbserver = server;
+            _dbname = db;
+            _dbuser = user;
+            _dbpwd = password;
+            _dbport = port;
+            _timeout = timeout;
 
-            StringBuilder connString = new StringBuilder();
+            var connString = new StringBuilder();
             connString.Append("Server=");
-            connString.Append(this._dbserver);
+            connString.Append(_dbserver);
             connString.Append(":");
-            connString.Append(this._dbport);
+            connString.Append(_dbport);
             connString.Append(";Database=");
-            connString.Append(this._dbname);
+            connString.Append(_dbname);
             connString.Append(";uid=");
-            connString.Append(this._dbuser);
+            connString.Append(_dbuser);
             connString.Append(";pwd=");
-            connString.Append(this._dbpwd);
+            connString.Append(_dbpwd);
             connString.Append(";Charset=utf-8");
-            if (this._timeout > 0)
+            if (_timeout > 0)
             {
-                connString.Append(";Connection Timeout=" + this._timeout);
+                connString.Append(";Connection Timeout=" + _timeout);
             }
 
             //Create the Connection Object
-            this._db = new VirtuosoConnection(connString.ToString());
+            _db = new VirtuosoConnection(connString.ToString());
         }
 
         /// <summary>
@@ -171,7 +171,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// <param name="db">Database Name</param>
         /// <param name="user">Username</param>
         /// <param name="password">Password</param>
-        public VirtuosoManager(String server, int port, String db, String user, String password)
+        public VirtuosoManager(string server, int port, string db, string user, string password)
             : this(server, port, db, user, password, 0)
         {
         }
@@ -186,8 +186,8 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// <remarks>
         /// Assumes the Server is on the localhost and the port is the default installation port of 1111
         /// </remarks>
-        public VirtuosoManager(String db, String user, String password, int timeout)
-            : this("localhost", VirtuosoManager.DefaultPort, db, user, password, timeout)
+        public VirtuosoManager(string db, string user, string password, int timeout)
+            : this("localhost", DefaultPort, db, user, password, timeout)
         {
         }
 
@@ -200,8 +200,8 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// <remarks>
         /// Assumes the Server is on the localhost and the port is the default installation port of 1111
         /// </remarks>
-        public VirtuosoManager(String db, String user, String password)
-            : this("localhost", VirtuosoManager.DefaultPort, db, user, password, 0)
+        public VirtuosoManager(string db, string user, string password)
+            : this("localhost", DefaultPort, db, user, password, 0)
         {
         }
 
@@ -212,10 +212,10 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// <remarks>
         /// Allows the end user to specify a customised connection string
         /// </remarks>
-        public VirtuosoManager(String connectionString)
+        public VirtuosoManager(string connectionString)
         {
-            this._db = new VirtuosoConnection(connectionString);
-            this._customConnString = true;
+            _db = new VirtuosoConnection(connectionString);
+            _customConnString = true;
         }
 
         #endregion
@@ -233,7 +233,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
             {
                 g.BaseUri = graphUri;
             }
-            this.LoadGraph(new GraphHandler(g), graphUri);
+            LoadGraph(new GraphHandler(g), graphUri);
         }
 
         /// <summary>
@@ -251,13 +251,13 @@ namespace Semiodesk.Trinity.Store.Virtuoso
 
                 //Need to keep Database Open as Literals require extra trips to the Database to get additional
                 //information about Language and Type
-                this.Open(false);
+                Open(false);
 
-                DataTable data = this.LoadTriples(graphUri);
+                var data = LoadTriples(graphUri);
 
                 foreach (DataRow row in data.Rows)
                 {
-                    Object s, p, o;
+                    object s, p, o;
                     INode subj, pred, obj;
 
                     //Get Data
@@ -266,25 +266,25 @@ namespace Semiodesk.Trinity.Store.Virtuoso
                     o = row["O"];
 
                     //Create Nodes
-                    subj = this.LoadNode(handler, s);
-                    pred = this.LoadNode(handler, p);
-                    obj = this.LoadNode(handler, o);
+                    subj = LoadNode(handler, s);
+                    pred = LoadNode(handler, p);
+                    obj = LoadNode(handler, o);
 
                     //Assert Triple
                     if (!handler.HandleTriple(new Triple(subj, pred, obj))) ParserHelper.Stop();
                 }
                 handler.EndRdf(true);
-                this.Close(false);
+                Close(false);
             }
             catch (RdfParsingTerminatedException)
             {
                 handler.EndRdf(true);
-                this.Close(false);
+                Close(false);
             }
             catch
             {
                 handler.EndRdf(false);
-                this.Close(true);
+                Close(true);
                 throw;
             }
         }
@@ -294,15 +294,15 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// </summary>
         /// <param name="g">Graph to load into</param>
         /// <param name="graphUri">URI of the Graph to Load</param>
-        public override void LoadGraph(IGraph g, String graphUri)
+        public override void LoadGraph(IGraph g, string graphUri)
         {
-            if (graphUri == null || graphUri.Equals(String.Empty))
+            if (graphUri == null || graphUri.Equals(string.Empty))
             {
-                this.LoadGraph(g, (Uri)null);
+                LoadGraph(g, (Uri)null);
             }
             else
             {
-                this.LoadGraph(g, UriFactory.Create(graphUri));
+                LoadGraph(g, UriFactory.Create(graphUri));
             }
         }
 
@@ -311,15 +311,15 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// </summary>
         /// <param name="handler">RDF Handler</param>
         /// <param name="graphUri">URI of the Graph to Load</param>
-        public override void LoadGraph(IRdfHandler handler, String graphUri)
+        public override void LoadGraph(IRdfHandler handler, string graphUri)
         {
-            if (graphUri == null || graphUri.Equals(String.Empty))
+            if (graphUri == null || graphUri.Equals(string.Empty))
             {
-                this.LoadGraph(handler, (Uri)null);
+                LoadGraph(handler, (Uri)null);
             }
             else
             {
-                this.LoadGraph(handler, UriFactory.Create(graphUri));
+                LoadGraph(handler, UriFactory.Create(graphUri));
             }
         }
 
@@ -333,26 +333,26 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// </remarks>
         private DataTable LoadTriples(Uri graphUri)
         {
-            DataTable dt = new DataTable();
-            String getTriples;
+            var dt = new DataTable();
+            string getTriples;
             if (graphUri != null)
             {
-                getTriples = "SPARQL define output:format '_JAVA_' SELECT * FROM <" + this.UnmarshalUri(graphUri) + "> WHERE {?s ?p ?o}";
+                getTriples = "SPARQL define output:format '_JAVA_' SELECT * FROM <" + UnmarshalUri(graphUri) + "> WHERE {?s ?p ?o}";
             }
             else
             {
                 getTriples = "SPARQL define output:format '_JAVA_' SELECT * WHERE {?s ?p ?o}";
             }
 
-            VirtuosoCommand cmd = this._db.CreateCommand();
-            cmd.CommandTimeout = (this._timeout > 0 ? this._timeout : cmd.CommandTimeout);
+            var cmd = _db.CreateCommand();
+            cmd.CommandTimeout = (_timeout > 0 ? _timeout : cmd.CommandTimeout);
             cmd.CommandText = getTriples;
 
-            VirtuosoDataAdapter adapter = new VirtuosoDataAdapter(cmd);
+            var adapter = new VirtuosoDataAdapter(cmd);
 
-            dt.Columns.Add("S", typeof(System.Object));
-            dt.Columns.Add("P", typeof(System.Object));
-            dt.Columns.Add("O", typeof(System.Object));
+            dt.Columns.Add("S", typeof(object));
+            dt.Columns.Add("P", typeof(object));
+            dt.Columns.Add("O", typeof(object));
             adapter.Fill(dt);
 
             return dt;
@@ -364,128 +364,113 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// <param name="factory">Node Factory to use to create Node</param>
         /// <param name="n">Object to convert</param>
         /// <returns></returns>
-        private INode LoadNode(INodeFactory factory, Object n)
+        private INode LoadNode(INodeFactory factory, object n)
         {
             INode temp;
-            if (n is SqlExtendedString)
+            switch (n)
             {
-                SqlExtendedString iri = (SqlExtendedString)n;
-                if (iri.IriType == SqlExtendedStringType.BNODE)
-                {
+                case SqlExtendedString iri when iri.IriType == SqlExtendedStringType.BNODE:
                     //Blank Node
-                    temp = factory.CreateBlankNode(n.ToString().Substring(9));
-                }
-                else if (iri.IriType != iri.StrType)
-                {
+                    temp = factory.CreateBlankNode(iri.ToString().Substring(9));
+                    break;
+                case SqlExtendedString iri when iri.IriType != iri.StrType:
                     //Literal
-                    temp = factory.CreateLiteralNode(n.ToString());
-                }
-                else if (iri.IriType == SqlExtendedStringType.IRI)
+                    temp = factory.CreateLiteralNode(iri.ToString());
+                    break;
+                case SqlExtendedString iri when iri.IriType == SqlExtendedStringType.IRI:
                 {
                     //Uri
-                    Uri u = this.MarshalUri(n.ToString());
+                    var u = MarshalUri(iri.ToString());
                     temp = factory.CreateUriNode(u);
+                    break;
                 }
-                else
-                {
+                case SqlExtendedString iri:
                     //Assume a Literal
-                    temp = factory.CreateLiteralNode(n.ToString());
-                }
-            }
-            else if (n is SqlRdfBox)
-            {
-                SqlRdfBox lit = (SqlRdfBox)n;
-                if (lit.StrLang != null)
-                {
+                    temp = factory.CreateLiteralNode(iri.ToString());
+                    break;
+                case SqlRdfBox lit when lit.StrLang != null:
                     //Language Specified Literal
-                    temp = factory.CreateLiteralNode(n.ToString(), lit.StrLang);
-                }
-                else if (lit.StrType != null)
-                {
+                    temp = factory.CreateLiteralNode(lit.ToString(), lit.StrLang);
+                    break;
+                case SqlRdfBox lit when lit.StrType != null:
                     //Data Typed Literal
-                    temp = factory.CreateLiteralNode(n.ToString(), this.MarshalUri(lit.StrType));
-                }
-                else
-                {
+                    temp = factory.CreateLiteralNode(lit.ToString(), MarshalUri(lit.StrType));
+                    break;
+                case SqlRdfBox lit:
                     //Literal
-                    temp = factory.CreateLiteralNode(n.ToString());
-                }
-            }
-            else if (n is String)
-            {
-                String s = n.ToString();
-                if (s.StartsWith("nodeID://"))
+                    temp = factory.CreateLiteralNode(lit.ToString());
+                    break;
+                case string _:
                 {
-                    //Blank Node
-                    temp = factory.CreateBlankNode(s.Substring(9));
+                    var s = n.ToString();
+                    if (s.StartsWith("nodeID://"))
+                    {
+                        //Blank Node
+                        temp = factory.CreateBlankNode(s.Substring(9));
+                    }
+                    else
+                    {
+                        //Literal
+                        temp = factory.CreateLiteralNode(s);
+                    }
+
+                    break;
                 }
-                else
+                case int i:
+                    temp = i.ToLiteral(factory);
+                    break;
+                case short s:
+                    temp = s.ToLiteral(factory);
+                    break;
+                case float f:
+                    temp = f.ToLiteral(factory);
+                    break;
+                case double d:
+                    temp = d.ToLiteral(factory);
+                    break;
+                case decimal @decimal:
+                    temp = @decimal.ToLiteral(factory);
+                    break;
+                case DateTime time:
+                    temp = time.ToLiteral(factory);
+                    break;
+                case TimeSpan span:
+                    temp = span.ToLiteral(factory);
+                    break;
+                case bool b:
+                    temp = b.ToLiteral(factory);
+                    break;
+                case byte @byte:
+                    temp = @byte.ToLiteral(factory);
+                    break;
+                case sbyte @sbyte:
+                    temp = @sbyte.ToLiteral(factory);
+                    break;
+                case DBNull _:
+                    //Fix by Alexander Sidarov for Virtuoso's results for unbound variables in OPTIONALs
+                    temp = null;
+                    break;
+                case VirtuosoDateTime vDateTime:
                 {
-                    //Literal
-                    temp = factory.CreateLiteralNode(s);
+                    //New type in Virtuoso 7
+                    var dateTime = new DateTime(vDateTime.Year, vDateTime.Month, vDateTime.Day, vDateTime.Hour, vDateTime.Minute, vDateTime.Second, vDateTime.Millisecond, vDateTime.Kind);
+                    return dateTime.ToLiteral(factory);
                 }
-            }
-            else if (n is Int32)
-            {
-                temp = ((Int32)n).ToLiteral(factory);
-            }
-            else if (n is Int16)
-            {
-                temp = ((Int16)n).ToLiteral(factory);
-            }
-            else if (n is Single)
-            {
-                temp = ((Single)n).ToLiteral(factory);
-            }
-            else if (n is Double)
-            {
-                temp = ((Double)n).ToLiteral(factory);
-            }
-            else if (n is Decimal)
-            {
-                temp = ((Decimal)n).ToLiteral(factory);
-            }
-            else if (n is DateTime)
-            {
-                temp = ((DateTime)n).ToLiteral(factory);
-            }
-            else if (n is TimeSpan)
-            {
-                temp = ((TimeSpan)n).ToLiteral(factory);
-            }
-            else if (n is Boolean)
-            {
-                temp = ((Boolean)n).ToLiteral(factory);
-            }
-            else if (n is DBNull)
-            {
-                //Fix by Alexander Sidarov for Virtuoso's results for unbound variables in OPTIONALs
-                temp = null;
-            }
-            else if (n is VirtuosoDateTime)
-            {
-                //New type in Virtuoso 7
-                VirtuosoDateTime vDateTime = (VirtuosoDateTime)n;
-                DateTime dateTime = new DateTime(vDateTime.Year, vDateTime.Month, vDateTime.Day, vDateTime.Hour, vDateTime.Minute, vDateTime.Second, vDateTime.Millisecond, vDateTime.Kind);
-                return dateTime.ToLiteral(factory);
-            }
-            else if (n is VirtuosoDateTimeOffset)
-            {
-                //New type in Virtuoso 7
-                VirtuosoDateTimeOffset vDateTimeOffset = (VirtuosoDateTimeOffset)n;
-                DateTimeOffset dateTimeOffset = new DateTimeOffset(vDateTimeOffset.Year, vDateTimeOffset.Month, vDateTimeOffset.Day, vDateTimeOffset.Hour, vDateTimeOffset.Minute, vDateTimeOffset.Second, vDateTimeOffset.Millisecond, vDateTimeOffset.Offset);
-                return dateTimeOffset.ToLiteral(factory);
-            }
-            else
-            {
-                throw new RdfStorageException("Unexpected Object Type '" + n.GetType().ToString() + "' returned from SPASQL SELECT query to the Virtuoso Quad Store");
+                case VirtuosoDateTimeOffset vDateTimeOffset:
+                {
+                    //New type in Virtuoso 7
+                    var dateTimeOffset = new DateTimeOffset(vDateTimeOffset.Year, vDateTimeOffset.Month, vDateTimeOffset.Day, vDateTimeOffset.Hour, vDateTimeOffset.Minute, vDateTimeOffset.Second, vDateTimeOffset.Millisecond, vDateTimeOffset.Offset);
+                    return dateTimeOffset.ToLiteral(factory);
+                }
+                default:
+                    throw new RdfStorageException("Unexpected Object Type '" + n.GetType().ToString() + "' returned from SPASQL SELECT query to the Virtuoso Quad Store");
             }
             return temp;
         }
 
-        private Uri MarshalUri(String uriData)
+        private Uri MarshalUri(string uriData)
         {
-            Uri u = new Uri(uriData, UriKind.RelativeOrAbsolute);
+            var u = new Uri(uriData, UriKind.RelativeOrAbsolute);
             if (!u.IsAbsoluteUri)
             {
                 // As of VIRT-375 we marshal this to a form we can round trip later rather than erroring as we did previously
@@ -494,24 +479,13 @@ namespace Semiodesk.Trinity.Store.Virtuoso
             return u;
         }
 
-        private String UnmarshalUri(Uri u)
+        private string UnmarshalUri(Uri u)
         {
-            if (u.IsAbsoluteUri)
-            {
-                if (u.AbsoluteUri.StartsWith(VirtuosoRelativeBaseString))
-                {
-                    u = new Uri(u.AbsoluteUri.Substring(VirtuosoRelativeBase.AbsoluteUri.Length), UriKind.Relative);
-                    return u.OriginalString;
-                }
-                else
-                {
-                    return u.AbsoluteUri;
-                }
-            }
-            else
-            {
-                return u.OriginalString;
-            }
+            if (!u.IsAbsoluteUri) return u.OriginalString;
+            if (!u.AbsoluteUri.StartsWith(VirtuosoRelativeBaseString)) return u.AbsoluteUri;
+            
+            u = new Uri(u.AbsoluteUri.Substring(VirtuosoRelativeBase.AbsoluteUri.Length), UriKind.Relative);
+            return u.OriginalString;
         }
 
         /// <summary>
@@ -527,30 +501,30 @@ namespace Semiodesk.Trinity.Store.Virtuoso
 
             try
             {
-                this.Open(false);
+                Open(false);
 
                 //Delete the existing Graph (if it exists)
-                this.ExecuteNonQuery("DELETE FROM DB.DBA.RDF_QUAD WHERE G = DB.DBA.RDF_MAKE_IID_OF_QNAME('" + this.UnmarshalUri(g.BaseUri) + "')");
+                ExecuteNonQuery("DELETE FROM DB.DBA.RDF_QUAD WHERE G = DB.DBA.RDF_MAKE_IID_OF_QNAME('" + UnmarshalUri(g.BaseUri) + "')");
 
                 //Make a call to the TTLP() Virtuoso function
-                VirtuosoCommand cmd = new VirtuosoCommand();
-                cmd.CommandTimeout = (this._timeout > 0 ? this._timeout : cmd.CommandTimeout);
+                var cmd = new VirtuosoCommand();
+                cmd.CommandTimeout = (_timeout > 0 ? _timeout : cmd.CommandTimeout);
                 cmd.CommandText = "DB.DBA.TTLP(@data, @base, @graph, 1)";
                 cmd.Parameters.Add("data", VirtDbType.VarChar);
                 cmd.Parameters["data"].Value = VDS.RDF.Writing.StringWriter.Write(g, new NTriplesWriter());
-                String baseUri = this.UnmarshalUri(g.BaseUri);
+                var baseUri = UnmarshalUri(g.BaseUri);
                 cmd.Parameters.Add("base", VirtDbType.VarChar);
                 cmd.Parameters.Add("graph", VirtDbType.VarChar);
                 cmd.Parameters["base"].Value = baseUri;
                 cmd.Parameters["graph"].Value = baseUri;
-                cmd.Connection = this._db;
-                int result = cmd.ExecuteNonQuery();
+                cmd.Connection = _db;
+                var result = cmd.ExecuteNonQuery();
 
-                this.Close(false);
+                Close(false);
             }
             catch
             {
-                this.Close(true);
+                Close(true);
                 throw;
             }
         }
@@ -558,10 +532,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// <summary>
         /// Gets the IO Behaviour of the store
         /// </summary>
-        public override IOBehaviour IOBehaviour
-        {
-            get { return IOBehaviour.IsQuadStore | IOBehaviour.HasNamedGraphs | IOBehaviour.OverwriteNamed | IOBehaviour.CanUpdateTriples; }
-        }
+        public override IOBehaviour IOBehaviour => IOBehaviour.IsQuadStore | IOBehaviour.HasNamedGraphs | IOBehaviour.OverwriteNamed | IOBehaviour.CanUpdateTriples;
 
         /// <summary>
         /// Updates a Graph in the Quad Store
@@ -584,7 +555,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         {
             try
             {
-                this.Open(true);
+                Open(true);
                 int r;
 
                 //Build the Delete Data Command
@@ -597,9 +568,9 @@ namespace Semiodesk.Trinity.Store.Virtuoso
                         //We use the VirtuosoFormatter as our formatter which formats Blank Nodes as calls to the
                         //bif:rdf_make_iid_of_qname('nodeID://bnode') function which works if the blank node originates from Virtuoso
 
-                        VirtuosoCommand deleteCmd = new VirtuosoCommand();
-                        deleteCmd.CommandTimeout = (this._timeout > 0 ? this._timeout : deleteCmd.CommandTimeout);
-                        StringBuilder delete = new StringBuilder();
+                        var deleteCmd = new VirtuosoCommand();
+                        deleteCmd.CommandTimeout = (_timeout > 0 ? _timeout : deleteCmd.CommandTimeout);
+                        var delete = new StringBuilder();
                         if (removals.All(t => t.IsGroundTriple))
                         {
                             delete.AppendLine("SPARQL define output:format '_JAVA_' DELETE DATA");
@@ -612,16 +583,16 @@ namespace Semiodesk.Trinity.Store.Virtuoso
                         }
                         if (graphUri != null)
                         {
-                            delete.AppendLine(" FROM <" + this.UnmarshalUri(graphUri) + ">");
+                            delete.AppendLine(" FROM <" + UnmarshalUri(graphUri) + ">");
                         }
                         else
                         {
                             throw new RdfStorageException("Cannot update an unnamed Graph in a Virtuoso Store using this method - you must specify the URI of a Graph to Update");
                         }
                         delete.AppendLine("{");
-                        foreach (Triple t in removals)
+                        foreach (var t in removals)
                         {
-                            delete.AppendLine(t.ToString(this._formatter));
+                            delete.AppendLine(t.ToString(_formatter));
                         }
                         delete.AppendLine("}");
 
@@ -634,8 +605,8 @@ namespace Semiodesk.Trinity.Store.Virtuoso
 
                         //Run the Delete
                         deleteCmd.CommandText = delete.ToString();
-                        deleteCmd.Connection = this._db;
-                        deleteCmd.Transaction = this._dbtrans;
+                        deleteCmd.Connection = _db;
+                        deleteCmd.Transaction = _dbtrans;
 
                         r = deleteCmd.ExecuteNonQuery();
                         if (r < 0) throw new RdfStorageException("Virtuoso encountered an error when deleting Triples");
@@ -649,27 +620,27 @@ namespace Semiodesk.Trinity.Store.Virtuoso
                     {
                         if (additions.All(t => t.IsGroundTriple))
                         {
-                            VirtuosoCommand insertCmd = new VirtuosoCommand();
-                            insertCmd.CommandTimeout = (this._timeout > 0 ? this._timeout : insertCmd.CommandTimeout);
-                            StringBuilder insert = new StringBuilder();
+                            var insertCmd = new VirtuosoCommand();
+                            insertCmd.CommandTimeout = (_timeout > 0 ? _timeout : insertCmd.CommandTimeout);
+                            var insert = new StringBuilder();
                             insert.AppendLine("SPARQL define output:format '_JAVA_' INSERT DATA");
                             if (graphUri != null)
                             {
-                                insert.AppendLine(" INTO <" + this.UnmarshalUri(graphUri) + ">");
+                                insert.AppendLine(" INTO <" + UnmarshalUri(graphUri) + ">");
                             }
                             else
                             {
                                 throw new RdfStorageException("Cannot update an unnamed Graph in Virtuoso using this method - you must specify the URI of a Graph to Update");
                             }
                             insert.AppendLine("{");
-                            foreach (Triple t in additions)
+                            foreach (var t in additions)
                             {
-                                insert.AppendLine(t.ToString(this._formatter));
+                                insert.AppendLine(t.ToString(_formatter));
                             }
                             insert.AppendLine("}");
                             insertCmd.CommandText = insert.ToString();
-                            insertCmd.Connection = this._db;
-                            insertCmd.Transaction = this._dbtrans;
+                            insertCmd.Connection = _db;
+                            insertCmd.Transaction = _dbtrans;
 
                             r = insertCmd.ExecuteNonQuery();
                             if (r < 0) throw new RdfStorageException("Virtuoso encountered an error when inserting Triples");
@@ -678,30 +649,30 @@ namespace Semiodesk.Trinity.Store.Virtuoso
                         {
                             //When data to be inserted contains Blank Nodes we must make a call to the TTLP() Virtuoso function
                             //instead of using INSERT DATA
-                            VDS.RDF.Graph g = new VDS.RDF.Graph();
+                            var g = new VDS.RDF.Graph();
                             g.Assert(additions);
-                            VirtuosoCommand cmd = new VirtuosoCommand();
-                            cmd.CommandTimeout = (this._timeout > 0 ? this._timeout : cmd.CommandTimeout);
+                            var cmd = new VirtuosoCommand();
+                            cmd.CommandTimeout = (_timeout > 0 ? _timeout : cmd.CommandTimeout);
                             cmd.CommandText = "DB.DBA.TTLP(@data, @base, @graph, 1)";
                             cmd.Parameters.Add("data", VirtDbType.VarChar);
                             cmd.Parameters["data"].Value = VDS.RDF.Writing.StringWriter.Write(g, new NTriplesWriter());
-                            String baseUri = this.UnmarshalUri(graphUri);
-                            if (String.IsNullOrEmpty(baseUri)) throw new RdfStorageException("Cannot updated an unnamed Graph in Virtuoso using this method - you must specify the URI of a Graph to Update");
+                            var baseUri = UnmarshalUri(graphUri);
+                            if (string.IsNullOrEmpty(baseUri)) throw new RdfStorageException("Cannot updated an unnamed Graph in Virtuoso using this method - you must specify the URI of a Graph to Update");
                             cmd.Parameters.Add("base", VirtDbType.VarChar);
                             cmd.Parameters.Add("graph", VirtDbType.VarChar);
                             cmd.Parameters["base"].Value = baseUri;
                             cmd.Parameters["graph"].Value = baseUri;
-                            cmd.Connection = this._db;
-                            int result = cmd.ExecuteNonQuery();
+                            cmd.Connection = _db;
+                            var result = cmd.ExecuteNonQuery();
                         }
                     }
                 }
 
-                this.Close(false);
+                Close(false);
             }
             catch
             {
-                this.Close(true, true);
+                Close(true, true);
                 throw;
             }
         }
@@ -712,35 +683,26 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// <param name="graphUri">Graph Uri of the Graph to update</param>
         /// <param name="additions">Triples to be added</param>
         /// <param name="removals">Triples to be removed</param>
-        public override void UpdateGraph(String graphUri, IEnumerable<Triple> additions, IEnumerable<Triple> removals)
+        public override void UpdateGraph(string graphUri, IEnumerable<Triple> additions, IEnumerable<Triple> removals)
         {
-            Uri u = (graphUri.Equals(String.Empty)) ? null : UriFactory.Create(graphUri);
-            this.UpdateGraph(u, additions, removals);
+            var u = (graphUri.Equals(string.Empty)) ? null : UriFactory.Create(graphUri);
+            UpdateGraph(u, additions, removals);
         }
 
         /// <summary>
         /// Indicates that Updates are supported by the Virtuoso Native Quad Store
         /// </summary>
-        public override bool UpdateSupported
-        {
-            get { return true; }
-        }
+        public override bool UpdateSupported => true;
 
         /// <summary>
         /// Returns that the Manager is ready
         /// </summary>
-        public override bool IsReady
-        {
-            get { return true; }
-        }
+        public override bool IsReady => true;
 
         /// <summary>
         /// Returns that the Manager is not read-only
         /// </summary>
-        public override bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public override bool IsReadOnly => false;
 
         #endregion
 
@@ -763,11 +725,11 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// </para>
         /// </remarks>
         /// <exception cref="RdfQueryException">Thrown if an error occurs in making the query</exception>
-        public Object Query(String sparqlQuery)
+        public object Query(string sparqlQuery)
         {
-            VDS.RDF.Graph g = new VDS.RDF.Graph();
-            SparqlResultSet results = new SparqlResultSet();
-            this.Query(new GraphHandler(g), new ResultSetHandler(results), sparqlQuery);
+            var g = new VDS.RDF.Graph();
+            var results = new SparqlResultSet();
+            Query(new GraphHandler(g), new ResultSetHandler(results), sparqlQuery);
 
             if (results.ResultsType != SparqlResultsType.Unknown)
             {
@@ -794,13 +756,13 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// </para>
         /// </remarks>
         /// <exception cref="RdfQueryException">Thrown if an error occurs in making the query</exception>
-        public void Query(IRdfHandler rdfHandler, ISparqlResultsHandler resultsHandler, String sparqlQuery)
+        public void Query(IRdfHandler rdfHandler, ISparqlResultsHandler resultsHandler, string sparqlQuery)
         {
             try
             {
-                if (resultsHandler != null) resultsHandler.StartResults();
+                resultsHandler?.StartResults();
 
-                DataTable results = new DataTable();
+                var results = new DataTable();
                 results.Columns.CollectionChanged += Columns_CollectionChanged;
 
                 //See if the query can be parsed into a SparqlQuery object
@@ -808,12 +770,14 @@ namespace Semiodesk.Trinity.Store.Virtuoso
                 try
                 {
                     //We'll set the Parser to SPARQL 1.1 mode even though Virtuoso's SPARQL implementation has
-                    //various perculiarties in their SPARQL 1.1 implementation and we'll try and 
+                    //various peculiarities in their SPARQL 1.1 implementation and we'll try and 
                     //handle the potential results in the catch branch if a valid SPARQL 1.0 query
                     //cannot be parsed
                     //Change made in response to a bug report by Aleksandr A. Zaripov [zaripov@tpu.ru]
-                    SparqlQueryParser parser = new SparqlQueryParser();
-                    parser.SyntaxMode = SparqlQuerySyntax.Sparql_1_1;
+                    var parser = new SparqlQueryParser
+                    {
+                        SyntaxMode = SparqlQuerySyntax.Sparql_1_1
+                    };
                     VDS.RDF.Query.SparqlQuery query;
                     try
                     {
@@ -835,156 +799,149 @@ namespace Semiodesk.Trinity.Store.Virtuoso
                         case VDS.RDF.Query.SparqlQueryType.SelectDistinct:
                         case VDS.RDF.Query.SparqlQueryType.SelectReduced:
                             //Type the Tables columns as System.Object
-                            foreach (SparqlVariable var in query.Variables)
+                            foreach (var var in query.Variables)
                             {
                                 if (var.IsResultVariable)
                                 {
-                                    results.Columns.Add(var.Name, typeof(System.Object));
+                                    results.Columns.Add(var.Name, typeof(object));
                                 }
                             }
                             break;
                     }
 
-                    try
+                    #region Valid SPARQL Query Handling
+
+                    Open(false);
+
+                    //Make the Query against Virtuoso
+                    var cmd = _db.CreateCommand();
+                    cmd.CommandTimeout = (_timeout > 0 ? _timeout : cmd.CommandTimeout);
+                    cmd.CommandText = "SPARQL " + sparqlQuery;
+                    var adapter = new VirtuosoDataAdapter(cmd);
+                    adapter.Fill(results);
+
+                    //Decide how to process the results based on the return type
+                    switch (query.QueryType)
                     {
-                        #region Valid SPARQL Query Handling
+                        case VDS.RDF.Query.SparqlQueryType.Ask:
+                            //Expect a DataTable containing a single row and column which contains a boolean
 
-                        this.Open(false);
+                            //Ensure Results Handler is not null
+                            if (resultsHandler == null) throw new ArgumentNullException("resultsHandler", "Cannot handle a Boolean Result with a null SPARQL Results Handler");
 
-                        //Make the Query against Virtuoso
-                        VirtuosoCommand cmd = this._db.CreateCommand();
-                        cmd.CommandTimeout = (this._timeout > 0 ? this._timeout : cmd.CommandTimeout);
-                        cmd.CommandText = "SPARQL " + sparqlQuery;
-                        VirtuosoDataAdapter adapter = new VirtuosoDataAdapter(cmd);
-                        adapter.Fill(results);
-
-                        //Decide how to process the results based on the return type
-                        switch (query.QueryType)
-                        {
-                            case VDS.RDF.Query.SparqlQueryType.Ask:
-                                //Expect a DataTable containing a single row and column which contains a boolean
-
-                                //Ensure Results Handler is not null
-                                if (resultsHandler == null) throw new ArgumentNullException("resultsHandler", "Cannot handle a Boolean Result with a null SPARQL Results Handler");
-
-                                if (results.Rows.Count == 1 && results.Columns.Count == 1)
+                            if (results.Rows.Count == 1 && results.Columns.Count == 1)
+                            {
+                                //Try and parse the result
+                                bool result;
+                                int r;
+                                if (bool.TryParse(results.Rows[0][0].ToString(), out result))
                                 {
-                                    //Try and parse the result
-                                    bool result;
-                                    int r;
-                                    if (Boolean.TryParse(results.Rows[0][0].ToString(), out result))
-                                    {
-                                        resultsHandler.HandleBooleanResult(result);
-                                    }
-                                    else if (Int32.TryParse(results.Rows[0][0].ToString(), out r))
-                                    {
-                                        resultsHandler.HandleBooleanResult(r == 1);
-                                    }
-                                    else
-                                    {
-                                        throw new RdfQueryException("Expected a Boolean as the result of an ASK query but the non-boolean value '" + results.Rows[0][0].ToString() + "' was received");
-                                    }
+                                    resultsHandler.HandleBooleanResult(result);
+                                }
+                                else if (int.TryParse(results.Rows[0][0].ToString(), out r))
+                                {
+                                    resultsHandler.HandleBooleanResult(r == 1);
                                 }
                                 else
                                 {
-                                    //If we get anything else then we'll return that the result was False
-                                    resultsHandler.HandleBooleanResult(false);
+                                    throw new RdfQueryException("Expected a Boolean as the result of an ASK query but the non-boolean value '" + results.Rows[0][0].ToString() + "' was received");
                                 }
-                                break;
+                            }
+                            else
+                            {
+                                //If we get anything else then we'll return that the result was False
+                                resultsHandler.HandleBooleanResult(false);
+                            }
+                            break;
 
-                            case VDS.RDF.Query.SparqlQueryType.Construct:
-                            case VDS.RDF.Query.SparqlQueryType.Describe:
-                            case VDS.RDF.Query.SparqlQueryType.DescribeAll:
-                                //Expect a DataTable containing a single row and column which contains a String
-                                //That string will be a Turtle serialization of the Graph
+                        case VDS.RDF.Query.SparqlQueryType.Construct:
+                        case VDS.RDF.Query.SparqlQueryType.Describe:
+                        case VDS.RDF.Query.SparqlQueryType.DescribeAll:
+                            //Expect a DataTable containing a single row and column which contains a String
+                            //That string will be a Turtle serialization of the Graph
 
-                                //Ensure that RDF Handler is not null
-                                if (rdfHandler == null) throw new ArgumentNullException("rdfHandler", "Cannot handle a Graph result with a null RDF Handler");
+                            //Ensure that RDF Handler is not null
+                            if (rdfHandler == null) throw new ArgumentNullException("rdfHandler", "Cannot handle a Graph result with a null RDF Handler");
 
-                                if (results.Rows.Count == 1 && results.Columns.Count == 1)
+                            if (results.Rows.Count == 1 && results.Columns.Count == 1)
+                            {
+                                try
                                 {
-                                    try
-                                    {
-                                        //Use StringParser to parse
-                                        String data = results.Rows[0][0].ToString();
-                                        TurtleParser ttlparser = new TurtleParser();
-                                        ttlparser.Load(rdfHandler, new StringReader(data));
-                                    }
-                                    catch (RdfParseException parseEx)
-                                    {
-                                        throw new RdfQueryException("Expected a valid Turtle serialization of the Graph resulting from a CONSTRUCT/DESCRIBE query but the result failed to parse", parseEx);
-                                    }
+                                    //Use StringParser to parse
+                                    var data = results.Rows[0][0].ToString();
+                                    var ttlparser = new TurtleParser();
+                                    ttlparser.Load(rdfHandler, new StringReader(data));
                                 }
-                                else if (results.Columns.Count == 3)
+                                catch (RdfParseException parseEx)
                                 {
-                                    rdfHandler.StartRdf();
-                                    try
-                                    {
-                                        foreach (DataRow row in results.Rows)
-                                        {
-                                            INode s = this.LoadNode(rdfHandler, row[0]);
-                                            INode p = this.LoadNode(rdfHandler, row[1]);
-                                            INode o = this.LoadNode(rdfHandler, row[2]);
-                                            if (!rdfHandler.HandleTriple(new Triple(s, p, o))) break;
-                                        }
-                                        rdfHandler.EndRdf(true);
-                                    }
-                                    catch
-                                    {
-                                        rdfHandler.EndRdf(false);
-                                        throw;
-                                    }
+                                    throw new RdfQueryException("Expected a valid Turtle serialization of the Graph resulting from a CONSTRUCT/DESCRIBE query but the result failed to parse", parseEx);
                                 }
-                                else
+                            }
+                            else if (results.Columns.Count == 3)
+                            {
+                                rdfHandler.StartRdf();
+                                try
                                 {
-                                    throw new RdfQueryException("Unexpected results data received for a CONSTRUCT/DESCRIBE query (Got " + results.Rows.Count + " row(s) with " + results.Columns.Count + " column(s)");
-                                }
-                                break;
-
-                            case VDS.RDF.Query.SparqlQueryType.Select:
-                            case VDS.RDF.Query.SparqlQueryType.SelectAll:
-                            case VDS.RDF.Query.SparqlQueryType.SelectAllDistinct:
-                            case VDS.RDF.Query.SparqlQueryType.SelectAllReduced:
-                            case VDS.RDF.Query.SparqlQueryType.SelectDistinct:
-                            case VDS.RDF.Query.SparqlQueryType.SelectReduced:
-                                //Ensure Results Handler is not null
-                                if (resultsHandler == null) throw new ArgumentNullException("resultsHandler", "Cannot handle SPARQL Results with a null Results Handler");
-
-                                //Get Result Variables
-                                List<SparqlVariable> resultVars = query.Variables.Where(v => v.IsResultVariable).ToList();
-                                foreach (SparqlVariable var in resultVars)
-                                {
-                                    if (!resultsHandler.HandleVariable(var.Name)) ParserHelper.Stop();
-                                }
-                                VDS.RDF.Graph temp = new VDS.RDF.Graph();
-
-                                //Convert each solution into a SPARQLResult
-                                foreach (DataRow r in results.Rows)
-                                {
-                                    Set s = new Set();
-                                    foreach (SparqlVariable var in resultVars)
+                                    foreach (DataRow row in results.Rows)
                                     {
-                                        if (r[var.Name] != null)
-                                        {
-                                            s.Add(var.Name, this.LoadNode(temp, r[var.Name]));
-                                        }
+                                        var s = LoadNode(rdfHandler, row[0]);
+                                        var p = LoadNode(rdfHandler, row[1]);
+                                        var o = LoadNode(rdfHandler, row[2]);
+                                        if (!rdfHandler.HandleTriple(new Triple(s, p, o))) break;
                                     }
-                                    if (!resultsHandler.HandleResult(new SparqlResult(s))) ParserHelper.Stop();
+                                    rdfHandler.EndRdf(true);
                                 }
-                                break;
+                                catch
+                                {
+                                    rdfHandler.EndRdf(false);
+                                    throw;
+                                }
+                            }
+                            else
+                            {
+                                throw new RdfQueryException("Unexpected results data received for a CONSTRUCT/DESCRIBE query (Got " + results.Rows.Count + " row(s) with " + results.Columns.Count + " column(s)");
+                            }
+                            break;
 
-                            default:
-                                throw new RdfQueryException("Unable to process the Results of an Unknown query type");
-                        }
+                        case VDS.RDF.Query.SparqlQueryType.Select:
+                        case VDS.RDF.Query.SparqlQueryType.SelectAll:
+                        case VDS.RDF.Query.SparqlQueryType.SelectAllDistinct:
+                        case VDS.RDF.Query.SparqlQueryType.SelectAllReduced:
+                        case VDS.RDF.Query.SparqlQueryType.SelectDistinct:
+                        case VDS.RDF.Query.SparqlQueryType.SelectReduced:
+                            //Ensure Results Handler is not null
+                            if (resultsHandler == null) throw new ArgumentNullException("resultsHandler", "Cannot handle SPARQL Results with a null Results Handler");
 
-                        this.Close(false);
+                            //Get Result Variables
+                            var resultVars = query.Variables.Where(v => v.IsResultVariable).ToList();
+                            foreach (var var in resultVars)
+                            {
+                                if (!resultsHandler.HandleVariable(var.Name)) ParserHelper.Stop();
+                            }
+                            var temp = new VDS.RDF.Graph();
 
-                        #endregion
+                            //Convert each solution into a SPARQLResult
+                            foreach (DataRow r in results.Rows)
+                            {
+                                var s = new Set();
+                                foreach (var var in resultVars)
+                                {
+                                    if (r[var.Name] != null)
+                                    {
+                                        s.Add(var.Name, LoadNode(temp, r[var.Name]));
+                                    }
+                                }
+                                if (!resultsHandler.HandleResult(new SparqlResult(s))) ParserHelper.Stop();
+                            }
+                            break;
+
+                        default:
+                            throw new RdfQueryException("Unable to process the Results of an Unknown query type");
                     }
-                    catch
-                    {
-                        throw;
-                    }
+
+                    Close(false);
+
+                    #endregion
                 }
                 catch (RdfParseException)
                 {
@@ -996,13 +953,13 @@ namespace Semiodesk.Trinity.Store.Virtuoso
                     {
                         #region Potentially Invalid SPARQL Query Handling
 
-                        this.Open(false);
+                        Open(false);
 
                         //Make the Query against Virtuoso
-                        VirtuosoCommand cmd = this._db.CreateCommand();
-                        cmd.CommandTimeout = (this._timeout > 0 ? this._timeout : cmd.CommandTimeout);
+                        var cmd = _db.CreateCommand();
+                        cmd.CommandTimeout = (_timeout > 0 ? _timeout : cmd.CommandTimeout);
                         cmd.CommandText = "SPARQL " /*define output:format '_JAVA_' "*/+ sparqlQuery;
-                        VirtuosoDataAdapter adapter = new VirtuosoDataAdapter(cmd);
+                        var adapter = new VirtuosoDataAdapter(cmd);
                         adapter.Fill(results);
 
                         //Try to detect the return type based on the DataTable configuration
@@ -1020,9 +977,9 @@ namespace Semiodesk.Trinity.Store.Virtuoso
                             {
                                 foreach (DataRow row in results.Rows)
                                 {
-                                    INode s = this.LoadNode(rdfHandler, row[0]);
-                                    INode p = this.LoadNode(rdfHandler, row[1]);
-                                    INode o = this.LoadNode(rdfHandler, row[2]);
+                                    var s = LoadNode(rdfHandler, row[0]);
+                                    var p = LoadNode(rdfHandler, row[1]);
+                                    var o = LoadNode(rdfHandler, row[2]);
                                     if (!rdfHandler.HandleTriple(new Triple(s, p, o))) break;
                                 }
                                 rdfHandler.EndRdf(true);
@@ -1054,53 +1011,53 @@ namespace Semiodesk.Trinity.Store.Virtuoso
                             double rdbl;
                             float rflt;
 
-                            if (results.Rows[0][0].ToString().Equals(String.Empty))
+                            if (results.Rows[0][0].ToString().Equals(string.Empty))
                             {
                                 //Empty Results - no need to do anything
                             }
-                            else if (Boolean.TryParse(results.Rows[0][0].ToString(), out result))
+                            else if (bool.TryParse(results.Rows[0][0].ToString(), out result))
                             {
                                 //Parseable Boolean so ASK Results
                                 if (resultsHandler == null) throw new ArgumentNullException("resultsHandler", "Cannot handle a Boolean result with a null Results Handler");
                                 resultsHandler.HandleBooleanResult(result);
                             }
-                            else if (Int32.TryParse(results.Rows[0][0].ToString(), out r))
+                            else if (int.TryParse(results.Rows[0][0].ToString(), out r))
                             {
                                 if (resultsHandler == null) throw new ArgumentNullException("resultsHandler", "Cannot handle SPARQL results with a null Results Handler");
 
                                 //Parseable Integer so Aggregate SELECT Query Results
                                 if (!resultsHandler.HandleVariable("Result")) ParserHelper.Stop();
-                                Set s = new Set();
+                                var s = new Set();
                                 s.Add("Result", r.ToLiteral(resultsHandler));
                                 if (!resultsHandler.HandleResult(new SparqlResult(s))) ParserHelper.Stop();
                             }
-                            else if (Single.TryParse(results.Rows[0][0].ToString(), out rflt))
+                            else if (float.TryParse(results.Rows[0][0].ToString(), out rflt))
                             {
                                 if (resultsHandler == null) throw new ArgumentNullException("resultsHandler", "Cannot handle SPARQL results with a null Results Handler");
 
                                 //Parseable Single so Aggregate SELECT Query Results
                                 if (!resultsHandler.HandleVariable("Result")) ParserHelper.Stop();
-                                Set s = new Set();
+                                var s = new Set();
                                 s.Add("Result", rflt.ToLiteral(resultsHandler));
                                 if (!resultsHandler.HandleResult(new SparqlResult(s))) ParserHelper.Stop();
                             }
-                            else if (Double.TryParse(results.Rows[0][0].ToString(), out rdbl))
+                            else if (double.TryParse(results.Rows[0][0].ToString(), out rdbl))
                             {
                                 if (resultsHandler == null) throw new ArgumentNullException("resultsHandler", "Cannot handle SPARQL results with a null Results Handler");
 
                                 //Parseable Double so Aggregate SELECT Query Results
                                 if (!resultsHandler.HandleVariable("Result")) ParserHelper.Stop();
-                                Set s = new Set();
+                                var s = new Set();
                                 s.Add("Result", rdbl.ToLiteral(resultsHandler));
                                 if (!resultsHandler.HandleResult(new SparqlResult(s))) ParserHelper.Stop();
                             }
-                            else if (Decimal.TryParse(results.Rows[0][0].ToString(), out rdec))
+                            else if (decimal.TryParse(results.Rows[0][0].ToString(), out rdec))
                             {
                                 if (resultsHandler == null) throw new ArgumentNullException("resultsHandler", "Cannot handle SPARQL results with a null Results Handler");
 
                                 //Parseable Decimal so Aggregate SELECT Query Results
                                 if (!resultsHandler.HandleVariable("Result")) ParserHelper.Stop();
-                                Set s = new Set();
+                                var s = new Set();
                                 s.Add("Result", rdec.ToLiteral(resultsHandler));
                                 if (!resultsHandler.HandleResult(new SparqlResult(s))) ParserHelper.Stop();
                             }
@@ -1110,8 +1067,8 @@ namespace Semiodesk.Trinity.Store.Virtuoso
                                 try
                                 {
                                     //Use StringParser to parse
-                                    String data = results.Rows[0][0].ToString();
-                                    TurtleParser ttlparser = new TurtleParser();
+                                    var data = results.Rows[0][0].ToString();
+                                    var ttlparser = new TurtleParser();
                                     ttlparser.Load(rdfHandler, new StringReader(data));
                                 }
                                 catch (RdfParseException)
@@ -1121,8 +1078,8 @@ namespace Semiodesk.Trinity.Store.Virtuoso
                                     //If it failed to parse then it might be the result of one of the aggregate
                                     //functions that Virtuoso extends Sparql with
                                     if (!resultsHandler.HandleVariable(results.Columns[0].ColumnName)) ParserHelper.Stop();
-                                    Set s = new Set();
-                                    s.Add(results.Columns[0].ColumnName, this.LoadNode(resultsHandler, results.Rows[0][0]));
+                                    var s = new Set();
+                                    s.Add(results.Columns[0].ColumnName, LoadNode(resultsHandler, results.Rows[0][0]));
                                     //Nothing was returned here previously - fix submitted by Aleksandr A. Zaripov [zaripov@tpu.ru]
                                     if (!resultsHandler.HandleResult(new SparqlResult(s))) ParserHelper.Stop();
                                 }
@@ -1136,7 +1093,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
                             if (resultsHandler == null) throw new ArgumentNullException("resultsHandler", "Cannot handle SPARQL results with a null Results Handler");
 
                             //Get Result Variables
-                            List<String> vars = new List<string>();
+                            var vars = new List<string>();
                             foreach (DataColumn col in results.Columns)
                             {
                                 vars.Add(col.ColumnName);
@@ -1146,51 +1103,51 @@ namespace Semiodesk.Trinity.Store.Virtuoso
                             //Convert each solution into a SPARQLResult
                             foreach (DataRow r in results.Rows)
                             {
-                                Set s = new Set();
-                                foreach (String var in vars)
+                                var s = new Set();
+                                foreach (var var in vars)
                                 {
                                     if (r[var] != null)
                                     {
-                                        s.Add(var, this.LoadNode(resultsHandler, r[var]));
+                                        s.Add(var, LoadNode(resultsHandler, r[var]));
                                     }
                                 }
                                 if (!resultsHandler.HandleResult(new SparqlResult(s))) ParserHelper.Stop();
                             }
                         }
-                        this.Close(false);
+                        Close(false);
 
                         #endregion
                     }
                     catch
                     {
-                        this.Close(true, true);
+                        Close(true, true);
                         throw;
                     }
                 }
 
-                if (resultsHandler != null) resultsHandler.EndResults(true);
-                this.Close(false);
+                resultsHandler?.EndResults(true);
+                Close(false);
             }
             catch (RdfParsingTerminatedException)
             {
-                if (resultsHandler != null) resultsHandler.EndResults(true);
-                this.Close(false);
+                resultsHandler?.EndResults(true);
+                Close(false);
             }
             catch
             {
-                this.Close(true);
-                if (resultsHandler != null) resultsHandler.EndResults(false);
-                this.Close(false);
+                Close(true);
+                resultsHandler?.EndResults(false);
+                Close(false);
                 throw;
             }
         }
 
         private static void Columns_CollectionChanged(object sender, System.ComponentModel.CollectionChangeEventArgs e)
         {
-            Type reqType = typeof(Object);
+            var reqType = typeof(object);
             if (e.Action != System.ComponentModel.CollectionChangeAction.Add) return;
-            DataColumn column = (DataColumn)e.Element;
-            if (!column.DataType.Equals(reqType))
+            var column = (DataColumn)e.Element;
+            if (column.DataType != reqType)
             {
                 column.DataType = reqType;
             }
@@ -1209,55 +1166,55 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// </para>
         /// </remarks>
         /// <exception cref="SparqlUpdateException">Thrown if an error occurs in making the update</exception>
-        public void Update(String sparqlUpdate)
+        public void Update(string sparqlUpdate)
         {
             try
             {
-                this.Open(true);
+                Open(true);
 
                 //Try and parse the SPARQL Update String
-                SparqlUpdateParser parser = new SparqlUpdateParser();
-                SparqlUpdateCommandSet commands = parser.ParseFromString(sparqlUpdate);
+                var parser = new SparqlUpdateParser();
+                var commands = parser.ParseFromString(sparqlUpdate);
 
                 //Process each Command individually
-                foreach (SparqlUpdateCommand command in commands.Commands)
+                foreach (var command in commands.Commands)
                 {
                     //Make the Update against Virtuoso
-                    VirtuosoCommand cmd = this._db.CreateCommand();
-                    cmd.CommandTimeout = (this._timeout > 0 ? this._timeout : cmd.CommandTimeout);
+                    var cmd = _db.CreateCommand();
+                    cmd.CommandTimeout = (_timeout > 0 ? _timeout : cmd.CommandTimeout);
                     cmd.CommandText = "SPARQL " + command.ToString();
                     cmd.ExecuteNonQuery();
                 }
 
-                this.Close(true);
+                Close(true);
             }
             catch (RdfParseException)
             {
                 try
                 {
                     //Ignore failed parsing and attempt to execute anyway
-                    VirtuosoCommand cmd = this._db.CreateCommand();
-                    cmd.CommandTimeout = (this._timeout > 0 ? this._timeout : cmd.CommandTimeout);
+                    var cmd = _db.CreateCommand();
+                    cmd.CommandTimeout = (_timeout > 0 ? _timeout : cmd.CommandTimeout);
                     cmd.CommandText = "SPARQL " + sparqlUpdate;
 
                     cmd.ExecuteNonQuery();
-                    this.Close(true);
+                    Close(true);
                 }
                 catch (Exception ex)
                 {
-                    this.Close(true, true);
+                    Close(true, true);
                     throw new SparqlUpdateException("An error occurred while trying to perform the SPARQL Update with Virtuoso.  Note that Virtuoso historically has primarily supported SPARUL (the precursor to SPARQL Update) and many valid SPARQL Update Commands may not be supported by Virtuoso", ex);
                 }
             }
             catch (SparqlUpdateException)
             {
-                this.Close(true, true);
+                Close(true, true);
                 throw;
             }
             catch (Exception ex)
             {
                 //Wrap in a SPARQL Update Exception
-                this.Close(true, true);
+                Close(true, true);
                 throw new SparqlUpdateException("An error occurred while trying to perform the SPARQL Update with Virtuoso.  Note that Virtuoso historically has primarily supported SPARUL (the precursor to SPARQL Update) and many valid SPARQL Update Commands may not be supported by Virtuoso if you are not using a recent version.", ex);
             }
         }
@@ -1270,27 +1227,27 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// <param name="graphUri">URI of the Graph to delete</param>
         public override void DeleteGraph(Uri graphUri)
         {
-            this.DeleteGraph(this.UnmarshalUri(graphUri));
+            DeleteGraph(UnmarshalUri(graphUri));
         }
 
         /// <summary>
         /// Deletes a Graph from the store
         /// </summary>
         /// <param name="graphUri">URI of the Graph to delete</param>
-        public override void DeleteGraph(String graphUri)
+        public override void DeleteGraph(string graphUri)
         {
             if (graphUri == null) return;
-            if (graphUri.Equals(String.Empty)) return;
+            if (string.IsNullOrWhiteSpace(graphUri)) return;
 
             try
             {
-                this.Open(false);
-                this.ExecuteNonQuery("DELETE FROM DB.DBA.RDF_QUAD WHERE G = DB.DBA.RDF_MAKE_IID_OF_QNAME('" + graphUri + "')");
-                this.Close(false);
+                Open(false);
+                ExecuteNonQuery("DELETE FROM DB.DBA.RDF_QUAD WHERE G = DB.DBA.RDF_MAKE_IID_OF_QNAME('" + graphUri + "')");
+                Close(false);
             }
             catch
             {
-                this.Close(true, true);
+                Close(true, true);
                 throw;
             }
         }
@@ -1298,10 +1255,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// <summary>
         /// Returns that deleting Graphs is supported
         /// </summary>
-        public override bool DeleteSupported
-        {
-            get { return true; }
-        }
+        public override bool DeleteSupported => true;
 
         /// <summary>
         /// Lists the Graphs in the store
@@ -1311,40 +1265,37 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         {
             try
             {
-                Object results = this.Query("SELECT DISTINCT ?g WHERE { GRAPH ?g { ?s ?p ?o } }");
-                if (results is SparqlResultSet)
+                var results = Query("SELECT DISTINCT ?g WHERE { GRAPH ?g { ?s ?p ?o } }");
+                if (results is SparqlResultSet set)
                 {
-                    List<Uri> graphs = new List<Uri>();
-                    foreach (SparqlResult r in ((SparqlResultSet)results))
+                    var graphs = new List<Uri>();
+                    foreach (var r in set)
                     {
-                        if (r.HasValue("g"))
+                        if (!r.HasValue("g")) continue;
+                        var temp = r["g"];
+                        try
                         {
-                            INode temp = r["g"];
-                            try
+                            switch (temp.NodeType)
                             {
-                                if (temp.NodeType == NodeType.Uri)
-                                {
+                                case NodeType.Uri:
                                     graphs.Add(((IUriNode)temp).Uri);
-                                }
-                                else if (temp.NodeType == NodeType.Literal)
-                                {
+                                    break;
+                                case NodeType.Literal:
                                     //HACK: Virtuoso wrongly returns Literals instead of URIs in the results for the above query prior to Virtuoso 6.1.3
                                     graphs.Add(UriFactory.Create(((ILiteralNode)temp).Value));
-                                }
+                                    break;
                             }
-                            catch
-                            {
-                                //HACK: Virtuoso has some special Graphs which have non-URI names so ignore these
-                                continue;
-                            }
+                        }
+                        catch
+                        {
+                            //HACK: Virtuoso has some special Graphs which have non-URI names so ignore these
+                            continue;
                         }
                     }
                     return graphs;
                 }
-                else
-                {
-                    return Enumerable.Empty<Uri>();
-                }
+
+                return Enumerable.Empty<Uri>();
             }
             catch (Exception ex)
             {
@@ -1355,10 +1306,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// <summary>
         /// Returns that listing graphs is supported
         /// </summary>
-        public override bool ListGraphsSupported
-        {
-            get { return true; }
-        }
+        public override bool ListGraphsSupported => true;
 
         #region Database IO
 
@@ -1366,32 +1314,23 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// Opens a Connection to the Database
         /// </summary>
         /// <param name="keepOpen">Indicates that the Connection should be kept open and a Transaction started</param>
-        private void Open(bool keepOpen)
-        {
-            this.Open(keepOpen, IsolationLevel.ReadCommitted);
-        }
-
-        /// <summary>
-        /// Opens a Connection to the Database
-        /// </summary>
-        /// <param name="keepOpen">Indicates that the Connection should be kept open and a Transaction started</param>
         /// <param name="level">Isolation Level to use</param>
-        private void Open(bool keepOpen, IsolationLevel level)
+        private void Open(bool keepOpen, IsolationLevel level = IsolationLevel.ReadCommitted)
         {
-            switch (this._db.State)
+            switch (_db.State)
             {
                 case ConnectionState.Broken:
                 case ConnectionState.Closed:
-                    this._db.Open();
+                    _db.Open();
 
                     //Start a Transaction
-                    if (this._dbtrans == null)
+                    if (_dbtrans == null)
                     {
-                        this._dbtrans = this._db.BeginTransaction(level);
+                        _dbtrans = _db.BeginTransaction(level);
                     }
                     break;
             }
-            if (keepOpen) this._keepOpen = true;
+            if (keepOpen) _keepOpen = true;
         }
 
         /// <summary>
@@ -1400,7 +1339,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// <param name="forceClose">Indicates that the connection should be closed even if keepOpen was specified when the Connection was opened</param>
         private void Close(bool forceClose)
         {
-            this.Close(forceClose, false);
+            Close(forceClose, false);
         }
 
         /// <summary>
@@ -1411,33 +1350,33 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         private void Close(bool forceClose, bool rollbackTrans)
         {
             //Don't close if we're keeping open and not forcing Close or rolling back a Transaction
-            if (this._keepOpen && !forceClose && !rollbackTrans)
+            if (_keepOpen && !forceClose && !rollbackTrans)
             {
                 return;
             }
 
-            switch (this._db.State)
+            switch (_db.State)
             {
                 case ConnectionState.Open:
                     //Finish the Transaction if exists
-                    if (this._dbtrans != null)
+                    if (_dbtrans != null)
                     {
                         if (!rollbackTrans)
                         {
                             //Commit normally
-                            this._dbtrans.Commit();
+                            _dbtrans.Commit();
                         }
                         else
                         {
                             //Want to Rollback
-                            this._dbtrans.Rollback();
+                            _dbtrans.Rollback();
                         }
-                        this._dbtrans = null;
+                        _dbtrans = null;
 
-                        this._db.Close();
+                        _db.Close();
                     }
 
-                    this._keepOpen = false;
+                    _keepOpen = false;
                     break;
             }
         }
@@ -1449,12 +1388,12 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         private void ExecuteNonQuery(string sqlCmd)
         {
             //Create the SQL Command
-            VirtuosoCommand cmd = new VirtuosoCommand(sqlCmd, this._db);
-            cmd.CommandTimeout = (this._timeout > 0 ? this._timeout : cmd.CommandTimeout);
-            if (this._dbtrans != null)
+            var cmd = new VirtuosoCommand(sqlCmd, _db);
+            cmd.CommandTimeout = (_timeout > 0 ? _timeout : cmd.CommandTimeout);
+            if (_dbtrans != null)
             {
                 //Add to the Transaction if required
-                cmd.Transaction = this._dbtrans;
+                cmd.Transaction = _dbtrans;
             }
 
             //Execute
@@ -1469,17 +1408,17 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         private DataTable ExecuteQuery(string sqlCmd)
         {
             //Create the SQL Command
-            VirtuosoCommand cmd = new VirtuosoCommand(sqlCmd, this._db);
-            cmd.CommandTimeout = (this._timeout > 0 ? this._timeout : cmd.CommandTimeout);
-            if (this._dbtrans != null)
+            var cmd = new VirtuosoCommand(sqlCmd, _db);
+            cmd.CommandTimeout = (_timeout > 0 ? _timeout : cmd.CommandTimeout);
+            if (_dbtrans != null)
             {
                 //Add to the Transaction if required
-                cmd.Transaction = this._dbtrans;
+                cmd.Transaction = _dbtrans;
             }
 
             //Execute the Query
-            VirtuosoDataAdapter adapter = new VirtuosoDataAdapter(cmd);
-            DataTable results = new DataTable();
+            var adapter = new VirtuosoDataAdapter(cmd);
+            var results = new DataTable();
             adapter.Fill(results);
 
             return results;
@@ -1493,12 +1432,12 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         private object ExecuteScalar(string sqlCmd)
         {
             //Create the SQL Command
-            VirtuosoCommand cmd = new VirtuosoCommand(sqlCmd, this._db);
-            cmd.CommandTimeout = (this._timeout > 0 ? this._timeout : cmd.CommandTimeout);
-            if (this._dbtrans != null)
+            var cmd = new VirtuosoCommand(sqlCmd, _db);
+            cmd.CommandTimeout = (_timeout > 0 ? _timeout : cmd.CommandTimeout);
+            if (_dbtrans != null)
             {
                 //Add to the Transaction if required
-                cmd.Transaction = this._dbtrans;
+                cmd.Transaction = _dbtrans;
             }
 
             //Execute the Scalar
@@ -1508,18 +1447,12 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// <summary>
         /// Gets whether there is an active connection to the Virtuoso database
         /// </summary>
-        public bool HasOpenConnection
-        {
-            get { return this._db.State != ConnectionState.Broken && this._db.State != ConnectionState.Closed; }
-        }
+        public bool HasOpenConnection => _db.State != ConnectionState.Broken && _db.State != ConnectionState.Closed;
 
         /// <summary>
         /// Gets whether there is any active transaction on the Virtuoso database
         /// </summary>
-        public bool HasActiveTransaction
-        {
-            get { return !ReferenceEquals(this._dbtrans, null); }
-        }
+        public bool HasActiveTransaction => !ReferenceEquals(_dbtrans, null);
 
         #endregion
 
@@ -1530,7 +1463,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// </summary>
         public override void Dispose()
         {
-            this.Close(true, false);
+            Close(true, false);
         }
 
         #endregion
@@ -1541,11 +1474,11 @@ namespace Semiodesk.Trinity.Store.Virtuoso
         /// <returns></returns>
         public override string ToString()
         {
-            if (this._customConnString)
+            if (_customConnString)
             {
                 return "[Virtuoso] Custom Connection String";
             }
-            return "[Virtuoso] " + this._dbserver + ":" + this._dbport;
+            return "[Virtuoso] " + _dbserver + ":" + _dbport;
         }
 
     }

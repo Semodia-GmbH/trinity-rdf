@@ -134,31 +134,19 @@ namespace LightJson
 		/// Gets the type of this JsonValue.
 		/// </summary>
 		/// <value>The type of this JsonValue.</value>
-		public JsonValueType Type {
-			get {
-				return this.type;
-			}
-		}
+		public JsonValueType Type => this.type;
 
 		/// <summary>
 		/// Gets a value indicating whether this JsonValue is Null.
 		/// </summary>
 		/// <value>A value indicating whether this JsonValue is Null.</value>
-		public bool IsNull {
-			get {
-				return this.Type == JsonValueType.Null;
-			}
-		}
+		public bool IsNull => this.Type == JsonValueType.Null;
 
 		/// <summary>
 		/// Gets a value indicating whether this JsonValue is a Boolean.
 		/// </summary>
 		/// <value>A value indicating whether this JsonValue is a Boolean.</value>
-		public bool IsBoolean {
-			get {
-				return this.Type == JsonValueType.Boolean;
-			}
-		}
+		public bool IsBoolean => this.Type == JsonValueType.Boolean;
 
 		/// <summary>
 		/// Gets a value indicating whether this JsonValue is an Integer.
@@ -179,51 +167,31 @@ namespace LightJson
 		/// Gets a value indicating whether this JsonValue is a Number.
 		/// </summary>
 		/// <value>A value indicating whether this JsonValue is a Number.</value>
-		public bool IsNumber {
-			get {
-				return this.Type == JsonValueType.Number;
-			}
-		}
+		public bool IsNumber => this.Type == JsonValueType.Number;
 
 		/// <summary>
 		/// Gets a value indicating whether this JsonValue is a String.
 		/// </summary>
 		/// <value>A value indicating whether this JsonValue is a String.</value>
-		public bool IsString {
-			get {
-				return this.Type == JsonValueType.String;
-			}
-		}
+		public bool IsString => this.Type == JsonValueType.String;
 
 		/// <summary>
 		/// Gets a value indicating whether this JsonValue is a JsonObject.
 		/// </summary>
 		/// <value>A value indicating whether this JsonValue is a JsonObject.</value>
-		public bool IsJsonObject {
-			get {
-				return this.Type == JsonValueType.Object;
-			}
-		}
+		public bool IsJsonObject => this.Type == JsonValueType.Object;
 
 		/// <summary>
 		/// Gets a value indicating whether this JsonValue is a JsonArray.
 		/// </summary>
 		/// <value>A value indicating whether this JsonValue is a JsonArray.</value>
-		public bool IsJsonArray {
-			get {
-				return this.Type == JsonValueType.Array;
-			}
-		}
+		public bool IsJsonArray => this.Type == JsonValueType.Array;
 
 		/// <summary>
 		/// Gets a value indicating whether this JsonValue represents a DateTime.
 		/// </summary>
 		/// <value>A value indicating whether this JsonValue represents a DateTime.</value>
-		public bool IsDateTime {
-			get {
-				return this.AsDateTime != null;
-			}
-		}
+		public bool IsDateTime => this.AsDateTime != null;
 
 		/// <summary>
 		/// Gets a value indicating whether this value is true or false.
@@ -329,25 +297,19 @@ namespace LightJson
 		/// Gets this value as an JsonObject.
 		/// </summary>
 		/// <value>This value as an JsonObject.</value>
-		public JsonObject AsJsonObject {
-			get {
-				return this.IsJsonObject
-					? (JsonObject)this.reference
-					: null;
-			}
-		}
+		public JsonObject AsJsonObject =>
+			this.IsJsonObject
+				? (JsonObject)this.reference
+				: null;
 
 		/// <summary>
 		/// Gets this value as an JsonArray.
 		/// </summary>
 		/// <value>This value as an JsonArray.</value>
-		public JsonArray AsJsonArray {
-			get {
-				return this.IsJsonArray
-					? (JsonArray)this.reference
-					: null;
-			}
-		}
+		public JsonArray AsJsonArray =>
+			this.IsJsonArray
+				? (JsonArray)this.reference
+				: null;
 
 		/// <summary>
 		/// Gets this value as a system.DateTime.
@@ -747,11 +709,7 @@ namespace LightJson
 				}
 			}
 
-			public JsonValueType Type {
-				get {
-					return this.jsonValue.Type;
-				}
-			}
+			public JsonValueType Type => this.jsonValue.Type;
 
 			public object Value {
 				get {

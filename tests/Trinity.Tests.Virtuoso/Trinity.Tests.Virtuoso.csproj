@@ -13,10 +13,11 @@
     <RootNamespace>Semiodesk.Trinity.Tests.Virtuoso</RootNamespace>
     <OutputType>Exe</OutputType>
     <StartupObject></StartupObject>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NUnit" Version="3.12.0" />
+    <PackageReference Include="NUnit" Version="3.13.3" />
   </ItemGroup>
 
   <ItemGroup>

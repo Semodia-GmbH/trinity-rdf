@@ -35,7 +35,17 @@ namespace Semiodesk.Trinity
     /// </summary>
     public class UriRef : Uri
     {
+        #region Members
+
+        /// <summary>
+        /// Indicates if the UriRef is a triple store specific blank node identifier.
+        /// </summary>
+        public bool IsBlankId { get; }
+
+        #endregion
+
         #region Constructors
+
         /// <summary>
         /// Creates an UriRef from an Uri
         /// </summary>
@@ -56,6 +66,16 @@ namespace Semiodesk.Trinity
         public UriRef(string uriString, UriKind uriKind) : base(uriString, uriKind) { }
 
         /// <summary>
+        /// Creates a UriRef instance for an existing blank node identifier.
+        /// </summary>
+        /// <param name="uriString">URI string or blank node identifier.</param>
+        /// <param name="isBlankId">Indicate if the URI is a blank node identifier.</param>
+        public UriRef(string uriString, bool isBlankId) : base(uriString, UriKind.RelativeOrAbsolute)
+        {
+            IsBlankId = isBlankId;
+        }
+
+        /// <summary>
         /// Creates an UriRef from a base uri and a relative uri as string.
         /// </summary>
         /// <param name="baseUri"></param>
@@ -73,9 +93,18 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public override bool Equals(object comparand)
         {
-            if (comparand is Uri)
+            if (comparand is UriRef uriref)
             {
-                return base.Equals(comparand) && Fragment.Equals((comparand as Uri).Fragment);
+                if(uriref.IsBlankId)
+                {
+                    return string.Equals(OriginalString, uriref.OriginalString);
+                }
+
+                return base.Equals(comparand) && Fragment.Equals(uriref.Fragment);
+            }
+            else if(comparand is Uri uri)
+            {
+                return base.Equals(comparand) && Fragment.Equals(uri.Fragment);
             }
             else
             {
@@ -89,7 +118,14 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public override int GetHashCode()
         {
-            return base.GetHashCode() & Fragment.GetHashCode();
+            if(IsBlankId)
+            {
+                return OriginalString.GetHashCode();
+            }
+            else
+            {
+                return base.GetHashCode() & Fragment.GetHashCode();
+            }
         }
 
         /// <summary>

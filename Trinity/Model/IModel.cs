@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using VDS.RDF;
 
 namespace Semiodesk.Trinity
 {
@@ -139,8 +140,7 @@ namespace Semiodesk.Trinity
         object CreateResource(Uri uri, Type t, ITransaction transaction = null);
 
         /// <summary>
-        /// Removes the given resource from the model and its backing RDF store. Note that there is no verification
-        /// that the given resource and its stored represenation have identical properties.
+        /// Removes the given resource from the model and its backing RDF store.
         /// </summary>
         /// <param name="uri">A Uniform Resource Identifier.</param>
         /// <param name="transaction">The transaction associated with this action.</param>
@@ -153,6 +153,31 @@ namespace Semiodesk.Trinity
         /// <param name="resource">Resource that is to be removed from the model.</param>
         /// <param name="transaction">Transaction associated with this action.</param>
         void DeleteResource(IResource resource, ITransaction transaction = null);
+
+        /// <summary>
+        /// Removes the given resources from the model and its backing RDF store.
+        /// </summary>
+        /// <param name="uris">Resource that is to be removed from the model.</param>
+        /// <param name="transaction">Transaction associated with this action.</param>
+        void DeleteResources(IEnumerable<Uri> uris, ITransaction transaction = null);
+
+
+        /// <summary>
+        /// Removes the given resources from the model and its backing RDF store. Note that there is no verification
+        /// that the given resource and its stored represenation have identical properties.
+        /// </summary>
+        /// <param name="resources">Resources that are to be removed from the model.</param>
+        /// <param name="transaction">Transaction associated with this action.</param>
+        void DeleteResources(IEnumerable<IResource> resources, ITransaction transaction = null);
+
+
+        /// <summary>
+        /// Removes the given resources from the model and its backing RDF store. Note that there is no verification
+        /// that the given resource and its stored represenation have identical properties.
+        /// </summary>
+        /// <param name="resources">Resources that are to be removed from the model.</param>
+        /// <param name="transaction">Transaction associated with this action.</param>
+        void DeleteResources(ITransaction transaction = null, params IResource[] resources);
 
         /// <summary>
         /// Indicates wheter a given resource is part of the model.
@@ -184,7 +209,7 @@ namespace Semiodesk.Trinity
         /// </summary>
         /// <param name="update">A sparql update object.</param>
         /// <param name="transaction">Transaction associated with this action.</param>
-        void ExecuteUpdate(SparqlUpdate update, ITransaction transaction = null);
+        void ExecuteUpdate(ISparqlUpdate update, ITransaction transaction = null);
 
         /// <summary>
         /// Retrieves a resource from the model.
@@ -254,6 +279,15 @@ namespace Semiodesk.Trinity
         IEnumerable<T> GetResources<T>(bool inferenceEnabled = false, ITransaction transaction = null) where T : Resource;
 
         /// <summary>
+        /// Retrieves resources from the model. Provides resources object of the given type.
+        /// </summary>
+        /// <param name="uris">A List Uniform Resource Identifier.</param>
+        /// <param name="type">The type the resource should have.</param>
+        /// <param name="transaction">Transaction associated with this action.</param>
+        /// <returns>A resource with all asserted properties.</returns>
+        IEnumerable<object> GetResources(IEnumerable<Uri> uris, Type type, ITransaction transaction = null);
+
+        /// <summary>
         /// Returns a queryable object that can be used to build LINQ statements.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -289,12 +323,34 @@ namespace Semiodesk.Trinity
         bool Read(Stream stream, RdfSerializationFormat format, bool update);
 
         /// <summary>
+        /// Imports the contents of a graph serialized in the stream to this model.
+        /// </summary>
+        /// <param name="content">The string containing the serialization</param>
+        /// <param name="format">Format of the serialization</param>
+        /// <param name="update">True to update the model, false to replace the data.</param>
+        /// <returns>True if the contents of the model were imported, False if not.</returns>
+        bool Read(string content, RdfSerializationFormat format, bool update);
+
+
+        /// <summary>
         /// Serializes the contents of the model and provides a memory stream.
         /// </summary>
-        /// <param name="fs">The file stream to write to.</param>
+        /// <param name="stream">The file stream to write to.</param>
         /// <param name="format">The serialization format.</param>
+        /// <param name="namespaces">Defines namespace to prefix mappings for the output.</param>
+        /// <param name="baseUri">Base URI for shortening URIs in formats that support it.</param>
+        /// <param name="leaveOpen">Indicates if the stream should be left open after writing completes.</param>
         /// <returns>A serialization of the models contents.</returns>
-        void Write(Stream fs, RdfSerializationFormat format);
+        void Write(Stream stream, RdfSerializationFormat format, INamespaceMap namespaces = null, Uri baseUri = null, bool leaveOpen = false);
+
+        /// <summary>
+        /// Serializes the contents of the model and provides a memory stream.
+        /// </summary>
+        /// <param name="stream">The file stream to write to.</param>
+        /// <param name="formatWriter">A RDF writer.</param>
+        /// <param name="leaveOpen">Indicates if the stream should be left open after writing completes.</param>
+        /// <returns>A serialization of the models contents.</returns>
+        void Write(Stream stream, IRdfWriter formatWriter, bool leaveOpen = false);
 
         /// <summary>
         /// Updates a resource with it's current state in the model.
@@ -302,6 +358,20 @@ namespace Semiodesk.Trinity
         /// <param name="resource"></param>
         /// <param name="transaction"></param>
         void UpdateResource(Resource resource, ITransaction transaction = null);
+
+        /// <summary>
+        /// Updates the properties resources in the backing RDF store.
+        /// </summary>
+        /// <param name="resources">Resources that is to be updated in the backing store.</param>
+        /// <param name="transaction">Transaction associated with this action.</param>
+       void UpdateResources(IEnumerable<Resource> resources, ITransaction transaction = null);
+
+        /// <summary>
+        /// Updates the properties of resources in the backing RDF store.
+        /// </summary>
+        /// <param name="resources">Resources that is to be updated in the backing store.</param>
+        /// <param name="transaction">Transaction associated with this action.</param>
+        void UpdateResources(ITransaction transaction = null, params Resource[] resources);
 
         /// <summary>
         /// Removes all elements from the model.

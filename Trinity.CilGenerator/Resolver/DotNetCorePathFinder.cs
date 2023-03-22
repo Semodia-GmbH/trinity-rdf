@@ -23,7 +23,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using ICSharpCode.Decompiler.Util;
 using LightJson.Serialization;
 
 namespace ICSharpCode.Decompiler.Metadata
@@ -77,7 +76,8 @@ namespace ICSharpCode.Decompiler.Metadata
 				foreach (var pk in packages) {
 					foreach (var item in pk.Value.RuntimeComponents) {
 						var itemPath = Path.GetDirectoryName(item);
-						var fullPath = Path.Combine(path, pk.Value.Name, pk.Value.Version, itemPath).ToLowerInvariant();
+                        // Support for case sensitive file systems
+						var fullPath = Path.Combine(path, Path.Combine(pk.Value.Name, pk.Value.Version, itemPath).ToLowerInvariant());
 						if (Directory.Exists(fullPath))
 							packageBasePaths.Add(fullPath);
 					}
@@ -111,9 +111,9 @@ namespace ICSharpCode.Decompiler.Metadata
 				var type = library.Value["type"].AsString;
 				var path = library.Value["path"].AsString;
 				var runtimeInfo = runtimeInfos[library.Key].AsJsonObject?["runtime"].AsJsonObject;
-				string[] components = new string[runtimeInfo?.Count ?? 0];
+				var components = new string[runtimeInfo?.Count ?? 0];
 				if (runtimeInfo != null) {
-					int i = 0;
+					var i = 0;
 					foreach (var component in runtimeInfo) {
 						components[i] = component.Key;
 						i++;
@@ -150,8 +150,8 @@ namespace ICSharpCode.Decompiler.Metadata
 		{
 			string RemoveTrailingVersionInfo()
 			{
-				string shortName = name;
-				int dashIndex = shortName.IndexOf('-');
+				var shortName = name;
+				var dashIndex = shortName.IndexOf('-');
 				if (dashIndex > 0) {
 					shortName = shortName.Remove(dashIndex);
 				}
@@ -168,10 +168,10 @@ namespace ICSharpCode.Decompiler.Metadata
 
 		static string FindDotNetExeDirectory()
 		{
-			string dotnetExeName = (Environment.OSVersion.Platform == PlatformID.Unix) ? "dotnet" : "dotnet.exe";
+			var dotnetExeName = (Environment.OSVersion.Platform == PlatformID.Unix) ? "dotnet" : "dotnet.exe";
 			foreach (var item in Environment.GetEnvironmentVariable("PATH").Split(Path.PathSeparator)) {
 				try {
-					string fileName = Path.Combine(item, dotnetExeName);
+					var fileName = Path.Combine(item, dotnetExeName);
 					if (!File.Exists(fileName))
 						continue;
 					if (Environment.OSVersion.Platform == PlatformID.Unix) {
