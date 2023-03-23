@@ -4,8 +4,8 @@
     <TargetFramework>net472</TargetFramework>
     <Title>Trinity.Test</Title>
     <Copyright>Copyright © Semiodesk GmbH 2018</Copyright>
-    <Company>Semiodesk GmbH</Company>
-    <Version>1.1.0</Version>
+    <Company>Semodia GmbH</Company>
+    <Version>1.2.0</Version>
     <AssemblyName>Semiodesk.Trinity.Tests</AssemblyName>
     <RootNamespace>Semiodesk.Trinity.Tests</RootNamespace>
     <OutputType>Exe</OutputType>
