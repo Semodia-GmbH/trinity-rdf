@@ -7,7 +7,7 @@
     <Copyright>Copyright - Derived Work © Semodia GmbH 2023</Copyright>
     <Description>This library allows Semodia.Trinity to use the OpenLink Virtuoso store directly through the ODBC interface.</Description>
     <Company>Semodia GmbH</Company>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
     <AssemblyName>Semodia.Trinity.Virtuoso</AssemblyName>
     <RootNamespace>Semiodesk.Trinity.Store.Virtuoso</RootNamespace>
     <IsPackable>true</IsPackable>
