@@ -11,7 +11,7 @@
         <RootNamespace>Semiodesk.Trinity</RootNamespace>
         <IsPackable>true</IsPackable>
         <TargetFramework>netstandard2.0</TargetFramework>
-        <DocumentationFile>..\Build\$(Configuration)\$(TargetFramework)\Semiodesk.Trinity.xml</DocumentationFile>
+        <DocumentationFile>..\Build\$(Configuration)\$(TargetFramework)\Semodia.Trinity.xml</DocumentationFile>
         <NeutralLanguage>en</NeutralLanguage>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageId>Semodia.Trinity</PackageId>
@@ -89,7 +89,7 @@
     </ItemGroup>
     
     <ItemGroup>
-        <None Update="Targets\Semiodesk.Trinity.targets">
+        <None Update="Targets\Semodia.Trinity.targets">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
