@@ -4,13 +4,11 @@
     <TargetFramework>net472</TargetFramework>
     <Title>Trinity.Test.Virtuoso</Title>
     <Copyright>Copyright © Semiodesk GmbH 2019</Copyright>
-    <Description></Description>
     <Company>Semodia GmbH</Company>
     <Version>1.2.0</Version>
     <AssemblyName>Semiodesk.Trinity.Tests.Virtuoso</AssemblyName>
     <RootNamespace>Semiodesk.Trinity.Tests.Virtuoso</RootNamespace>
     <OutputType>Exe</OutputType>
-    <StartupObject></StartupObject>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
