@@ -448,7 +448,7 @@ namespace Semiodesk.Trinity
         /// Add a property with a Int16 as value.
         /// If this property is mapped with a compatible type, it will be filled with the given value.
         /// </summary>
-        public void AddProperty(Property property, Int16 value)
+        public void AddProperty(Property property, short value)
         {
             AddPropertyToMapping(property, value, false);
         }
@@ -457,7 +457,7 @@ namespace Semiodesk.Trinity
         /// Add a property with a Int32 as value.
         /// If this property is mapped with a compatible type, it will be filled with the given value.
         /// </summary>
-        public void AddProperty(Property property, Int32 value)
+        public void AddProperty(Property property, int value)
         {
             AddPropertyToMapping(property, value, false);
         }
@@ -466,7 +466,7 @@ namespace Semiodesk.Trinity
         /// Add a property with a Int64 as value.
         /// If this property is mapped with a compatible type, it will be filled with the given value.
         /// </summary>
-        public void AddProperty(Property property, Int64 value)
+        public void AddProperty(Property property, long value)
         {
             AddPropertyToMapping(property, value, false);
         }
@@ -475,7 +475,7 @@ namespace Semiodesk.Trinity
         /// Add a property with a UInt16 as value.
         /// If this property is mapped with a compatible type, it will be filled with the given value.
         /// </summary>
-        public void AddProperty(Property property, UInt16 value)
+        public void AddProperty(Property property, ushort value)
         {
             AddPropertyToMapping(property, value, false);
         }
@@ -484,7 +484,7 @@ namespace Semiodesk.Trinity
         /// Add a property with a UInt32 as value.
         /// If this property is mapped with a compatible type, it will be filled with the given value.
         /// </summary>
-        public void AddProperty(Property property, UInt32 value)
+        public void AddProperty(Property property, uint value)
         {
             AddPropertyToMapping(property, value, false);
         }
@@ -493,7 +493,7 @@ namespace Semiodesk.Trinity
         /// Add a property with a UInt64 as value.
         /// If this property is mapped with a compatible type, it will be filled with the given value.
         /// </summary>
-        public void AddProperty(Property property, UInt64 value)
+        public void AddProperty(Property property, ulong value)
         {
             AddPropertyToMapping(property, value, false);
         }
@@ -638,7 +638,7 @@ namespace Semiodesk.Trinity
         /// Removes a property with a Int16 value.
         /// If this property is mapped with a compatible type, the given value will be removed.
         /// </summary>
-        public void RemoveProperty(Property property, Int16 value)
+        public void RemoveProperty(Property property, short value)
         {
             RemovePropertyFromMapping(property, value);
         }
@@ -647,7 +647,7 @@ namespace Semiodesk.Trinity
         /// Removes a property with a Int32 value.
         /// If this property is mapped with a compatible type, the given value will be removed.
         /// </summary>
-        public void RemoveProperty(Property property, Int32 value)
+        public void RemoveProperty(Property property, int value)
         {
             RemovePropertyFromMapping(property, value);
         }
@@ -656,7 +656,7 @@ namespace Semiodesk.Trinity
         /// Removes a property with a Int64 value.
         /// If this property is mapped with a compatible type, the given value will be removed.
         /// </summary>
-        public void RemoveProperty(Property property, Int64 value)
+        public void RemoveProperty(Property property, long value)
         {
             RemovePropertyFromMapping(property, value);
         }
@@ -665,7 +665,7 @@ namespace Semiodesk.Trinity
         /// Removes a property with a UInt16 value.
         /// If this property is mapped with a compatible type, the given value will be removed.
         /// </summary>
-        public void RemoveProperty(Property property, UInt16 value)
+        public void RemoveProperty(Property property, ushort value)
         {
             RemovePropertyFromMapping(property, value);
         }
@@ -674,7 +674,7 @@ namespace Semiodesk.Trinity
         /// Removes a property with a UInt32 value.
         /// If this property is mapped with a compatible type, the given value will be removed.
         /// </summary>
-        public void RemoveProperty(Property property, UInt32 value)
+        public void RemoveProperty(Property property, uint value)
         {
             RemovePropertyFromMapping(property, value);
         }
@@ -683,7 +683,7 @@ namespace Semiodesk.Trinity
         /// Removes a property with a UInt64 value.
         /// If this property is mapped with a compatible type, the given value will be removed.
         /// </summary>
-        public void RemoveProperty(Property property, UInt64 value)
+        public void RemoveProperty(Property property, ulong value)
         {
             RemovePropertyFromMapping(property, value);
         }

@@ -282,7 +282,7 @@ namespace Semiodesk.Trinity.Query
 
             var member = memberExpression.Member;
 
-            if (member.DeclaringType == typeof(String))
+            if (member.DeclaringType == typeof(string))
             {
                 switch (member.Name)
                 {

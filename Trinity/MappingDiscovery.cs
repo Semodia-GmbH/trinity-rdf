@@ -198,7 +198,7 @@ namespace Semiodesk.Trinity
         /// <param name="baseTypes">List where the base types will be added to.</param>
         public static void GetBaseTypes(Type type, ref List<Class> baseTypes)
         {
-            if (type.BaseType == typeof(Resource) || type.BaseType == typeof(Object))
+            if (type.BaseType == typeof(Resource) || type.BaseType == typeof(object))
             {
                 return;
             }

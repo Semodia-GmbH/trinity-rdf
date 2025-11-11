@@ -80,20 +80,20 @@ namespace Semiodesk.Trinity
         /// </summary>
         protected static Dictionary<Type, Uri> NativeToXsd = new Dictionary<Type, Uri>()
         {
-            {typeof(Byte), xsd._byte},
-            {typeof(SByte), xsd._sbyte},
-            {typeof(Int16), xsd._short},
-            {typeof(Int32), xsd._int},
-            {typeof(Int64), xsd._long},
-            {typeof(UInt16), xsd._ushort},
-            {typeof(UInt32), xsd._uint},
-            {typeof(UInt64), xsd._ulong},
+            {typeof(byte), xsd._byte},
+            {typeof(sbyte), xsd._sbyte},
+            {typeof(short), xsd._short},
+            {typeof(int), xsd._int},
+            {typeof(long), xsd._long},
+            {typeof(ushort), xsd._ushort},
+            {typeof(uint), xsd._uint},
+            {typeof(ulong), xsd._ulong},
             {typeof(DateTime), xsd.datetime},
             {typeof(TimeSpan), xsd.duration},
-            {typeof(Byte[]), xsd.base64Binary},
-            {typeof(Boolean), xsd.boolean},
-            {typeof(Decimal), xsd._decimal},
-            {typeof(Double), xsd._double},
+            {typeof(byte[]), xsd.base64Binary},
+            {typeof(bool), xsd.boolean},
+            {typeof(decimal), xsd._decimal},
+            {typeof(double), xsd._double},
             {typeof(float), xsd._float},
             {typeof(Uri), xsd.anyUri},
         };
@@ -104,21 +104,21 @@ namespace Semiodesk.Trinity
         protected static Dictionary<string, Type> XsdToNative = new Dictionary<string, Type>()
         {
             
-            {xsd.nonNegativeInteger.AbsoluteUri, typeof(UInt64)},
-            {xsd._byte.AbsoluteUri, typeof(Byte)},
-            {xsd._sbyte.AbsoluteUri, typeof(SByte)},
-            {xsd._short.AbsoluteUri, typeof(Int16)},
-            {xsd._int.AbsoluteUri, typeof(Int32)},
-            {xsd._long.AbsoluteUri, typeof(Int64)},
-            {xsd._ushort.AbsoluteUri, typeof(UInt16)},
-            {xsd._uint.AbsoluteUri, typeof(UInt32)},
-            {xsd._ulong.AbsoluteUri, typeof(UInt64)},
+            {xsd.nonNegativeInteger.AbsoluteUri, typeof(ulong)},
+            {xsd._byte.AbsoluteUri, typeof(byte)},
+            {xsd._sbyte.AbsoluteUri, typeof(sbyte)},
+            {xsd._short.AbsoluteUri, typeof(short)},
+            {xsd._int.AbsoluteUri, typeof(int)},
+            {xsd._long.AbsoluteUri, typeof(long)},
+            {xsd._ushort.AbsoluteUri, typeof(ushort)},
+            {xsd._uint.AbsoluteUri, typeof(uint)},
+            {xsd._ulong.AbsoluteUri, typeof(ulong)},
             {xsd.datetime.AbsoluteUri,typeof(DateTime) },
             {xsd.duration.AbsoluteUri,typeof(TimeSpan) },
-            {xsd.boolean.AbsoluteUri, typeof(Boolean)},
-            {xsd.boolean_.AbsoluteUri, typeof(Boolean)},
-            {xsd._decimal.AbsoluteUri, typeof(Decimal)},
-            {xsd._double.AbsoluteUri, typeof(Double)},
+            {xsd.boolean.AbsoluteUri, typeof(bool)},
+            {xsd.boolean_.AbsoluteUri, typeof(bool)},
+            {xsd._decimal.AbsoluteUri, typeof(decimal)},
+            {xsd._double.AbsoluteUri, typeof(double)},
             {xsd._float.AbsoluteUri, typeof(float)},
             {xsd.base64Binary.AbsoluteUri, typeof(byte[])},
             {xsd.anyUri.AbsoluteUri, typeof(Uri)},
@@ -129,19 +129,19 @@ namespace Semiodesk.Trinity
         /// </summary>
         protected static Dictionary<Type, ObjectSerializationDelegate> Serializers = new Dictionary<Type, ObjectSerializationDelegate>()
         {
-            {typeof(Byte), SerializeByte},
-            {typeof(SByte), SerializeSByte},
-            {typeof(Int16), SerializeInt16},
-            {typeof(Int32), SerializeInt32},
-            {typeof(Int64), SerializeInt64},
-            {typeof(UInt16), SerializeUInt16},
-            {typeof(UInt32), SerializeUInt32},
-            {typeof(UInt64), SerializeUInt64},
+            {typeof(byte), SerializeByte},
+            {typeof(sbyte), SerializeSByte},
+            {typeof(short), SerializeInt16},
+            {typeof(int), SerializeInt32},
+            {typeof(long), SerializeInt64},
+            {typeof(ushort), SerializeUInt16},
+            {typeof(uint), SerializeUInt32},
+            {typeof(ulong), SerializeUInt64},
             {typeof(DateTime), SerializeDateTime},
             {typeof(TimeSpan), SerializeTimeSpan},
-            {typeof(Boolean), SerializeBool},
-            {typeof(Decimal), SerializeDecimal},
-            {typeof(Double), SerializeDouble},
+            {typeof(bool), SerializeBool},
+            {typeof(decimal), SerializeDecimal},
+            {typeof(double), SerializeDouble},
             {typeof(float), SerializeSingle},
             {typeof(IResource), SerializeIResource},
             {typeof(IModel), SerializeIResource},
@@ -149,7 +149,7 @@ namespace Semiodesk.Trinity
             {typeof(string[]), SerializeStringArray},
             {typeof(Tuple<string, CultureInfo>), SerializeStringCultureInfoTuple},
             {typeof(Uri), SerializeUri},
-            {typeof(Byte[]), SerializeByteArray},
+            {typeof(byte[]), SerializeByteArray},
         };
 
         /// <summary>
@@ -421,7 +421,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeInt16(object obj)
         {
-            return XmlConvert.ToString((Int16)obj);
+            return XmlConvert.ToString((short)obj);
         }
 
         /// <summary>
@@ -431,7 +431,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeInt32(object obj)
         {
-            return XmlConvert.ToString((Int32)obj);
+            return XmlConvert.ToString((int)obj);
         }
 
         /// <summary>
@@ -441,7 +441,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeInt64(object obj)
         {
-            return XmlConvert.ToString((Int64)obj);
+            return XmlConvert.ToString((long)obj);
         }
 
         /// <summary>
@@ -451,7 +451,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeUInt16(object obj)
         {
-            return XmlConvert.ToString((UInt16)obj);
+            return XmlConvert.ToString((ushort)obj);
         }
 
         /// <summary>
@@ -461,7 +461,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeUInt32(object obj)
         {
-            return XmlConvert.ToString((UInt32)obj);
+            return XmlConvert.ToString((uint)obj);
         }
 
         /// <summary>
@@ -471,7 +471,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeUInt64(object obj)
         {
-            return XmlConvert.ToString((UInt64)obj);
+            return XmlConvert.ToString((ulong)obj);
         }
 
         /// <summary>
@@ -481,7 +481,7 @@ namespace Semiodesk.Trinity
         /// <returns></returns>
         public static string SerializeDecimal(object obj)
         {
-            return XmlConvert.ToString((Decimal)obj);
+            return XmlConvert.ToString((decimal)obj);
         }
 
         /// <summary>

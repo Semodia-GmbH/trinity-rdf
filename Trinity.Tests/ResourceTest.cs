@@ -317,7 +317,7 @@ namespace Semiodesk.Trinity.Test
         {
             var myProperty = new Property(new Uri("ex:myProperty"));
             var r = new Resource(new Uri("ex:myResource"));
-            Int16 val = 124;
+            short val = 124;
             r.AddProperty(myProperty, val);
             var res = r.ListValues(myProperty).First();
             Assert.AreEqual(val.GetType(), res.GetType());
@@ -345,7 +345,7 @@ namespace Semiodesk.Trinity.Test
         {
             var myProperty = new Property(new Uri("ex:myProperty"));
             var r = new Resource(new Uri("ex:myResource"));
-            Int64 val = 126;
+            long val = 126;
             r.AddProperty(myProperty, val);
             var res = r.ListValues(myProperty).First();
             Assert.AreEqual(val.GetType(), res.GetType());
@@ -371,7 +371,7 @@ namespace Semiodesk.Trinity.Test
         {
             var myProperty = new Property(new Uri("ex:myProperty"));
             var r = new Resource(new Uri("ex:myResource"));
-            UInt16 val = 126;
+            ushort val = 126;
             r.AddProperty(myProperty, val);
             var res = r.ListValues(myProperty).First();
             Assert.AreEqual(val.GetType(), res.GetType());
@@ -384,7 +384,7 @@ namespace Semiodesk.Trinity.Test
         {
             var myProperty = new Property(new Uri("ex:myProperty"));
             var r = new Resource(new Uri("ex:myResource"));
-            UInt32 val = 126;
+            uint val = 126;
             r.AddProperty(myProperty, val);
             var res = r.ListValues(myProperty).First();
             Assert.AreEqual(val.GetType(), res.GetType());
@@ -397,7 +397,7 @@ namespace Semiodesk.Trinity.Test
         {
             var myProperty = new Property(new Uri("ex:myProperty"));
             var r = new Resource(new Uri("ex:myResource"));
-            UInt32 val = 126;
+            uint val = 126;
             r.AddProperty(myProperty, val);
             var res = r.ListValues(myProperty).First();
             Assert.AreEqual(val.GetType(), res.GetType());

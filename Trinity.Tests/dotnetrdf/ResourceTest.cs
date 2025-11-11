@@ -99,14 +99,14 @@ namespace dotNetRDFStore.Test
             var resourceUri = new Uri("ex:myResource");
             var myProperty = new Property(new Uri("ex:myProperty"));
             var r1 = Model.CreateResource<Resource>(resourceUri);
-            Int16 val = 124;
+            short val = 124;
             r1.AddProperty(myProperty, val);
             r1.Commit();
             r1 = Model.GetResource<Resource>(resourceUri);
 
             var res = r1.ListValues(myProperty).First();
 
-            Assert.AreEqual(typeof(Int16), res.GetType());
+            Assert.AreEqual(typeof(short), res.GetType());
             Assert.AreEqual(val, res);
 
         }
@@ -124,7 +124,7 @@ namespace dotNetRDFStore.Test
 
             var res = r1.ListValues(myProperty).First();
 
-            Assert.AreEqual(typeof(Int32), res.GetType());
+            Assert.AreEqual(typeof(int), res.GetType());
             Assert.AreEqual(val, res);
 
         }
@@ -135,14 +135,14 @@ namespace dotNetRDFStore.Test
             var resourceUri = new Uri("ex:myResource");
             var myProperty = new Property(new Uri("ex:myProperty"));
             var r1 = Model.CreateResource<Resource>(resourceUri);
-            Int64 val = 126;
+            long val = 126;
             r1.AddProperty(myProperty, val);
             r1.Commit();
             r1 = Model.GetResource<Resource>(resourceUri);
 
             var res = r1.ListValues(myProperty).First();
 
-            Assert.AreEqual(typeof(Int64), res.GetType());
+            Assert.AreEqual(typeof(long), res.GetType());
             Assert.AreEqual(val, res);
         }
 
@@ -169,14 +169,14 @@ namespace dotNetRDFStore.Test
             var resourceUri = new Uri("ex:myResource");
             var myProperty = new Property(new Uri("ex:myProperty"));
             var r1 = Model.CreateResource<Resource>(resourceUri);
-            UInt16 val = 126;
+            ushort val = 126;
             r1.AddProperty(myProperty, val);
             r1.Commit();
             r1 = Model.GetResource<Resource>(resourceUri);
 
             var res = r1.ListValues(myProperty).First();
 
-            Assert.AreEqual(typeof(UInt16), res.GetType());
+            Assert.AreEqual(typeof(ushort), res.GetType());
             Assert.AreEqual(val, res);
         }
 
@@ -186,14 +186,14 @@ namespace dotNetRDFStore.Test
             var resourceUri = new Uri("ex:myResource");
             var myProperty = new Property(new Uri("ex:myProperty"));
             var r1 = Model.CreateResource<Resource>(resourceUri);
-            UInt32 val = 126;
+            uint val = 126;
             r1.AddProperty(myProperty, val);
             r1.Commit();
             r1 = Model.GetResource<Resource>(resourceUri);
 
             var res = r1.ListValues(myProperty).First();
 
-            Assert.AreEqual(typeof(UInt32), res.GetType());
+            Assert.AreEqual(typeof(uint), res.GetType());
             Assert.AreEqual(val, res);
         }
 
@@ -203,14 +203,14 @@ namespace dotNetRDFStore.Test
             var resourceUri = new Uri("ex:myResource");
             var myProperty = new Property(new Uri("ex:myProperty"));
             var r1 = Model.CreateResource<Resource>(resourceUri);
-            UInt64 val = 126;
+            ulong val = 126;
             r1.AddProperty(myProperty, val);
             r1.Commit();
             r1 = Model.GetResource<Resource>(resourceUri);
 
             var res = r1.ListValues(myProperty).First();
 
-            Assert.AreEqual(typeof(UInt64), res.GetType());
+            Assert.AreEqual(typeof(ulong), res.GetType());
             Assert.AreEqual(val, res);
         }
 
@@ -261,7 +261,7 @@ namespace dotNetRDFStore.Test
 
             var res = r1.ListValues(myProperty).First();
 
-            Assert.AreEqual(typeof(Single), res.GetType());
+            Assert.AreEqual(typeof(float), res.GetType());
             Assert.AreEqual(val, res);
         }
 

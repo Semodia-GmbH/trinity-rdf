@@ -211,7 +211,7 @@ namespace Semiodesk.Trinity
             // Get the next character.
             var next = Peek();
 
-            while (Char.IsWhiteSpace(next))
+            while (char.IsWhiteSpace(next))
             {
                 this.DiscardWhiteSpace();
 
@@ -222,7 +222,7 @@ namespace Semiodesk.Trinity
             {
                 StartNewToken();
 
-                while(next == '@' || Char.IsLetterOrDigit(next))
+                while(next == '@' || char.IsLetterOrDigit(next))
                 {
                     ConsumeCharacter();
 

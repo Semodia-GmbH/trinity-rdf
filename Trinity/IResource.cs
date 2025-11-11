@@ -103,42 +103,42 @@ namespace Semiodesk.Trinity
         /// </summary>
         /// <param name="property">Property the value should be associated with.</param>
         /// <param name="value">A 16-bit integer value.</param>
-        void AddProperty(Property property, Int16 value);
+        void AddProperty(Property property, short value);
 
         /// <summary>
         /// Adds a new property with the given value to the resource.
         /// </summary>
         /// <param name="property">Property the value should be associated with.</param>
         /// <param name="value">A 32-bit integer value.</param>
-        void AddProperty(Property property, Int32 value);
+        void AddProperty(Property property, int value);
 
         /// <summary>
         /// Adds a new property with the given value to the resource.
         /// </summary>
         /// <param name="property">Property the value should be associated with.</param>
         /// <param name="value">A 64-bit integer value.</param>
-        void AddProperty(Property property, Int64 value);
+        void AddProperty(Property property, long value);
 
         /// <summary>
         /// Adds a new property with the given value to the resource.
         /// </summary>
         /// <param name="property">Property the value should be associated with.</param>
         /// <param name="value">A 16-bit unsigned integer value.</param>
-        void AddProperty(Property property, UInt16 value);
+        void AddProperty(Property property, ushort value);
 
         /// <summary>
         /// Adds a new property with the given value to the resource.
         /// </summary>
         /// <param name="property">Property the value should be associated with.</param>
         /// <param name="value">A 32-bit unsigned integer value.</param>
-        void AddProperty(Property property, UInt32 value);
+        void AddProperty(Property property, uint value);
 
         /// <summary>
         /// Adds a new property with the given value to the resource.
         /// </summary>
         /// <param name="property">Property the value should be associated with.</param>
         /// <param name="value">A 64-bit unsigned integer value.</param>
-        void AddProperty(Property property, UInt64 value);
+        void AddProperty(Property property, ulong value);
 
         /// <summary>
         /// Adds a new property with the given value to the resource.
@@ -232,42 +232,42 @@ namespace Semiodesk.Trinity
         /// </summary>
         /// <param name="property">Property the given value is associated with.</param>
         /// <param name="value">A 16-bit integer value.</param>
-        void RemoveProperty(Property property, Int16 value);
+        void RemoveProperty(Property property, short value);
 
         /// <summary>
         /// Removes an associated property from the resource.
         /// </summary>
         /// <param name="property">Property the given value is associated with.</param>
         /// <param name="value">A 32-bit integer value.</param>
-        void RemoveProperty(Property property, Int32 value);
+        void RemoveProperty(Property property, int value);
 
         /// <summary>
         /// Removes an associated property from the resource.
         /// </summary>
         /// <param name="property">Property the given value is associated with.</param>
         /// <param name="value">A 64-bit integer value.</param>
-        void RemoveProperty(Property property, Int64 value);
+        void RemoveProperty(Property property, long value);
 
         /// <summary>
         /// Removes an associated property from the resource.
         /// </summary>
         /// <param name="property">Property the given value is associated with.</param>
         /// <param name="value">A 16-bit unsigned integer value.</param>
-        void RemoveProperty(Property property, UInt16 value);
+        void RemoveProperty(Property property, ushort value);
 
         /// <summary>
         /// Removes an associated property from the resource.
         /// </summary>
         /// <param name="property">Property the given value is associated with.</param>
         /// <param name="value">A 32-bit unsigned integer value.</param>
-        void RemoveProperty(Property property, UInt32 value);
+        void RemoveProperty(Property property, uint value);
 
         /// <summary>
         /// Removes an associated property from the resource.
         /// </summary>
         /// <param name="property">Property the given value is associated with.</param>
         /// <param name="value">A 64-bit unsigned integer value.</param>
-        void RemoveProperty(Property property, UInt64 value);
+        void RemoveProperty(Property property, ulong value);
 
         /// <summary>
         /// Removes an associated property from the resource.

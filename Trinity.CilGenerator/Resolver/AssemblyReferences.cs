@@ -146,7 +146,7 @@ namespace ICSharpCode.Decompiler.Metadata
 
 						name.PublicKeyToken = new byte[pk_token.Length / 2];
 						for (var j = 0; j < name.PublicKeyToken.Length; j++)
-							name.PublicKeyToken[j] = Byte.Parse(pk_token.Substring(j * 2, 2), System.Globalization.NumberStyles.HexNumber);
+							name.PublicKeyToken[j] = byte.Parse(pk_token.Substring(j * 2, 2), System.Globalization.NumberStyles.HexNumber);
 
 						break;
 				}

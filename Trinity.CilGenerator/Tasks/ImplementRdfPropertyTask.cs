@@ -123,7 +123,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
             fieldType.GenericArguments.Add(property.PropertyType);
 
             // Generate the name of the private backing field.
-            var fieldName = "<" + Char.ToLowerInvariant(property.Name[0]) + property.Name.Substring(1) + ">"+"k__"+"MappingField";
+            var fieldName = "<" + char.ToLowerInvariant(property.Name[0]) + property.Name.Substring(1) + ">"+"k__"+"MappingField";
 
             var mappingField = Type.TryGetField(fieldName);
 
@@ -358,7 +358,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
             {
                 var v = (long)defaultValue.Value;
 
-                if (Int32.MinValue <= v && v <= Int32.MaxValue)
+                if (int.MinValue <= v && v <= int.MaxValue)
                 {
                     yield return processor.CreateLdc_I4((int)v);
                     yield return processor.Create(OpCodes.Conv_I8);
@@ -372,7 +372,7 @@ namespace Semiodesk.Trinity.CilGenerator.Tasks
             {
                 var v = (ulong)defaultValue.Value;
 
-                if (UInt32.MinValue <= v && v >= UInt32.MaxValue)
+                if (uint.MinValue <= v && v >= uint.MaxValue)
                 {
                     yield return processor.CreateLdc_I4((uint)v);
                     yield return processor.Create(OpCodes.Conv_I8);

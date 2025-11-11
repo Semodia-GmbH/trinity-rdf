@@ -191,12 +191,12 @@ namespace Semiodesk.Trinity
                                                  typeof(double), typeof(double?),
                                                  typeof(decimal), typeof(decimal?),
                                                  typeof(byte), typeof(sbyte),
-                                                 typeof(Int16), typeof(Int16?),
-                                                 typeof(Int32), typeof(Int32?),
-                                                 typeof(Int64), typeof(Int64?),
-                                                 typeof(UInt16), typeof(UInt16?),
-                                                 typeof(UInt32), typeof(UInt32?),
-                                                 typeof(UInt64), typeof(UInt64?),
+                                                 typeof(short), typeof(short?),
+                                                 typeof(int), typeof(int?),
+                                                 typeof(long), typeof(long?),
+                                                 typeof(ushort), typeof(ushort?),
+                                                 typeof(uint), typeof(uint?),
+                                                 typeof(ulong), typeof(ulong?),
                                                  typeof(DateTime), typeof(DateTime?),
                                                  typeof(TimeSpan), typeof(TimeSpan?),
                                                  typeof(System.Uri), typeof(Tuple<string, CultureInfo>)};
@@ -498,14 +498,14 @@ namespace Semiodesk.Trinity
         /// <returns><c>true</c> if the types are precision compatible, <c>false</c> otherwise.</returns>
         public bool IsPrecisionCompatible(Type source, Type target)
         {
-            if (target == typeof(Double))
+            if (target == typeof(double))
             {
                 return true;
             }
             
-            if (target == typeof(Single))
+            if (target == typeof(float))
             {
-                if (source == typeof(Double))
+                if (source == typeof(double))
                 {
                     return false;
                 }
@@ -515,9 +515,9 @@ namespace Semiodesk.Trinity
                 }
             }
 
-            if (target == typeof(Decimal))
+            if (target == typeof(decimal))
             {
-                if (source == typeof(Double) || source == typeof(Single))
+                if (source == typeof(double) || source == typeof(float))
                 {
                     return false;
                 }

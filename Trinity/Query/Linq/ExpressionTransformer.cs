@@ -130,7 +130,7 @@ namespace Semiodesk.Trinity.Query
 
                         // Insert .Count() with an integer result type.
                         queryModel.ResultOperators.Insert(0, new CountResultOperator());
-                        queryModel.ResultTypeOverride = typeof(Int32);
+                        queryModel.ResultTypeOverride = typeof(int);
 
                         return Expression.Equal(new SubQueryExpression(queryModel), Expression.Constant(0));
                     }

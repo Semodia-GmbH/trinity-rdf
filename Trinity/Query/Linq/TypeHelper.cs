@@ -6,7 +6,7 @@ namespace Semiodesk.Trinity.Query
     {
         public static object GetDefaultValue(Type type)
         {
-            if(type == typeof(String))
+            if(type == typeof(string))
             {
                 return "";
             }

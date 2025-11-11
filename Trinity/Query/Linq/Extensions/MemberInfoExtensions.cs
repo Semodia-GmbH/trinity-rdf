@@ -99,7 +99,7 @@ namespace Semiodesk.Trinity.Query
             var systemTypes = new HashSet<Type>()
             {
                 typeof(DateTime),
-                typeof(String)
+                typeof(string)
             };
 
             return systemTypes.Contains(member.DeclaringType);
