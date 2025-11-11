@@ -25,19 +25,19 @@
 //
 // Copyright (c) Semiodesk GmbH 2015-2019
 
-using NUnit.Framework;
+
+using Xunit;
 
 namespace Semiodesk.Trinity.Test
 {
-    [TestFixture]
-    class StoreFactoryTest : SetupClass
+    public class StoreFactoryTest : SetupClass
     {
-        [Test]
+        [Fact]
         public void TestConnectionStringTest()
         {
-            Assert.IsTrue(StoreFactory.TestConnectionString("provider=dotnetrdf;schema=Models/rdf-schema.rdf,Models/rdf-syntax.rdf"));
-            Assert.IsTrue(StoreFactory.TestConnectionString("provider=sparqlendpoint;endpoint=http://live.dbpedia.org/sparql"));
-            Assert.IsFalse(StoreFactory.TestConnectionString("data source=.\\SQLEXPRESS;Integrated Security=SSPI;AttachDBFilename=|DataDirectory|aspnetdb.mdf;User Instance=true"));
+            Assert.True(StoreFactory.TestConnectionString("provider=dotnetrdf;schema=Models/rdf-schema.rdf,Models/rdf-syntax.rdf"));
+            Assert.True(StoreFactory.TestConnectionString("provider=sparqlendpoint;endpoint=http://live.dbpedia.org/sparql"));
+            Assert.False(StoreFactory.TestConnectionString("data source=.\\SQLEXPRESS;Integrated Security=SSPI;AttachDBFilename=|DataDirectory|aspnetdb.mdf;User Instance=true"));
         }
     }
 }

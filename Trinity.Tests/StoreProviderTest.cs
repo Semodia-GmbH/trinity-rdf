@@ -26,33 +26,33 @@
 // Copyright (c) Semiodesk GmbH 2015-2019
 
 using System.Collections.Generic;
-using NUnit.Framework;
+
 using Semiodesk.Trinity.Store;
+using Xunit;
 
 namespace Semiodesk.Trinity.Test
 {
-    [TestFixture]
-    class StoreProviderTest
+    public class StoreProviderTest
     {
-        [Test]
+        [Fact]
         public void ParseConfigurationTest()
         {
             var result = StoreFactory.ParseConfiguration("provider=virtuoso");
-            Assert.AreEqual("virtuoso", result["provider"]);
+            Assert.Equal("virtuoso", result["provider"]);
 
             result = StoreFactory.ParseConfiguration("provider=virtuoso;host=localhost;port=1111;uid=dba;pw=dba");
-            Assert.AreEqual("localhost", result["host"]);
-            Assert.AreEqual("1111", result["port"]);
-            Assert.AreEqual("dba", result["uid"]);
-            Assert.AreEqual("dba", result["pw"]);
+            Assert.Equal("localhost", result["host"]);
+            Assert.Equal("1111", result["port"]);
+            Assert.Equal("dba", result["uid"]);
+            Assert.Equal("dba", result["pw"]);
 
             result = StoreFactory.ParseConfiguration("provider=virtuoso;path=c:/path/to/my/files.ext");
-            Assert.AreEqual("c:/path/to/my/files.ext", result["path"]);
+            Assert.Equal("c:/path/to/my/files.ext", result["path"]);
 
             result = StoreFactory.ParseConfiguration("provider=dotnetrdf;schema=c:/path/to/my/schema1.rdf,c:/path/to/my/schema2.rdf");
         }
 
-        [Test]
+        [Fact]
         public void DotNetRDFConfigTest()
         {
           var p = new dotNetRDFStoreProvider();

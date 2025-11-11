@@ -1,24 +1,24 @@
-﻿using NUnit.Framework;
+﻿
 using System;
+using Xunit;
 
 namespace Semiodesk.Trinity.Test
 {
-    [TestFixture]
-    class SparqlSerializerTest
+    public class SparqlSerializerTest
     {
-        [TestCase]
+        [Fact]
         public void TestStringSerializeResource()
         {
             var r = new Resource("http://example.com/ex");
             r.AddProperty(Ontologies.dc.title, "MyResource");
 
             var res = SparqlSerializer.SerializeResource(r);
-            var expected = "<http://example.com/ex> <http://purl.org/dc/elements/1.1/title> 'MyResource'. ";
+            const string expected = "<http://example.com/ex> <http://purl.org/dc/elements/1.1/title> 'MyResource'. ";
 
-            Assert.AreEqual(expected, res);
+            Assert.Equal(expected, res);
         }
 
-        [TestCase]
+        [Fact]
         public void TestStringSerializeResourceWithMapping()
         {
             var contact = new PersonContact(new Uri("http://example.com/ex"));
@@ -27,15 +27,15 @@ namespace Semiodesk.Trinity.Test
             var res = SparqlSerializer.SerializeResource(contact);
             var expected = "<http://example.com/ex> <http://www.semanticdesktop.org/ontologies/2007/03/22/nco#nameGiven> 'Peter'; <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.semanticdesktop.org/ontologies/2007/03/22/nco#PersonContact>. ";
             
-            Assert.AreEqual(expected, res);
+            Assert.Equal(expected, res);
 
             contact.Language = "DE";
             res = SparqlSerializer.SerializeResource(contact);
 
-            Assert.AreEqual(expected, res);
+            Assert.Equal(expected, res);
         }
 
-        [TestCase]
+        [Fact]
         public void TestStringSerializeResourceEmpty()
         {
             var empty = new Resource("http://test.com/ex");
@@ -43,10 +43,10 @@ namespace Semiodesk.Trinity.Test
             var res = SparqlSerializer.SerializeResource(empty);
             var expected = "";
 
-            Assert.AreEqual(expected, res);
+            Assert.Equal(expected, res);
         }
 
-        [TestCase]
+        [Fact]
         public void TestSerializeResourceWithBlankNode()
         {
             var r0 = new Resource(new UriRef("_:0", true));
@@ -55,7 +55,7 @@ namespace Semiodesk.Trinity.Test
 
             var s = SparqlSerializer.SerializeResource(r1);
 
-            Assert.IsTrue(s.Contains("_:1 <http://schema.org/relatedTo> _:0"));
+            Assert.Contains("_:1 <http://schema.org/relatedTo> _:0", s);
         }
     }
 }

@@ -29,13 +29,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using NUnit.Framework;
+
 using Semiodesk.Trinity.Ontologies;
 using System.IO;
+using Xunit;
 
 namespace Semiodesk.Trinity.Test.Fuseki
 {
-    [TestFixture]
+
     public class ModelTest : SetupClass
     {
         private IStore Store;
@@ -133,7 +134,7 @@ namespace Semiodesk.Trinity.Test.Fuseki
             public Contact(Uri uri) : base(uri) { }
         }
 
-        [Test]
+        [Fact]
         public void ModelNameTest()
         {
             Uri modelUri = new Uri("http://doesNotExist.example.com");
@@ -141,59 +142,59 @@ namespace Semiodesk.Trinity.Test.Fuseki
 
             IModel m1 = Store.GetModel(modelUri);
             m1.Clear();
-            Assert.IsTrue(m1.IsEmpty);
+            Assert.True(m1.IsEmpty);
 
             IModel m2 = Store.GetModel(modelUri2);
 
-            Assert.IsTrue(m2.IsEmpty);
+            Assert.True(m2.IsEmpty);
             
             PersonContact c = m1.CreateResource<PersonContact>(new Uri("http://www.example.com/testResource"));
             c.NameFamily = "Doe";
             c.Commit();
 
-            Assert.IsFalse(m1.IsEmpty);
-            Assert.IsTrue(m2.IsEmpty);
+            Assert.False(m1.IsEmpty);
+            Assert.True(m2.IsEmpty);
 
             m1.Clear();
 
-            Assert.IsTrue(m1.IsEmpty);
-            Assert.IsTrue(m2.IsEmpty);
+            Assert.True(m1.IsEmpty);
+            Assert.True(m2.IsEmpty);
 
         }
 
-        [Test]
+        [Fact]
         public void ContainsResourceTest()
         {
-            Assert.IsTrue(Model.ContainsResource(new Uri("http://example.org/MyResource")));
-            Assert.IsTrue(Model.ContainsResource(new Uri("ex:Resource")));
-            Assert.IsTrue(Model2.ContainsResource(new Uri("http://example.org/MyResource")));
-            Assert.IsTrue(Model2.ContainsResource(new Uri("ex:Resource")));
+            Assert.True(Model.ContainsResource(new Uri("http://example.org/MyResource")));
+            Assert.True(Model.ContainsResource(new Uri("ex:Resource")));
+            Assert.True(Model2.ContainsResource(new Uri("http://example.org/MyResource")));
+            Assert.True(Model2.ContainsResource(new Uri("ex:Resource")));
         }
         
-        [Test]
+        [Fact]
         public void CreateResourceTest()
         {
-            Assert.IsTrue(Model.ContainsResource(new Uri("http://example.org/MyResource")));
+            Assert.True(Model.ContainsResource(new Uri("http://example.org/MyResource")));
         }
 
-        [Test]
+        [Fact]
         public void CreateEmptyResourceTest()
         {
             var res = Model.CreateResource(new Uri("http://semiodesk.com/emptyResource"));
             res.Commit();
         }
 
-        [Test]
+        [Fact]
         public void DeleteResourceTest()
         {
             Uri uri0 = new Uri("http://example.org/MyResource");
             Uri uri1 = new Uri("http://example.org/MyResource1");
 
-            Assert.IsTrue(Model.ContainsResource(uri0));
+            Assert.True(Model.ContainsResource(uri0));
 
             Model.DeleteResource(uri0);
 
-            Assert.IsFalse(Model.ContainsResource(uri0));
+            Assert.False(Model.ContainsResource(uri0));
 
             Property p0 = new Property(new Uri("http://example.org/MyProperty"));
             Property p1 = new Property(new Uri("http://example.org/MyProperty1"));
@@ -208,22 +209,22 @@ namespace Semiodesk.Trinity.Test.Fuseki
             r1.AddProperty(p1, r0);
             r1.Commit();
 
-            Assert.IsTrue(Model.ContainsResource(r0));
-            Assert.IsTrue(Model.ContainsResource(r1));
+            Assert.True(Model.ContainsResource(r0));
+            Assert.True(Model.ContainsResource(r1));
 
             Model.DeleteResource(r0);
 
-            Assert.IsFalse(Model.ContainsResource(r0));
-            Assert.IsTrue(Model.ContainsResource(r1));
+            Assert.False(Model.ContainsResource(r0));
+            Assert.True(Model.ContainsResource(r1));
 
             // Update the resource from the model.
             r1 = Model.GetResource(uri1);
 
-            Assert.IsTrue(r1.HasProperty(p0, 123));
-            Assert.IsFalse(r1.HasProperty(p1, r0));
+            Assert.True(r1.HasProperty(p0, 123));
+            Assert.False(r1.HasProperty(p1, r0));
         }
 
-        [Test]
+        [Fact]
         public void DeleteResourcesTest()
         {
             Uri uri0 = new Uri("http://example.org/MyResource");
@@ -237,20 +238,20 @@ namespace Semiodesk.Trinity.Test.Fuseki
             r1.AddProperty(p1, new Resource(uri0));
             r1.Commit();
 
-            Assert.IsTrue(Model.ContainsResource(uri0));
-            Assert.IsTrue(Model.ContainsResource(uri1));
+            Assert.True(Model.ContainsResource(uri0));
+            Assert.True(Model.ContainsResource(uri1));
 
             r1 = Model.GetResource(uri1);
             var r0 = Model.GetResource(uri0);
 
             Model.DeleteResources(null, r0, r1);
 
-            Assert.IsFalse(Model.ContainsResource(uri0));
-            Assert.IsFalse(Model.ContainsResource(uri1));
+            Assert.False(Model.ContainsResource(uri0));
+            Assert.False(Model.ContainsResource(uri1));
         }
 
 
-        [Test]
+        [Fact]
         public void DeleteResourcesByUrisTest()
         {
             Uri uri0 = new Uri("http://example.org/MyResource");
@@ -264,16 +265,16 @@ namespace Semiodesk.Trinity.Test.Fuseki
             r1.AddProperty(p1, new Resource(uri0));
             r1.Commit();
 
-            Assert.IsTrue(Model.ContainsResource(uri0));
-            Assert.IsTrue(Model.ContainsResource(uri1));
+            Assert.True(Model.ContainsResource(uri0));
+            Assert.True(Model.ContainsResource(uri1));
 
             Model.DeleteResources(new Uri[] { uri0, uri1 });
 
-            Assert.IsFalse(Model.ContainsResource(uri0));
-            Assert.IsFalse(Model.ContainsResource(uri1));
+            Assert.False(Model.ContainsResource(uri0));
+            Assert.False(Model.ContainsResource(uri1));
         }
 
-        [Test]
+        [Fact]
         public void GetResourceWithBlankIdTest()
         {
             Model.Clear();
@@ -287,7 +288,7 @@ namespace Semiodesk.Trinity.Test.Fuseki
             Assert.Throws<ArgumentException>(() => Model.GetResource<Resource>(x.Uri));
         }
 
-        [Test]
+        [Fact]
         public void GetResourceWithBlankIdPropertyTest()
         {
             Model.Clear();
@@ -310,21 +311,21 @@ namespace Semiodesk.Trinity.Test.Fuseki
 
             var resources = Model.GetResources<Resource>().ToArray();
 
-            Assert.AreEqual(2, resources.Length);
+            Assert.Equal(2, resources.Length);
 
             foreach (var r in resources)
             {
-                Assert.IsTrue(r.Uri.IsBlankId);
+                Assert.True(r.Uri.IsBlankId);
 
                 foreach(var x in r.ListValues(related).OfType<Resource>())
                 {
-                    Assert.IsTrue(x.Uri.IsBlankId);
+                    Assert.True(x.Uri.IsBlankId);
                 }
             }
         }
 
 
-        [Test]
+        [Fact]
         public void GetResourceWithDuplicateBlankIdPropertyTest()
         {
             Model.Clear();
@@ -347,20 +348,20 @@ namespace Semiodesk.Trinity.Test.Fuseki
 
             var resources = Model.GetResources<Resource>().ToArray();
 
-            Assert.AreEqual(2, resources.Length);
+            Assert.Equal(2, resources.Length);
 
             foreach (var r in resources)
             {
-                Assert.IsTrue(r.Uri.IsBlankId);
+                Assert.True(r.Uri.IsBlankId);
 
                 foreach (var x in r.ListValues(related).OfType<Resource>())
                 {
-                    Assert.IsTrue(x.Uri.IsBlankId);
+                    Assert.True(x.Uri.IsBlankId);
                 }
             }
         }
 
-        [Test]
+        [Fact]
         public void GetResourceTest()
         {
             IResource hans = Model.GetResource(new Uri("http://example.org/MyResource"));
@@ -386,7 +387,7 @@ namespace Semiodesk.Trinity.Test.Fuseki
             }
         }
 
-        [Test]
+        [Fact]
         public void GetResourcesTest()
         {
             SparqlQuery query = new SparqlQuery("DESCRIBE <http://example.org/MyResource>");
@@ -402,7 +403,7 @@ namespace Semiodesk.Trinity.Test.Fuseki
             }
         }
 
-        [Test]
+        [Fact]
         public void UpdateResourceTest()
         {
             Property property = new Property(new Uri("http://example.org/MyProperty"));
@@ -415,11 +416,11 @@ namespace Semiodesk.Trinity.Test.Fuseki
 
             IResource actual = Model.GetResource(resourceUri);
 
-            Assert.AreEqual(resource, actual);
+            Assert.Equal(resource, actual);
 
             actual = Model.GetResource<Resource>(resourceUri);
 
-            Assert.AreEqual(resource, actual);
+            Assert.Equal(resource, actual);
 
             // Try to update resource with different properties then persisted
             Resource r2 = new Resource(resourceUri);
@@ -428,10 +429,10 @@ namespace Semiodesk.Trinity.Test.Fuseki
             r2.Model = Model;
             r2.Commit();
             actual = Model.GetResource<Resource>(resourceUri);
-            Assert.AreEqual(r2, actual);
+            Assert.Equal(r2, actual);
         }
 
-        [Test]
+        [Fact]
         public void DateTimeResourceTest()
         {
             Uri resUri = new Uri("http://example.org/DateTimeTest");
@@ -440,20 +441,20 @@ namespace Semiodesk.Trinity.Test.Fuseki
             Property property = new Property(new Uri("http://example.org/MyProperty"));
 
             DateTime t = new DateTime();
-            Assert.IsTrue(DateTime.TryParse("2013-01-21T16:27:23.000Z", out t));
+            Assert.True(DateTime.TryParse("2013-01-21T16:27:23.000Z", out t));
 
             res.AddProperty(property, t);
             res.Commit();
 
             IResource actual = Model.GetResource(resUri);
             object o = actual.GetValue(property);
-            Assert.AreEqual(typeof(DateTime), o.GetType());
+            Assert.Equal(typeof(DateTime), o.GetType());
             DateTime actualDateTime = (DateTime)actual.GetValue(property);
 
-            Assert.AreEqual(t.ToUniversalTime(), actualDateTime.ToUniversalTime());
+            Assert.Equal(t.ToUniversalTime(), actualDateTime.ToUniversalTime());
         }
 
-        [Test]
+        [Fact]
         public void TimeSpanResourceTest()
         {
             Uri resUri = new Uri("http://example.org/DateTimeTest");
@@ -468,13 +469,13 @@ namespace Semiodesk.Trinity.Test.Fuseki
 
             IResource actual = Model.GetResource(resUri);
             object o = actual.GetValue(property);
-            Assert.AreEqual(typeof(TimeSpan), o.GetType());
+            Assert.Equal(typeof(TimeSpan), o.GetType());
             TimeSpan actualDateTime = (TimeSpan)actual.GetValue(property);
 
-            Assert.AreEqual(t.TotalMinutes, actualDateTime.TotalMinutes);
+            Assert.Equal(t.TotalMinutes, actualDateTime.TotalMinutes);
         }
 
-        [Test]
+        [Fact]
         public void LiteralWithHyphenTest()
         {
             Model.Clear();
@@ -487,11 +488,11 @@ namespace Semiodesk.Trinity.Test.Fuseki
 
             IResource r = Model.GetResource(new Uri("ex:Resource"));
             object o = r.GetValue(property);
-            Assert.AreEqual(typeof(string), o.GetType());
-            Assert.AreEqual("\"in the jungle\"", o);
+            Assert.Equal(typeof(string), o.GetType());
+            Assert.Equal("\"in the jungle\"", o);
         }
 
-        [Test]
+        [Fact]
         public void LiteralWithLangTagTest()
         {
             Model.Clear();
@@ -505,14 +506,14 @@ namespace Semiodesk.Trinity.Test.Fuseki
             IResource r = Model.GetResource(new Uri("ex:Resource"));
             object o = r.GetValue(property);
 
-            Assert.AreEqual(typeof(Tuple<string, string>), o.GetType());
+            Assert.Equal(typeof(Tuple<string, string>), o.GetType());
 
             var val = o as Tuple<string, string>;
 
-            Assert.AreEqual("in the jungle", val.Item1);
+            Assert.Equal("in the jungle", val.Item1);
         }
 
-        [Test]
+        [Fact]
         public void LiteralWithNewLineTest()
         {
             Model.Clear();
@@ -527,11 +528,11 @@ namespace Semiodesk.Trinity.Test.Fuseki
 
             object o = r0.GetValue(p0);
 
-            Assert.AreEqual(typeof(string), o.GetType());
-            Assert.AreEqual("in the\n jungle", o);
+            Assert.Equal(typeof(string), o.GetType());
+            Assert.Equal("in the\n jungle", o);
         }
 
-        [Test]
+        [Fact]
         public void AddResourceTest()
         {
             Uri uriResource = new Uri("http://example.org/AddResourceTest");
@@ -546,8 +547,8 @@ namespace Semiodesk.Trinity.Test.Fuseki
 
             IResource actual = Model.GetResource(uriResource);
 
-            Assert.AreEqual(uriResource, uriResource);
-            Assert.AreEqual(resource.ListValues(property).Count(), actual.ListValues(property).Count());
+            Assert.Equal(uriResource, uriResource);
+            Assert.Equal(resource.ListValues(property).Count(), actual.ListValues(property).Count());
 
 
             uriResource = new Uri("http://example.org/AddResourceTest2");
@@ -558,11 +559,11 @@ namespace Semiodesk.Trinity.Test.Fuseki
 
             Contact actualContact = Model.GetResource<Contact>(uriResource);
 
-            Assert.AreEqual(uriResource, uriResource);
-            Assert.AreEqual(contact.Fullname, actualContact.Fullname);
+            Assert.Equal(uriResource, uriResource);
+            Assert.Equal(contact.Fullname, actualContact.Fullname);
         }
 
-        [Test]
+        [Fact]
         public void GetTypedResourcesTest()
         {
             Uri uriResource = new Uri("http://example.org/Peter");
@@ -577,9 +578,9 @@ namespace Semiodesk.Trinity.Test.Fuseki
 
             var r = Model.GetResources<Contact>();
 
-            Assert.AreEqual(2, r.Count());
-            Assert.IsTrue(r.Contains(contact));
-            Assert.IsTrue(r.Contains(contact2));
+            Assert.Equal(2, r.Count());
+            Assert.True(r.Contains(contact));
+            Assert.True(r.Contains(contact2));
 
             Model.Clear();
 
@@ -588,17 +589,17 @@ namespace Semiodesk.Trinity.Test.Fuseki
             personContact.Commit();
 
             r = Model.GetResources<Contact>();
-            Assert.AreEqual(0, r.Count());
+            Assert.Equal(0, r.Count());
 
             r = Model.GetResources<Contact>(true);
-            Assert.AreEqual(1, r.Count());
+            Assert.Equal(1, r.Count());
 
             var x = Model.GetResource(uriResource);
 
-            Assert.AreEqual(typeof(PersonContact), x.GetType());
+            Assert.Equal(typeof(PersonContact), x.GetType());
         }
 
-        [Test]
+        [Fact]
         public void WriteTest()
         {
             Model.Clear();
@@ -614,7 +615,7 @@ namespace Semiodesk.Trinity.Test.Fuseki
             var myString = Encoding.UTF8.GetString(wr.ToArray());
         }
 
-        [Test]
+        [Fact]
         public void WriteWithBaseUriTest()
         {
             Model.Clear();
@@ -631,12 +632,12 @@ namespace Semiodesk.Trinity.Test.Fuseki
 
                 var result = Encoding.UTF8.GetString(stream.ToArray());
 
-                Assert.IsFalse(string.IsNullOrEmpty(result));
-                Assert.IsTrue(result.StartsWith("@base <http://example.org/>"));
+                Assert.False(string.IsNullOrEmpty(result));
+                Assert.True(result.StartsWith("@base <http://example.org/>"));
             }
         }
 
-        [Test]
+        [Fact]
         public void ReadTest()
         {
             Model.Clear();
@@ -644,27 +645,27 @@ namespace Semiodesk.Trinity.Test.Fuseki
             FileInfo fi = new FileInfo("Models\\test-ntriples.nt");
             UriRef fileUri = fi.ToUriRef();
 
-            Assert.IsTrue(Model.IsEmpty);
-            Assert.IsTrue(Model.Read(fileUri, RdfSerializationFormat.NTriples, false));
-            Assert.IsFalse(Model.IsEmpty);
+            Assert.True(Model.IsEmpty);
+            Assert.True(Model.Read(fileUri, RdfSerializationFormat.NTriples, false));
+            Assert.False(Model.IsEmpty);
 
             Model.Clear();
 
-            Assert.IsTrue(Model.IsEmpty);
-            Assert.IsTrue(Model.Read(new Uri("http://www.w3.org/1999/02/22-rdf-syntax-ns#"), RdfSerializationFormat.RdfXml, false));
-            Assert.IsFalse(Model.IsEmpty);
+            Assert.True(Model.IsEmpty);
+            Assert.True(Model.Read(new Uri("http://www.w3.org/1999/02/22-rdf-syntax-ns#"), RdfSerializationFormat.RdfXml, false));
+            Assert.False(Model.IsEmpty);
 
             Model.Clear();
 
             fi = new FileInfo("Models\\test-tmo.trig");
             fileUri = fi.ToUriRef();
 
-            Assert.IsTrue(Model.IsEmpty);
+            Assert.True(Model.IsEmpty);
             Assert.Throws(typeof(ArgumentException), () => { Model.Read(fileUri, RdfSerializationFormat.Trig, false); });
 
         }
 
-        [Test]
+        [Fact]
         public void ReadFromStringTest()
         {
             Model.Clear();
@@ -686,12 +687,12 @@ namespace Semiodesk.Trinity.Test.Fuseki
 
             using (Stream s = GenerateStreamFromString(turtle))
             {
-                Assert.IsTrue(Model.Read(s, RdfSerializationFormat.Turtle, false));
+                Assert.True(Model.Read(s, RdfSerializationFormat.Turtle, false));
             }
 
             IResource r = Model.GetResource(new Uri("http://example.org/#green-goblin"));
             string name = r.GetValue(new Property(new Uri("http://xmlns.com/foaf/0.1/name"))) as string;
-            Assert.AreEqual("Green Goblin", name);
+            Assert.Equal("Green Goblin", name);
 
             string turtle2 = @"@base <http://example.org/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -702,13 +703,13 @@ namespace Semiodesk.Trinity.Test.Fuseki
 
             using (Stream s = GenerateStreamFromString(turtle2))
             {
-                Assert.IsTrue(Model.Read(s, RdfSerializationFormat.Turtle, true));
+                Assert.True(Model.Read(s, RdfSerializationFormat.Turtle, true));
             }
 
             r = Model.GetResource(new Uri("http://example.org/#green-goblin"));
             int age = (int)r.GetValue(new Property(new Uri("http://xmlns.com/foaf/0.1/age")));
             name = r.GetValue(new Property(new Uri("http://xmlns.com/foaf/0.1/name"))) as string;
-            Assert.AreEqual(27, age);
+            Assert.Equal(27, age);
 
             turtle = @"@base <http://example.org/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -727,15 +728,15 @@ namespace Semiodesk.Trinity.Test.Fuseki
 
             using (Stream s = GenerateStreamFromString(turtle))
             {
-                Assert.IsTrue(Model.Read(s, RdfSerializationFormat.Turtle, false));
+                Assert.True(Model.Read(s, RdfSerializationFormat.Turtle, false));
             }
 
             r = Model.GetResource(new Uri("http://example.org/#green-goblin"));
             name = r.GetValue(new Property(new Uri("http://xmlns.com/foaf/0.1/name"))) as string;
-            Assert.AreEqual("Green Gobo", name);
+            Assert.Equal("Green Gobo", name);
         }
 
-        [Test]
+        [Fact]
         public void WriteToStringTest()
         {
             Model.Clear();
@@ -751,12 +752,12 @@ namespace Semiodesk.Trinity.Test.Fuseki
             stream.Seek(0, SeekOrigin.Begin);
             var res = Encoding.UTF8.GetString(stream.ToArray());
 
-            Assert.IsFalse(string.IsNullOrEmpty(res));
+            Assert.False(string.IsNullOrEmpty(res));
 
         }
 
 
-        [Test]
+        [Fact]
         public void TestAddMultipleResources()
         {
             Assert.Inconclusive("This test should work, it just takes too long.");

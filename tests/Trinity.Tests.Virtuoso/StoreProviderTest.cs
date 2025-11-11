@@ -1,12 +1,13 @@
-﻿using NUnit.Framework;
+﻿
+using Xunit;
 
 namespace Semiodesk.Trinity.Test.Virtuoso
 {
-    [TestFixture]
+
     public class StoreProviderTest : SetupClass
     {
 
-        [Test]
+        [Fact]
         public void VirtuosoConfigurationStringTest()
         {
             var components = SetupClass.HostAndPort.Split(':');

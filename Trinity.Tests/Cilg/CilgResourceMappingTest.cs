@@ -25,17 +25,18 @@
 //
 // Copyright (c) Semiodesk GmbH 2015-2019
 
-using NUnit.Framework;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Semiodesk.Trinity.Ontologies;
 using Semiodesk.Trinity.Test.Cilg;
+using Xunit;
 
 namespace Semiodesk.Trinity.Test
 {
-    [TestFixture]
-    public class CilgResourceMappingTest : SetupClass
+
+    public class CilgResourceMappingTest : SetupClass, IDisposable
     {
         public static bool RegisteredOntology = false;
 
@@ -47,14 +48,14 @@ namespace Semiodesk.Trinity.Test
 
             return _store.GetModel(new Uri("http://example.org/TestModel"));
         }
-        
-        [TearDown]
-        public void TearDown()
+
+        public void Dispose()
         {
             _store?.Dispose();
         }
+        
 
-        [Test]
+        [Fact]
         public void MultipleRdfClassesTest()
         {
             var model = GetModel();
@@ -64,22 +65,22 @@ namespace Semiodesk.Trinity.Test
             var t1 = model.CreateResource<CilgMultipleMappingTestClass>();
             t1.Commit();
 
-            Assert.AreEqual(2, t1.GetTypes().Count());
+            Assert.Equal(2, t1.GetTypes().Count());
 
             // Test if the types were correctly persisted.
             var t2 = model.GetResource<CilgMultipleMappingTestClass>(t1);
 
-            Assert.AreEqual(2, t2.ListValues(rdf.type).Count());
+            Assert.Equal(2, t2.ListValues(rdf.type).Count());
 
             // Test if we can retrieve instances of the class from the model.
             var classes = model.GetResources<CilgMultipleMappingTestClass>();
 
-            Assert.AreEqual(1, classes.Count());
+            Assert.Equal(1, classes.Count());
 
             model.Clear();
         }
 
-        [Test]
+        [Fact]
         public void AddRemoveIntegerTest()
         {
             var model = GetModel();
@@ -96,16 +97,16 @@ namespace Semiodesk.Trinity.Test
             var t_actual = model.GetResource<CilgMappingTestClass>(t1Uri);
 
             // Test if value was stored
-            Assert.AreEqual(value, t_actual.uniqueIntTest);
+            Assert.Equal(value, t_actual.uniqueIntTest);
 
             // Test if property is present
             var l = t_actual.ListProperties();
             Assert.True(l.Contains(TestOntology.uniqueIntTest));
-            Assert.AreEqual(2, l.Count());
+            Assert.Equal(2, l.Count());
 
             // Test if ListValues works
-            Assert.AreEqual(typeof(int), t_actual.ListValues(TestOntology.uniqueIntTest).First().GetType());
-            Assert.AreEqual(value, t_actual.ListValues(TestOntology.uniqueIntTest).First());
+            Assert.Equal(typeof(int), t_actual.ListValues(TestOntology.uniqueIntTest).First().GetType());
+            Assert.Equal(value, t_actual.ListValues(TestOntology.uniqueIntTest).First());
 
             // Remove with RemoveProperty
             t1.RemoveProperty(TestOntology.uniqueIntTest, value);
@@ -118,12 +119,12 @@ namespace Semiodesk.Trinity.Test
             Assert.False(l.Contains(TestOntology.uniqueIntTest));
 
             // Test if ListValues works
-            Assert.AreEqual(0, t_actual.ListValues(TestOntology.uniqueIntTest).Count());
+            Assert.Equal(0, t_actual.ListValues(TestOntology.uniqueIntTest).Count());
 
             model.Clear();
         }
 
-        [Test]
+        [Fact]
         public void SubAddRemoveIntegerTest()
         {
 
@@ -141,17 +142,17 @@ namespace Semiodesk.Trinity.Test
             var t_actual = m.GetResource<CilgSubMappingTestClass>(t1Uri);
 
             // Test if value was stored
-            Assert.AreEqual(value, t_actual.uniqueIntTest);
+            Assert.Equal(value, t_actual.uniqueIntTest);
 
 
             // Test if property is present
             var l = t_actual.ListProperties();
             Assert.True(l.Contains(TestOntology.uniqueIntTest));
-            Assert.AreEqual(2, l.Count());
+            Assert.Equal(2, l.Count());
 
             // Test if ListValues works
-            Assert.AreEqual(typeof(int), t_actual.ListValues(TestOntology.uniqueIntTest).First().GetType());
-            Assert.AreEqual(value, t_actual.ListValues(TestOntology.uniqueIntTest).First());
+            Assert.Equal(typeof(int), t_actual.ListValues(TestOntology.uniqueIntTest).First().GetType());
+            Assert.Equal(value, t_actual.ListValues(TestOntology.uniqueIntTest).First());
 
             // Remove with RemoveProperty
             t1.RemoveProperty(TestOntology.uniqueIntTest, value);
@@ -164,12 +165,12 @@ namespace Semiodesk.Trinity.Test
             Assert.False(l.Contains(TestOntology.uniqueIntTest));
 
             // Test if ListValues works
-            Assert.AreEqual(0, t_actual.ListValues(TestOntology.uniqueIntTest).Count());
+            Assert.Equal(0, t_actual.ListValues(TestOntology.uniqueIntTest).Count());
 
             m.Clear();
         }
 
-        [Test]
+        [Fact]
         public void AddRemoveIntegerListTest()
         {
             var m = GetModel();
@@ -185,17 +186,17 @@ namespace Semiodesk.Trinity.Test
             var t_actual = m.GetResource<CilgMappingTestClass>(t1Uri);
 
             // Test if value was stored
-            Assert.AreEqual(1, t_actual.intTest.Count());
-            Assert.AreEqual(value, t_actual.intTest[0]);
+            Assert.Equal(1, t_actual.intTest.Count());
+            Assert.Equal(value, t_actual.intTest[0]);
 
             // Test if property is present
             var l = t_actual.ListProperties();
             Assert.True(l.Contains(TestOntology.intTest));
-            Assert.AreEqual(2, l.Count());
+            Assert.Equal(2, l.Count());
 
             // Test if ListValues works
-            Assert.AreEqual(typeof(int), t_actual.ListValues(TestOntology.intTest).First().GetType());
-            Assert.AreEqual(value, t_actual.ListValues(TestOntology.intTest).First());
+            Assert.Equal(typeof(int), t_actual.ListValues(TestOntology.intTest).First().GetType());
+            Assert.Equal(value, t_actual.ListValues(TestOntology.intTest).First());
 
             // Add another value
             var value2 = -18583;
@@ -205,21 +206,21 @@ namespace Semiodesk.Trinity.Test
 
 
             // Test if value was stored
-            Assert.AreEqual(2, t_actual.intTest.Count());
-            Assert.IsTrue(t_actual.intTest.Contains(value));
-            Assert.IsTrue(t_actual.intTest.Contains(value2));
+            Assert.Equal(2, t_actual.intTest.Count());
+            Assert.True(t_actual.intTest.Contains(value));
+            Assert.True(t_actual.intTest.Contains(value2));
 
             // Test if property is present
             l = t_actual.ListProperties();
             Assert.True(l.Contains(TestOntology.intTest));
-            Assert.AreEqual(2, l.Count());
+            Assert.Equal(2, l.Count());
 
             // Test if ListValues works
             var res = t_actual.ListValues(TestOntology.intTest).ToList();
-            Assert.AreEqual(typeof(int), res[0].GetType());
-            Assert.AreEqual(typeof(int), res[1].GetType());
-            Assert.IsTrue(res.Contains(value));
-            Assert.IsTrue(res.Contains(value2));
+            Assert.Equal(typeof(int), res[0].GetType());
+            Assert.Equal(typeof(int), res[1].GetType());
+            Assert.True(res.Contains(value));
+            Assert.True(res.Contains(value2));
 
             // Remove value from mapped list
             t1.intTest.Remove(value2);
@@ -227,15 +228,15 @@ namespace Semiodesk.Trinity.Test
             t_actual = m.GetResource<CilgMappingTestClass>(t1Uri);
 
             // Test if removed
-            Assert.AreEqual(1, t_actual.intTest.Count());
+            Assert.Equal(1, t_actual.intTest.Count());
 
             // Test if ListProperties works
             l = t_actual.ListProperties().ToList();
             Assert.True(l.Contains(TestOntology.intTest));
 
             // Test if first added property is still present
-            Assert.AreEqual(typeof(int), t_actual.ListValues(TestOntology.intTest).First().GetType());
-            Assert.AreEqual(value, t_actual.ListValues(TestOntology.intTest).First());
+            Assert.Equal(typeof(int), t_actual.ListValues(TestOntology.intTest).First().GetType());
+            Assert.Equal(value, t_actual.ListValues(TestOntology.intTest).First());
 
             t1.intTest.Remove(value);
             t1.Commit();
@@ -245,12 +246,12 @@ namespace Semiodesk.Trinity.Test
             Assert.False(l.Contains(TestOntology.intTest));
 
             // Test if ListValues works
-            Assert.AreEqual(0, t_actual.ListValues(TestOntology.intTest).Count());
+            Assert.Equal(0, t_actual.ListValues(TestOntology.intTest).Count());
 
             m.Clear();
         }
 
-        [Test]
+        [Fact]
         public void AddRemoveUriTest()
         {
             var model = GetModel();
@@ -273,7 +274,7 @@ namespace Semiodesk.Trinity.Test
             test1 = model.GetResource<CilgMappingTestClass>(uri1);
 
             Assert.NotNull(test1.uriProperty);
-            Assert.AreEqual(test1.uriProperty.Uri, uri2);
+            Assert.Equal(test1.uriProperty.Uri, uri2);
 
             // 3. Change the property and commit the resource.
             test1.uriProperty = new Resource(uri3);
@@ -283,7 +284,7 @@ namespace Semiodesk.Trinity.Test
             test1 = model.GetResource<CilgMappingTestClass>(uri1);
 
             Assert.NotNull(test1.uriProperty);
-            Assert.AreEqual(test1.uriProperty.Uri, uri3);
+            Assert.Equal(test1.uriProperty.Uri, uri3);
         }
 
         /*
@@ -291,7 +292,7 @@ namespace Semiodesk.Trinity.Test
         /// This Test fails because the datatype "unsigned int" is not stored correctly in the database. 
         /// To be more specific the xsd type is missing although it is given at the insert.
         /// </summary>
-        //[Test]
+        //[Fact]
         public void AddRemoveUnsignedIntegerTest()
         {
             IModel m = GetModel();
@@ -308,17 +309,17 @@ namespace Semiodesk.Trinity.Test
             MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
-            Assert.AreEqual(uValue, t_actual.uniqueUintTest);
+            Assert.Equal(uValue, t_actual.uniqueUintTest);
 
 
             // Test if property is present
             var l = t1.ListProperties();
             Assert.True(l.Contains(TestOntology.uniqueUintTest));
-            Assert.AreEqual(2, l.Count());
+            Assert.Equal(2, l.Count());
 
             // Test if ListValues works
-            Assert.AreEqual(typeof(uint), t_actual.ListValues(TestOntology.uniqueUintTest).First().GetType());
-            Assert.AreEqual(uValue, t_actual.ListValues(TestOntology.uniqueUintTest).First());
+            Assert.Equal(typeof(uint), t_actual.ListValues(TestOntology.uniqueUintTest).First().GetType());
+            Assert.Equal(uValue, t_actual.ListValues(TestOntology.uniqueUintTest).First());
 
             // Remove with RemoveProperty
             t1.RemoveProperty(TestOntology.uniqueUintTest, uValue);
@@ -331,12 +332,12 @@ namespace Semiodesk.Trinity.Test
             Assert.False(l.Contains(TestOntology.uniqueUintTest));
 
             // Test if ListValues works
-            Assert.AreEqual(0, t_actual.ListValues(TestOntology.uniqueUintTest).Count());
+            Assert.Equal(0, t_actual.ListValues(TestOntology.uniqueUintTest).Count());
 
             m.Clear();
         }
 
-        //[Test]
+        //[Fact]
         public void AddRemoveUnsignedIntegerListTest()
         {
             IModel m = GetModel();
@@ -352,18 +353,18 @@ namespace Semiodesk.Trinity.Test
             MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
-            Assert.AreEqual(1, t_actual.uintTest.Count());
-            Assert.AreEqual(uValue, t_actual.uintTest[0]);
+            Assert.Equal(1, t_actual.uintTest.Count());
+            Assert.Equal(uValue, t_actual.uintTest[0]);
 
 
             // Test if property is present
             var l = t1.ListProperties();
             Assert.True(l.Contains(TestOntology.uintTest));
-            Assert.AreEqual(2, l.Count());
+            Assert.Equal(2, l.Count());
 
             // Test if ListValues works
-            Assert.AreEqual(typeof(uint), t_actual.ListValues(TestOntology.uintTest).First().GetType());
-            Assert.AreEqual(uValue, t_actual.ListValues(TestOntology.uintTest).First());
+            Assert.Equal(typeof(uint), t_actual.ListValues(TestOntology.uintTest).First().GetType());
+            Assert.Equal(uValue, t_actual.ListValues(TestOntology.uintTest).First());
 
             // Remove value from mapped list
             t1.uintTest.Remove(uValue);
@@ -372,18 +373,18 @@ namespace Semiodesk.Trinity.Test
             t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if removed
-            Assert.AreEqual(0, t_actual.uintTest.Count());
+            Assert.Equal(0, t_actual.uintTest.Count());
 
             // Test if ListProperties works
             l = (List<Property>)t_actual.ListProperties();
             Assert.False(l.Contains(TestOntology.uintTest));
 
             // Test if ListValues works
-            Assert.AreEqual(0, t_actual.ListValues(TestOntology.uintTest).Count());
+            Assert.Equal(0, t_actual.ListValues(TestOntology.uintTest).Count());
             m.Clear();
         }
 
-        [Test]
+        [Fact]
         public void AddRemoveStringTest()
         {
             IModel m = GetModel();
@@ -400,23 +401,23 @@ namespace Semiodesk.Trinity.Test
             MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
-            Assert.AreEqual(strValue, t_actual.uniqueStringTest);
+            Assert.Equal(strValue, t_actual.uniqueStringTest);
 
 
             // Test if property is present
             var l = t_actual.ListProperties();
             Assert.True(l.Contains(TestOntology.uniqueStringTest));
-            Assert.AreEqual(2, l.Count());
+            Assert.Equal(2, l.Count());
 
             var x = t_actual.HasProperty(TestOntology.uniqueStringTest);
-            Assert.IsTrue(x);
+            Assert.True(x);
 
             x = t_actual.HasProperty(TestOntology.uniqueStringTest, strValue);
-            Assert.IsTrue(x);
+            Assert.True(x);
 
             // Test if ListValues works
-            Assert.AreEqual(typeof(string), t_actual.ListValues(TestOntology.uniqueStringTest).First().GetType());
-            Assert.AreEqual(strValue, t1.ListValues(TestOntology.uniqueStringTest).First());
+            Assert.Equal(typeof(string), t_actual.ListValues(TestOntology.uniqueStringTest).First().GetType());
+            Assert.Equal(strValue, t1.ListValues(TestOntology.uniqueStringTest).First());
 
             // Remove with RemoveProperty
             t1.RemoveProperty(TestOntology.uniqueStringTest, strValue);
@@ -428,17 +429,17 @@ namespace Semiodesk.Trinity.Test
             Assert.False(l.Contains(TestOntology.uniqueStringTest));
 
             x = t_actual.HasProperty(TestOntology.uniqueStringTest);
-            Assert.IsFalse(x);
+            Assert.False(x);
 
             x = t_actual.HasProperty(TestOntology.uniqueStringTest, strValue);
-            Assert.IsFalse(x);
+            Assert.False(x);
 
             // Test if ListValues works
-            Assert.AreEqual(0, t_actual.ListValues(TestOntology.uniqueStringTest).Count());
+            Assert.Equal(0, t_actual.ListValues(TestOntology.uniqueStringTest).Count());
             m.Clear();
         }
 
-        [Test]
+        [Fact]
         public void AddRemoveStringListTest()
         {
             IModel m = GetModel();
@@ -455,24 +456,24 @@ namespace Semiodesk.Trinity.Test
             MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
-            Assert.AreEqual(1, t_actual.stringTest.Count());
-            Assert.AreEqual(strValue, t_actual.stringTest[0]);
+            Assert.Equal(1, t_actual.stringTest.Count());
+            Assert.Equal(strValue, t_actual.stringTest[0]);
 
 
             // Test if property is present
             var l = t_actual.ListProperties();
             Assert.True(l.Contains(TestOntology.stringTest));
-            Assert.AreEqual(2, l.Count());
+            Assert.Equal(2, l.Count());
 
             var x = t_actual.HasProperty(TestOntology.stringTest);
-            Assert.IsTrue(x);
+            Assert.True(x);
 
             x = t_actual.HasProperty(TestOntology.stringTest, strValue);
-            Assert.IsTrue(x);
+            Assert.True(x);
 
             // Test if ListValues works
-            Assert.AreEqual(typeof(string), t_actual.ListValues(TestOntology.stringTest).First().GetType());
-            Assert.AreEqual(strValue, t_actual.ListValues(TestOntology.stringTest).First());
+            Assert.Equal(typeof(string), t_actual.ListValues(TestOntology.stringTest).First().GetType());
+            Assert.Equal(strValue, t_actual.ListValues(TestOntology.stringTest).First());
 
 
             // Remove value from mapped list
@@ -482,25 +483,25 @@ namespace Semiodesk.Trinity.Test
             t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if removed
-            Assert.AreEqual(0, t_actual.boolTest.Count());
+            Assert.Equal(0, t_actual.boolTest.Count());
 
             // Test if ListProperties works
             l = (List<Property>)t_actual.ListProperties();
             Assert.False(l.Contains(TestOntology.stringTest));
 
             x = t_actual.HasProperty(TestOntology.stringTest);
-            Assert.IsFalse(x);
+            Assert.False(x);
 
             x = t_actual.HasProperty(TestOntology.stringTest, strValue);
-            Assert.IsFalse(x);
+            Assert.False(x);
 
             // Test if ListValues works
-            Assert.AreEqual(0, t_actual.ListValues(TestOntology.stringTest).Count());
+            Assert.Equal(0, t_actual.ListValues(TestOntology.stringTest).Count());
 
             m.Clear();
         }
 
-        [Test]
+        [Fact]
         public void AddRemoveBoolTest()
         {
             IModel m = GetModel();
@@ -518,17 +519,17 @@ namespace Semiodesk.Trinity.Test
             MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
-            Assert.AreEqual(bValue, t_actual.uniqueBoolTest);
+            Assert.Equal(bValue, t_actual.uniqueBoolTest);
 
 
             // Test if property is present
             var l = t_actual.ListProperties();
             Assert.True(l.Contains(TestOntology.uniqueBoolTest));
-            Assert.AreEqual(2, l.Count());
+            Assert.Equal(2, l.Count());
 
             // Test if ListValues works
-            Assert.AreEqual(typeof(bool), t_actual.ListValues(TestOntology.uniqueBoolTest).First().GetType());
-            Assert.AreEqual(bValue, t_actual.ListValues(TestOntology.uniqueBoolTest).First());
+            Assert.Equal(typeof(bool), t_actual.ListValues(TestOntology.uniqueBoolTest).First().GetType());
+            Assert.Equal(bValue, t_actual.ListValues(TestOntology.uniqueBoolTest).First());
 
             // Remove with RemoveProperty
             t1.RemoveProperty(TestOntology.uniqueBoolTest, bValue);
@@ -541,12 +542,12 @@ namespace Semiodesk.Trinity.Test
             Assert.False(l.Contains(TestOntology.uniqueBoolTest));
 
             // Test if ListValues works
-            Assert.AreEqual(0, t_actual.ListValues(TestOntology.uniqueBoolTest).Count());
+            Assert.Equal(0, t_actual.ListValues(TestOntology.uniqueBoolTest).Count());
 
             m.Clear();
         }
 
-        [Test]
+        [Fact]
         public void AddRemoveBoolListTest()
         {
             IModel m = GetModel();
@@ -563,18 +564,18 @@ namespace Semiodesk.Trinity.Test
             MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
-            Assert.AreEqual(1, t_actual.boolTest.Count());
-            Assert.AreEqual(value, t_actual.boolTest[0]);
+            Assert.Equal(1, t_actual.boolTest.Count());
+            Assert.Equal(value, t_actual.boolTest[0]);
 
 
             // Test if property is present
             var l = t_actual.ListProperties();
             Assert.True(l.Contains(TestOntology.boolTest));
-            Assert.AreEqual(2, l.Count());
+            Assert.Equal(2, l.Count());
 
             // Test if ListValues works
-            Assert.AreEqual(typeof(bool), t_actual.ListValues(TestOntology.boolTest).First().GetType());
-            Assert.AreEqual(value, t_actual.ListValues(TestOntology.boolTest).First());
+            Assert.Equal(typeof(bool), t_actual.ListValues(TestOntology.boolTest).First().GetType());
+            Assert.Equal(value, t_actual.ListValues(TestOntology.boolTest).First());
 
             // Remove value from mapped list
             t1.boolTest.Remove(value);
@@ -582,14 +583,14 @@ namespace Semiodesk.Trinity.Test
             t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if removed
-            Assert.AreEqual(0, t_actual.boolTest.Count());
+            Assert.Equal(0, t_actual.boolTest.Count());
 
             // Test if ListProperties works
             l = (List<Property>)t_actual.ListProperties();
             Assert.False(l.Contains(TestOntology.boolTest));
 
             // Test if ListValues works
-            Assert.AreEqual(0, t_actual.ListValues(TestOntology.boolTest).Count());
+            Assert.Equal(0, t_actual.ListValues(TestOntology.boolTest).Count());
 
             m.Clear();
         }
@@ -598,7 +599,7 @@ namespace Semiodesk.Trinity.Test
         /// Note: 
         /// Datetime precision in Virtuoso is not as high as native .net datetime precision.
         /// </summary>
-        [Test]
+        [Fact]
         public void AddRemoveDateTimeTest()
         {
             IModel m = GetModel();
@@ -615,18 +616,18 @@ namespace Semiodesk.Trinity.Test
             MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
-            Assert.AreEqual(Value.ToUniversalTime(), t_actual.uniqueDateTimeTest.ToUniversalTime());
+            Assert.Equal(Value.ToUniversalTime(), t_actual.uniqueDateTimeTest.ToUniversalTime());
 
 
             // Test if property is present
             var l = t_actual.ListProperties();
             Assert.True(l.Contains(TestOntology.uniqueDatetimeTest));
-            Assert.AreEqual(2, l.Count());
+            Assert.Equal(2, l.Count());
 
             // Test if ListValues works
-            Assert.AreEqual(typeof(DateTime), t_actual.ListValues(TestOntology.uniqueDatetimeTest).First().GetType());
+            Assert.Equal(typeof(DateTime), t_actual.ListValues(TestOntology.uniqueDatetimeTest).First().GetType());
             DateTime time = (DateTime)t_actual.ListValues(TestOntology.uniqueDatetimeTest).First();
-            Assert.AreEqual(Value.ToUniversalTime(), time.ToUniversalTime());
+            Assert.Equal(Value.ToUniversalTime(), time.ToUniversalTime());
 
             // Remove with RemoveProperty
             t1.RemoveProperty(TestOntology.uniqueDatetimeTest, Value);
@@ -639,22 +640,22 @@ namespace Semiodesk.Trinity.Test
             Assert.False(l.Contains(TestOntology.uniqueBoolTest));
 
             // Test if ListValues works
-            Assert.AreEqual(0, t_actual.ListValues(TestOntology.uniqueDatetimeTest).Count());
+            Assert.Equal(0, t_actual.ListValues(TestOntology.uniqueDatetimeTest).Count());
 
 
             DateTime t = new DateTime();
-            Assert.IsTrue(DateTime.TryParse("2013-01-21T16:27:23.000Z", out t));
+            Assert.True(DateTime.TryParse("2013-01-21T16:27:23.000Z", out t));
 
             t1.uniqueDateTimeTest = t;
             t1.Commit();
 
             t_actual = m.GetResource<MappingTestClass>(t1Uri);
-            Assert.AreEqual(t1.uniqueDateTimeTest, t_actual.uniqueDateTimeTest);
+            Assert.Equal(t1.uniqueDateTimeTest, t_actual.uniqueDateTimeTest);
 
             m.Clear();
         }
 
-        [Test]
+        [Fact]
         public void TimeZoneTest()
         {
             IModel m = GetModel();
@@ -662,7 +663,7 @@ namespace Semiodesk.Trinity.Test
 
             Uri t1Uri = new Uri("semio:test:testInstance1");
             DateTime t = new DateTime();
-            Assert.IsTrue(DateTime.TryParse("2013-01-21T16:27:23.000Z", out t));
+            Assert.True(DateTime.TryParse("2013-01-21T16:27:23.000Z", out t));
 
             MappingTestClass t1 = m.CreateResource<MappingTestClass>(t1Uri);
             t1.uniqueDateTimeTest = t;
@@ -671,7 +672,7 @@ namespace Semiodesk.Trinity.Test
             MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
         }
 
-        [Test]
+        [Fact]
         public void AddRemoveDateTimeListTest()
         {
             IModel m = GetModel();
@@ -687,19 +688,19 @@ namespace Semiodesk.Trinity.Test
             MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
-            Assert.AreEqual(1, t1.dateTimeTest.Count());
-            Assert.AreEqual(value, t1.dateTimeTest[0]);
+            Assert.Equal(1, t1.dateTimeTest.Count());
+            Assert.Equal(value, t1.dateTimeTest[0]);
 
 
             // Test if property is present
             var l = t1.ListProperties();
             Assert.True(l.Contains(TestOntology.datetimeTest));
-            Assert.AreEqual(2, l.Count());
+            Assert.Equal(2, l.Count());
 
             // Test if ListValues works
-            Assert.AreEqual(typeof(DateTime), t_actual.ListValues(TestOntology.datetimeTest).First().GetType());
+            Assert.Equal(typeof(DateTime), t_actual.ListValues(TestOntology.datetimeTest).First().GetType());
             DateTime time = (DateTime)t_actual.ListValues(TestOntology.datetimeTest).First();
-            Assert.AreEqual(value.ToUniversalTime(), time.ToUniversalTime());
+            Assert.Equal(value.ToUniversalTime(), time.ToUniversalTime());
 
             // Remove value from mapped list
             t1.dateTimeTest.Remove(value);
@@ -708,17 +709,17 @@ namespace Semiodesk.Trinity.Test
             t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if removed
-            Assert.AreEqual(0, t_actual.dateTimeTest.Count());
+            Assert.Equal(0, t_actual.dateTimeTest.Count());
 
             // Test if ListProperties works
             l = (List<Property>)t_actual.ListProperties();
             Assert.False(l.Contains(TestOntology.datetimeTest));
 
             // Test if ListValues works
-            Assert.AreEqual(0, t_actual.ListValues(TestOntology.datetimeTest).Count());
+            Assert.Equal(0, t_actual.ListValues(TestOntology.datetimeTest).Count());
         }
 
-        [Test]
+        [Fact]
         public void AddRemoveResourceTest()
         {
             IModel m = GetModel();
@@ -734,25 +735,25 @@ namespace Semiodesk.Trinity.Test
             MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
 
-            Assert.AreEqual(t2, t_actual.uniqueResourceTest);
+            Assert.Equal(t2, t_actual.uniqueResourceTest);
 
             var l = t_actual.ListProperties();
             Assert.Contains(TestOntology.uniqueResourceTest, l);
-            Assert.AreEqual(2, l.Count());
+            Assert.Equal(2, l.Count());
 
             var x = t_actual.HasProperty(TestOntology.uniqueResourceTest);
-            Assert.IsTrue(x);
+            Assert.True(x);
 
             x = t_actual.HasProperty(TestOntology.uniqueResourceTest, t2);
-            Assert.IsTrue(x);
+            Assert.True(x);
 
             t_actual = m.GetResource<MappingTestClass>(t1Uri);
             var values = t_actual.ListValues().ToList();
             Assert.Contains( new Tuple<Property, object>(TestOntology.uniqueResourceTest, t2), values);
             
 
-            Assert.IsTrue(typeof(Resource).IsAssignableFrom(t_actual.ListValues(TestOntology.uniqueResourceTest).First().GetType()));
-            //Assert.AreEqual(t2, t_actual.ListValues(TestOntology.uniqeResourceTest).First());
+            Assert.True(typeof(Resource).IsAssignableFrom(t_actual.ListValues(TestOntology.uniqueResourceTest).First().GetType()));
+            //Assert.Equal(t2, t_actual.ListValues(TestOntology.uniqeResourceTest).First());
 
             t1.RemoveProperty(TestOntology.uniqueResourceTest, t2);
             t1.Commit();
@@ -763,16 +764,16 @@ namespace Semiodesk.Trinity.Test
             Assert.False(l.Contains(TestOntology.uniqueResourceTest));
 
             x = t_actual.HasProperty(TestOntology.uniqueResourceTest);
-            Assert.IsFalse(x);
+            Assert.False(x);
 
             x = t_actual.HasProperty(TestOntology.uniqueResourceTest, t2);
-            Assert.IsFalse(x);
+            Assert.False(x);
 
             // Test if ListValues works
-            Assert.AreEqual(0, t_actual.ListValues(TestOntology.uniqueResourceTest).Count());
+            Assert.Equal(0, t_actual.ListValues(TestOntology.uniqueResourceTest).Count());
         }
 
-        [Test]
+        [Fact]
         public void AddRemoveResourceListTest()
         {
             IModel m = GetModel();
@@ -787,41 +788,41 @@ namespace Semiodesk.Trinity.Test
             t1.Commit();
             MappingTestClass t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
-            Assert.AreEqual(1, t_actual.resourceTest.Count);
-            Assert.AreEqual(t2, t_actual.resourceTest[0]);
+            Assert.Equal(1, t_actual.resourceTest.Count);
+            Assert.Equal(t2, t_actual.resourceTest[0]);
 
             var l = t_actual.ListProperties();
-            Assert.AreEqual(2, l.Count());
-            Assert.IsTrue(l.Contains(TestOntology.resourceTest));
+            Assert.Equal(2, l.Count());
+            Assert.True(l.Contains(TestOntology.resourceTest));
 
             var x = t_actual.HasProperty(TestOntology.resourceTest);
-            Assert.IsTrue(x);
+            Assert.True(x);
 
             x = t_actual.HasProperty(TestOntology.resourceTest, t2);
-            Assert.IsTrue(x);
+            Assert.True(x);
 
             var v = t_actual.ListValues(TestOntology.resourceTest);
-            Assert.AreEqual(2, l.Count());
-            Assert.IsTrue(v.Contains(t2));
+            Assert.Equal(2, l.Count());
+            Assert.True(v.Contains(t2));
 
-            Assert.AreEqual(t2.GetType(), v.First().GetType());
+            Assert.Equal(t2.GetType(), v.First().GetType());
 
             t1.resourceTest.Remove(t2);
             t1.Commit();
             t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             x = t_actual.HasProperty(TestOntology.resourceTest);
-            Assert.IsFalse(x);
+            Assert.False(x);
 
             x = t_actual.HasProperty(TestOntology.resourceTest, t2);
-            Assert.IsFalse(x);
+            Assert.False(x);
 
 
-            Assert.AreEqual(0, t_actual.resourceTest.Count);
+            Assert.Equal(0, t_actual.resourceTest.Count);
         }
 
 
-        [Test]
+        [Fact]
         public void LazyLoadResourceTest()
         {
             MappingDiscovery.RegisterCallingAssembly();
@@ -838,10 +839,10 @@ namespace Semiodesk.Trinity.Test
             t1.Commit();
 
             MappingTestClass p1 = model.GetResource<MappingTestClass>(testRes1);
-            //Assert.AreEqual(null, p1.uniqueResourceTest);
+            //Assert.Equal(null, p1.uniqueResourceTest);
 
             var v = p1.ListValues(TestOntology.uniqueResourceTest);
-            Assert.AreEqual(t2.Uri.OriginalString, (v.First() as IResource).Uri.OriginalString);
+            Assert.Equal(t2.Uri.OriginalString, (v.First() as IResource).Uri.OriginalString);
 
             model.DeleteResource(t1);
 
@@ -856,10 +857,10 @@ namespace Semiodesk.Trinity.Test
             t1.Commit();
 
             var tt1 = model.GetResource<MappingTestClass>(testRes1);
-            Assert.AreEqual(t2, tt1.uniqueResourceTest);
+            Assert.Equal(t2, tt1.uniqueResourceTest);
 
             IResource tr1 = model.GetResource(testRes1);
-            Assert.AreEqual(typeof(MappingTestClass), tr1.GetType());
+            Assert.Equal(typeof(MappingTestClass), tr1.GetType());
             
             
             
@@ -867,14 +868,14 @@ namespace Semiodesk.Trinity.Test
             _store.RemoveModel(model);
         }
 
-        [Test]
+        [Fact]
         public void MappingTypeTest()
         {
             IModel m = GetModel();
             m.Clear();
             Uri t1Uri = new Uri("semio:test:testInstance1");
             MappingTestClass2 t1 = m.CreateResource<MappingTestClass2>(t1Uri);
-            //Assert.AreEqual(1, t1.Classes.Count);
+            //Assert.Equal(1, t1.Classes.Count);
             t1.uniqueStringTest = "testing 1";
             t1.Commit();
 
@@ -889,16 +890,16 @@ namespace Semiodesk.Trinity.Test
             t3.Commit();
 
             Resource r1 = m.GetResource<Resource>(t1Uri);
-            Assert.AreEqual(t1, r1);
+            Assert.Equal(t1, r1);
 
             Resource r2 = m.GetResource<Resource>(t2Uri);
-            Assert.AreEqual(t2, r2);
+            Assert.Equal(t2, r2);
 
             Resource r3 = m.GetResource<Resource>(t3Uri);
-            Assert.AreEqual(t3, r3);
+            Assert.Equal(t3, r3);
         }
 
-        [Test]
+        [Fact]
         public void MappingTypeWithInferencingTest()
         {
             IModel m = GetModel();
@@ -922,7 +923,7 @@ namespace Semiodesk.Trinity.Test
         }
 
 
-        [Test]
+        [Fact]
         public void RollbackTest()
         {
             IModel m = GetModel();
@@ -941,7 +942,7 @@ namespace Semiodesk.Trinity.Test
             t1.Rollback();
 
 
-            Assert.AreEqual(strValue, t1.uniqueStringTest);
+            Assert.Equal(strValue, t1.uniqueStringTest);
 
             CilgMappingTestClass newRef = m.GetResource<CilgMappingTestClass>(t1Uri);
             newRef.stringTest.Add("Hi");
@@ -951,9 +952,9 @@ namespace Semiodesk.Trinity.Test
             t1.Rollback();
 
 
-            Assert.AreEqual(2, t1.stringTest.Count);
-            Assert.IsTrue(t1.stringTest.Contains("Hi"));
-            Assert.IsTrue(t1.stringTest.Contains("Blub"));
+            Assert.Equal(2, t1.stringTest.Count);
+            Assert.True(t1.stringTest.Contains("Hi"));
+            Assert.True(t1.stringTest.Contains("Blub"));
 
 
             Uri t2Uri = new Uri("semio:test:testInstance2");
@@ -968,13 +969,13 @@ namespace Semiodesk.Trinity.Test
             t1.Rollback();
 
 
-            Assert.IsTrue(t1.resourceTest.Count == 1);
-            Assert.IsTrue(t1.resourceTest.Contains(p));
+            Assert.True(t1.resourceTest.Count == 1);
+            Assert.True(t1.resourceTest.Contains(p));
            
         }
 
 
-        [Test]
+        [Fact]
         public void RollbackMappedResourcesTest()
         {
             IModel m = GetModel();
@@ -994,12 +995,12 @@ namespace Semiodesk.Trinity.Test
 
             t1.Rollback();
 
-            Assert.IsTrue(t1.ResourceTest.Count == 1);
-            Assert.IsTrue(t1.ResourceTest.Contains(p));
+            Assert.True(t1.ResourceTest.Count == 1);
+            Assert.True(t1.ResourceTest.Contains(p));
          
         }
 
-        [Test]
+        [Fact]
         public void ListValuesTest()
         {
             IModel m = GetModel();
@@ -1022,14 +1023,14 @@ namespace Semiodesk.Trinity.Test
             MappingTestClass actual = m.GetResource<MappingTestClass>(t1.Uri);
             var x2 = actual.ListValues(TestOntology.stringTest);
 
-            Assert.AreEqual(x.Count, x2.Count);
-            Assert.IsTrue(x2.Contains(x[0]));
-            Assert.IsTrue(x2.Contains(x[1]));
+            Assert.Equal(x.Count, x2.Count);
+            Assert.True(x2.Contains(x[0]));
+            Assert.True(x2.Contains(x[1]));
 
         }
 
 
-        [Test]
+        [Fact]
         public void KeepListsAfterRollbackTest()
         {
             IModel m = GetModel();
@@ -1043,43 +1044,43 @@ namespace Semiodesk.Trinity.Test
             t1.stringTest.Add("Hi");
             t1.stringTest.Add("Blub");
             var x = t1.ListValues(TestOntology.stringTest);
-            Assert.AreEqual(2, x.Count);
+            Assert.Equal(2, x.Count);
             t1.Commit();
 
             SingleMappingTestClass t2 = m.GetResource<SingleMappingTestClass>(t1Uri);
 
             var x2 = t2.ListValues(TestOntology.stringTest);
 
-            Assert.AreEqual(x.Count, x2.Count);
-            Assert.IsTrue(x2.Contains(x[0]));
-            Assert.IsTrue(x2.Contains(x[1]));
+            Assert.Equal(x.Count, x2.Count);
+            Assert.True(x2.Contains(x[0]));
+            Assert.True(x2.Contains(x[1]));
 
         }
 
-        [Test]
+        [Fact]
         public void TestEquality()
         {
             Resource c1 = new Resource(new Uri("http://www.semanticdesktop.org/ontologies/2007/04/02/ncal#cancelledStatus"));
             Resource c2 = new Resource(new Uri("http://www.semanticdesktop.org/ontologies/2007/04/02/ncal#cancelledStatus"));
 
-            Assert.IsTrue(c1.Equals(c2));
-            Assert.IsFalse(c1 == c2);
+            Assert.True(c1.Equals(c2));
+            Assert.False(c1 == c2);
         }
 
 
-        [Test]
+        [Fact]
         public void TestStringPropertyMapping()
         {
             StringMappingTestClass p = new StringMappingTestClass(new Uri("http://test.example.com"));
             p.uniqueStringTest = "Test string";
 
             var x = p.GetValue(TestOntology.uniqueStringTest);
-            Assert.AreEqual(p.uniqueStringTest, x);
+            Assert.Equal(p.uniqueStringTest, x);
 
             p.RandomProperty = "Test string 2";
 
             x = p.GetValue(new Property(new Uri("http://www.example.com/property")));
-            Assert.AreEqual(p.RandomProperty, x);
+            Assert.Equal(p.RandomProperty, x);
 
         }
          * */

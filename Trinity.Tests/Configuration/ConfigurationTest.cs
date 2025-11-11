@@ -25,28 +25,28 @@
 //
 // Copyright (c) Semiodesk GmbH 2015-2019
 
-using NUnit.Framework;
+
 using Semiodesk.Trinity.Configuration;
 using System.IO;
 using System.Linq;
+using Xunit;
 
 namespace Semiodesk.Trinity.Test
 {
-    [TestFixture]
-    class ConfigurationTest : SetupClass
+    public class ConfigurationTest : SetupClass
     {
-        [Test]
+        [Fact]
         public void TestAppConfig()
         {
             var configFile = new FileInfo("ontologies-test.config");
 
             var config = ConfigurationLoader.LoadConfiguration(configFile);
 
-            Assert.AreEqual("Semiodesk.Trinity.Test", config.Namespace);
+            Assert.Equal("Semiodesk.Trinity.Test", config.Namespace);
 
             var ontologies = config.ListOntologies();
 
-            Assert.AreEqual(5, ontologies.Count());
+            Assert.Equal(5, ontologies.Count());
 
             var x = config.ListStoreConfigurations().ToList();
             var b = x.First().Data;

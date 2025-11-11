@@ -27,23 +27,28 @@
 
 using System;
 using System.Collections;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Semiodesk.Trinity.Ontologies;
-
-using NUnit.Framework;
+using Xunit;
 
 namespace Semiodesk.Trinity.Test
 {
-    [TestFixture]
-    public class SparqlQueryDotNetRdfTest
+
+    public class SparqlQueryDotNetRdfTest: IDisposable
     {
         protected IStore Store;
 
         protected IModel Model;
 
-        [SetUp]
-        public void SetUp()
+
+        public SparqlQueryDotNetRdfTest()
+        {
+            SetUp();
+        }
+
+        private void SetUp()
         {
             Store = StoreFactory.CreateStore("provider=dotnetrdf");
             Model = Store.GetModel(new Uri("http://example.org/TestModel"));
@@ -100,54 +105,53 @@ namespace Semiodesk.Trinity.Test
             resource4.AddProperty(nco.creator, resource0);
             resource4.Commit();
         }
-
-        [TearDown]
-        public void TearDown()
+        
+        public void Dispose()
         {
             Model.Clear();
         }
 
-        [Test]
+        [Fact]
         public void TestAsk()
         {
             // Checking the model using ASK queries.
             var query = new SparqlQuery("ASK { ?s nco:fullname 'Hans Wurscht' . }");
             var result = Model.ExecuteQuery(query);
 
-            Assert.AreEqual(true, result.GetAnswer());
+            Assert.Equal(true, result.GetAnswer());
 
             query = new SparqlQuery("ASK { ?s nco:fullname 'Hans Meier' . }");
             result = Model.ExecuteQuery(query);
 
-            Assert.AreEqual(false, result.GetAnswer());
+            Assert.Equal(false, result.GetAnswer());
         }
 
-        [Test]
+        [Fact]
         public void TestSelect()
         {
             // Retrieving bound variables using the SELECT query form.
             var query = new SparqlQuery("SELECT ?name ?birthday WHERE { ?x nco:fullname ?name. ?x nco:birthDate ?birthday. }");
             var result = Model.ExecuteQuery(query);
 
-            Assert.AreEqual(1, result.GetBindings().Count());
+            Assert.Equal(1, result.GetBindings().Count());
 
             // Retrieving resoures using the SELECT or DESCRIBE query form.
             query = new SparqlQuery("SELECT ?s ?p ?o WHERE { ?s ?p ?o. ?s nco:fullname 'Hans Wurscht'. }");
             result = Model.ExecuteQuery(query);
 
-            Assert.AreEqual(1, result.GetResources().Count());
+            Assert.Equal(1, result.GetResources().Count());
 
             // Test SELECT with custom defined PREFIXes
             query = new SparqlQuery("PREFIX nco: <http://www.semanticdesktop.org/ontologies/2007/03/22/nco#> SELECT ?s ?p ?o WHERE { ?s ?p ?o. ?s nco:fullname 'Hans Wurscht'. }");
             result = Model.ExecuteQuery(query);
 
-            Assert.AreEqual(1, result.GetResources().Count());
+            Assert.Equal(1, result.GetResources().Count());
 
             // Check if the select statement only works on the given model.
             query = new SparqlQuery("SELECT * WHERE { ?s ?p ?o. }");
             result = Model.ExecuteQuery(query);
 
-            Assert.AreEqual(5, result.GetResources().Count());
+            Assert.Equal(5, result.GetResources().Count());
 
             // Check that resource creation is done correctly for Resources containing dashes.
             var r0 = Model.CreateResource(new Uri("http://example.org/Something#0"));
@@ -161,38 +165,38 @@ namespace Semiodesk.Trinity.Test
             query = new SparqlQuery("SELECT * WHERE { ?s ?p ?o. }");
             result = Model.ExecuteQuery(query);
 
-            Assert.AreEqual(7, result.GetResources().Count());
+            Assert.Equal(7, result.GetResources().Count());
         }
 
-        [Test]
+        [Fact]
         public void TestDescribe()
         {
             var query = new SparqlQuery("DESCRIBE <http://example.org/Hans>");
             var result = Model.ExecuteQuery(query);
 
             IList resources = result.GetResources().ToList();
-            Assert.AreEqual(1, resources.Count);
+            Assert.Single(resources);
 
             query = new SparqlQuery("DESCRIBE ?s WHERE { ?s nco:fullname 'Hans Wurscht'. }");
             result = Model.ExecuteQuery(query);
 
             resources = result.GetResources<PersonContact>().ToList();
-            Assert.AreEqual(1, resources.Count);
+            Assert.Single(resources);
 
             foreach (Contact c in resources)
             {
-                Assert.AreEqual(c.GetType(), typeof(PersonContact));
+                Assert.Equal(typeof(PersonContact), c.GetType());
             }
         }
 
-        [Test]
+        [Fact]
         public void TestConstruct()
         {
             var c0 = Model.GetResources<PersonContact>();
 
             foreach (var c in c0)
             {
-                Assert.IsFalse(c.HasProperty(vcard.givenName));
+                Assert.False(c.HasProperty(vcard.givenName));
             }
 
             // Assert.Inconclusive("Blank nodes are currently problematic.");
@@ -209,19 +213,17 @@ namespace Semiodesk.Trinity.Test
 
             var c1 = Model.GetResources(query).ToList();
 
-            Assert.AreEqual(2, c1.Count());
+            Assert.Equal(2, c1.Count());
 
             
-           Assert.IsTrue(c1[0].HasProperty(vcard.N));
-            Assert.IsTrue(c1[1].HasProperty(vcard.givenName));
+           Assert.True(c1[0].HasProperty(vcard.N));
+            Assert.True(c1[1].HasProperty(vcard.givenName));
 
         }
 
-        [Test]
+        [Fact(Skip = "Inferencing in dotNetRDF Memory store is still not supported.")]
         public void TestInferencing()
         {
-            Assert.Inconclusive("Inferencing in dotNetRDF Memory store is still not supported.");
-
             Store = StoreFactory.CreateStore("provider=dotnetrdf;schema=Models/test-vocab.rdf");
 
             var model = Store.CreateModel(new Uri("http://example.org/TestModel"));
@@ -242,31 +244,31 @@ namespace Semiodesk.Trinity.Test
             query = new SparqlQuery("ASK WHERE { <http://www.example.org/Hans> a test:Animal . }");
 
             result = model.ExecuteQuery(query);
-            Assert.IsFalse(result.GetAnswer());
+            Assert.False(result.GetAnswer());
 
             result = model.ExecuteQuery(query, true);
-            Assert.IsTrue(result.GetAnswer());
+            Assert.True(result.GetAnswer());
 
             result = model.ExecuteQuery(query);
-            Assert.IsFalse(result.GetAnswer());
+            Assert.False(result.GetAnswer());
 
             // This fact is not explicitly stated.
             query = new SparqlQuery("SELECT ?food WHERE { ?s test:consumes ?food . }");
 
             result = model.ExecuteQuery(query);
-            Assert.AreEqual(0, result.GetBindings().Count());
+            Assert.Empty(result.GetBindings());
 
             result = model.ExecuteQuery(query, true);
-            Assert.AreEqual(1, result.GetBindings().Count());
+            Assert.Single(result.GetBindings());
 
         }
 
-        [Test]
+        [Fact]
         public void TestModelApi()
         {
             // Retrieving resources using the model API.
-            Assert.AreEqual(true, Model.ContainsResource(new Uri("http://example.org/Hans")));
-            Assert.AreEqual(false, Model.ContainsResource(new Uri("http://example.org/Peter")));
+            Assert.True(Model.ContainsResource(new Uri("http://example.org/Hans")));
+            Assert.False(Model.ContainsResource(new Uri("http://example.org/Peter")));
 
             var hans = Model.GetResource(new Uri("http://example.org/Hans"));
             Assert.Throws<ResourceNotFoundException>(delegate { Model.GetResource(new Uri("http://example.org/Peter")); });
@@ -275,7 +277,7 @@ namespace Semiodesk.Trinity.Test
             Assert.NotNull(hans);
         }
 
-        [Test]
+        [Fact]
         public void TestUriEscaping()
         {
             var uri = new Uri("file:///F:/test/02%20-%20Take%20Me%20Somewhere%20Nice.mp3");
@@ -287,89 +289,90 @@ namespace Semiodesk.Trinity.Test
 
             var result = Model.GetResource(uri);
 
-            Assert.AreEqual(x.Uri, result.Uri);
-            Assert.AreEqual(x, result);
+            Assert.Equal(x.Uri, result.Uri);
+            Assert.Equal(x, result);
         }
 
-        [Test]
+        [Fact]
         public void TestSelectCount()
         {
             var query = new SparqlQuery("SELECT COUNT(?s) AS ?count WHERE { ?s rdf:type nfo:Document. }");
             var result = Model.ExecuteQuery(query);
 
-            var bindings = result.GetBindings();
-            Assert.AreEqual(1, bindings.Count());
-            Assert.AreEqual(3, bindings.First()["count"]);
+            var bindings = result.GetBindings().ToArray();
+            Assert.Single(bindings);
+            Assert.Equal(3, bindings.First()["count"]);
         }
 
-        [Test]
+        [Fact]
         public void TestCount()
         {
             var query = new SparqlQuery("SELECT ?s ?p ?o WHERE { ?s rdf:type nfo:Document. ?s ?p ?o. }");
             var result = Model.ExecuteQuery(query);
 
-            Assert.AreEqual(3, result.Count());
+            Assert.Equal(3, result.Count());
 
             query = new SparqlQuery("SELECT ?s ?p ?o WHERE { ?s rdf:type nfo:Document. ?s ?p ?o. }");
             result = Model.ExecuteQuery(query);
 
-            Assert.AreEqual(3, result.Count());
+            Assert.Equal(3, result.Count());
         }
 
-        [Test]
+        [Fact]
         public void TestSetModel()
         {
             // Testing SetModel with a SparqlQuery that uses the query parser, this should succeed
             var query = new SparqlQuery("SELECT COUNT(?s) AS ?count WHERE { ?s ?p ?o . }");
 
-            Assert.IsNull(query.Model);
-            Assert.IsFalse(query.ToString().Contains("FROM"));
+            Assert.Null(query.Model);
+            Assert.DoesNotContain("FROM", query.ToString());
 
             query.Model = Model;
 
             Assert.NotNull(query.Model);
-            Assert.IsTrue(query.ToString().Contains("FROM"));
+            Assert.Contains("FROM", query.ToString());
         }
 
-        [Test]
+        [Fact]
         public void TestComplexQuery()
         {
-            var queryString = "SELECT ?s0 ?p0 ?o0 " +
-                              "WHERE " +
-                              "{{ " +
-                              "?s0 ?p0 ?o0 . " +
-                              "{{ " +
-                              "  SELECT DISTINCT ?s0 " +
-                              "WHERE " +
-                              "{{ " +
-                              " ?s ?p ?o." +
-                              "?s <{0}> <{1}> ." +
-                              "{{" +
-                              "  ?s ?p1 ?o1 ." +
-                              "FILTER ISLITERAL(?o1) . FILTER REGEX(STR(?o1), \"\", \"i\") ." +
-                              "}}" +
-                              "UNION" +
-                              "{{" +
-                              "?s ?p1 ?s1 ." +
-                              "?s1 ?p2 ?o2 ." +
-                              "FILTER ISLITERAL(?o2) . FILTER REGEX(STR(?o2), \"\", \"i\") ." +
-                              "}}" +
-                              "}}" +
-                              "ORDER BY ?o" +
-                              "}}" +
-                              "}}";
+            const string queryString = "SELECT ?s0 ?p0 ?o0 " +
+                                       "WHERE " +
+                                       "{{ " +
+                                       "?s0 ?p0 ?o0 . " +
+                                       "{{ " +
+                                       "  SELECT DISTINCT ?s0 " +
+                                       "WHERE " +
+                                       "{{ " +
+                                       " ?s ?p ?o." +
+                                       "?s <{0}> <{1}> ." +
+                                       "{{" +
+                                       "  ?s ?p1 ?o1 ." +
+                                       "FILTER ISLITERAL(?o1) . FILTER REGEX(STR(?o1), \"\", \"i\") ." +
+                                       "}}" +
+                                       "UNION" +
+                                       "{{" +
+                                       "?s ?p1 ?s1 ." +
+                                       "?s1 ?p2 ?o2 ." +
+                                       "FILTER ISLITERAL(?o2) . FILTER REGEX(STR(?o2), \"\", \"i\") ." +
+                                       "}}" +
+                                       "}}" +
+                                       "ORDER BY ?o" +
+                                       "}}" +
+                                       "}}";
 
             var q = string.Format(queryString, rdf.type.Uri.OriginalString, tmo.Task.Uri.OriginalString);
             var query = new SparqlQuery(q);
 
             var method = query.GetType().GetMethod("SetLimit", BindingFlags.NonPublic | BindingFlags.Instance);
+            Debug.Assert(method != null, nameof(method) + " != null");
             method.Invoke(query, new object[] { 10 });
 
             var x = Model.ExecuteQuery(query);
             var res = x.GetResources().ToList();
         }
 
-        [Test]
+        [Fact]
         public void TestIsOrdered()
         {
             var query = new SparqlQuery(@"
@@ -401,7 +404,7 @@ namespace Semiodesk.Trinity.Test
                 .Bind("@type", rdf.type)
                 .Bind("@class", tmo.Task);
 
-            Assert.IsTrue(string.IsNullOrEmpty(query.GetRootOrderByClause()));
+            Assert.True(string.IsNullOrEmpty(query.GetRootOrderByClause()));
 
             query = new SparqlQuery(@"
                 SELECT ?s0 ?p0 ?o0
@@ -431,7 +434,7 @@ namespace Semiodesk.Trinity.Test
                 .Bind("@type", rdf.type)
                 .Bind("@class", tmo.Task);
 
-            Assert.IsTrue(string.IsNullOrEmpty(query.GetRootOrderByClause()));
+            Assert.True(string.IsNullOrEmpty(query.GetRootOrderByClause()));
 
             query = new SparqlQuery(@"
                 SELECT DISTINCT ?s0 FROM <urn:uuid:8083cf10-5f90-40d4-b30a-c18fea31177b/>
@@ -444,10 +447,10 @@ namespace Semiodesk.Trinity.Test
                 ORDER BY ASC(?o1) LIMIT 50
             ");
 
-            Assert.IsFalse(string.IsNullOrEmpty(query.GetRootOrderByClause()));
+            Assert.False(string.IsNullOrEmpty(query.GetRootOrderByClause()));
         }
 
-        [Test]
+        [Fact]
         public void TestFromGraphBehaviour()
         {
             var query = new SparqlQuery(@"

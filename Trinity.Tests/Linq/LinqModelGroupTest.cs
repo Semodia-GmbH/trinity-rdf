@@ -25,16 +25,15 @@
 //
 // Copyright (c) Semiodesk GmbH 2015-2019
 
-using NUnit.Framework;
+
 using System;
 using System.Diagnostics;
 
 namespace Semiodesk.Trinity.Test.Linq
 {
-    [TestFixture]
+
     public class LinqModelGroupTest : LinqTestBase
     {
-        [SetUp]
         public override void SetUp()
         {
             // DotNetRdf memory store.

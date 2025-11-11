@@ -27,11 +27,12 @@
 
 using System;
 using System.Linq;
-using NUnit.Framework;
+
+using Xunit;
 
 namespace Semiodesk.Trinity.Test.Fuseki
 {
-    [TestFixture]
+
     public class SparqlUpdateTest : SetupClass
     {
         private IStore _store;
@@ -64,7 +65,7 @@ namespace Semiodesk.Trinity.Test.Fuseki
             _store.Dispose();
         }
 
-        [Test]
+        [Fact]
         public void TestInsert()
         {
             SparqlUpdate update = new SparqlUpdate(@"INSERT DATA { GRAPH <ex:TestModel> { ex:book dc:title 'This is an example title' . } }");
@@ -75,7 +76,7 @@ namespace Semiodesk.Trinity.Test.Fuseki
 
             ISparqlQueryResult result = _model.ExecuteQuery(query);
 
-            Assert.AreEqual(true, result.GetAnswer());
+            Assert.Equal(true, result.GetAnswer());
 
             /// TEST WITH LANGUAGE TAG
             /// 
@@ -87,10 +88,10 @@ namespace Semiodesk.Trinity.Test.Fuseki
 
             result = _model.ExecuteQuery(query);
 
-            Assert.AreEqual(true, result.GetAnswer());
+            Assert.Equal(true, result.GetAnswer());
         }
 
-        [Test]
+        [Fact]
         public void TestModify()
         {
             SparqlUpdate update = new SparqlUpdate(@"
@@ -107,15 +108,15 @@ namespace Semiodesk.Trinity.Test.Fuseki
             SparqlQuery query = new SparqlQuery(@"
                 ASK WHERE { ?s dc:title 'This is an example title' . }");
 
-            Assert.AreEqual(false, _model.ExecuteQuery(query).GetAnswer());
+            Assert.Equal(false, _model.ExecuteQuery(query).GetAnswer());
 
             query = new SparqlQuery(@"
                 ASK WHERE { ?s dc:title 'This is an example title too' . }");
 
-            Assert.AreEqual(true, _model.ExecuteQuery(query).GetAnswer());
+            Assert.Equal(true, _model.ExecuteQuery(query).GetAnswer());
         }
 
-        [Test]
+        [Fact]
         public void TestMultipleModify()
         {
             SparqlUpdate update = new SparqlUpdate(@"
@@ -127,16 +128,16 @@ namespace Semiodesk.Trinity.Test.Fuseki
             SparqlQuery query = new SparqlQuery(@"
                 ASK WHERE { ?s dc:title 'This is an example title' . }");
 
-            Assert.AreEqual(true, _model.ExecuteQuery(query).GetAnswer());
+            Assert.Equal(true, _model.ExecuteQuery(query).GetAnswer());
 
             query = new SparqlQuery(@"
                 ASK WHERE { ?s dc:title 'This is an example title2' . }");
 
-            Assert.AreEqual(true, _model.ExecuteQuery(query).GetAnswer());
+            Assert.Equal(true, _model.ExecuteQuery(query).GetAnswer());
         }
 
 
-        [Test]
+        [Fact]
         public void TestDelete()
         {
             SparqlUpdate update = new SparqlUpdate(@"
@@ -152,10 +153,10 @@ namespace Semiodesk.Trinity.Test.Fuseki
             SparqlQuery query = new SparqlQuery(@"
                 ASK WHERE { ?s dc:title 'This is an example title' . }");
 
-            Assert.AreEqual(false, _model.ExecuteQuery(query).GetAnswer());
+            Assert.Equal(false, _model.ExecuteQuery(query).GetAnswer());
         }
 
-        [Test]
+        [Fact]
         public void TestLoad()
         {
             Assert.Inconclusive();
@@ -168,7 +169,7 @@ namespace Semiodesk.Trinity.Test.Fuseki
             Assert.Greater(_model.ExecuteQuery(query).GetBindings().Count(), 0);
         }
 
-        [Test]
+        [Fact]
         public void TestClear()
         {
             SparqlUpdate update = new SparqlUpdate(@"INSERT DATA { GRAPH <ex:TestModel> { ex:book dc:title 'This is an example title' . } }");
@@ -181,10 +182,10 @@ namespace Semiodesk.Trinity.Test.Fuseki
 
             SparqlQuery query = new SparqlQuery(@"ASK WHERE { ?s dc:title 'This is an example title' . }");
 
-            Assert.AreEqual(false, _model.ExecuteQuery(query).GetAnswer());
+            Assert.Equal(false, _model.ExecuteQuery(query).GetAnswer());
         }
 
-        [Test]
+        [Fact]
         public void TestUpdateParameters()
         {
             SparqlUpdate update = new SparqlUpdate(@"
@@ -197,7 +198,7 @@ namespace Semiodesk.Trinity.Test.Fuseki
 
             string updateString = update.ToString();
 
-            Assert.IsFalse(string.IsNullOrEmpty(updateString));
+            Assert.False(string.IsNullOrEmpty(updateString));
 
             _model.ExecuteUpdate(update);
         }

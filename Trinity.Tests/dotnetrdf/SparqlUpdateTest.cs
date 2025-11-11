@@ -27,19 +27,19 @@
 
 using System;
 using System.Linq;
-using NUnit.Framework;
+
+using Xunit;
 
 namespace Semiodesk.Trinity.Test
 {
-    [TestFixture]
-    public class SparqlUpdateTest : SetupClass
+
+    public class SparqlUpdateTest : SetupClass, IDisposable
     {
         private IStore _store;
 
         private IModel _model;
 
-        [SetUp]
-        public void SetUp()
+        public SparqlUpdateTest()
         {
             _store = StoreFactory.CreateStore("provider=dotnetrdf");
             _model = _store.GetModel(new Uri("http://example.org/TestModel"));
@@ -54,15 +54,14 @@ namespace Semiodesk.Trinity.Test
             OntologyDiscovery.AddNamespace("dc", new Uri("http://purl.org/dc/elements/1.1/"));
             OntologyDiscovery.AddNamespace("ex", new Uri("http://example.org/"));
         }
-
-        [TearDown]
-        public void TearDown()
+        
+        public void Dispose()
         {
             _model.Clear();
             _store.Dispose();
         }
 
-        [Test]
+        [Fact]
         public void TestLanguageTagsVariableIssue()
         {
             var str = @"
@@ -78,14 +77,13 @@ namespace Semiodesk.Trinity.Test
                 }
             ";
             var update = new SparqlUpdate(str);
-            Assert.DoesNotThrow(() =>
-           {
-               update.ToString();
-           });
+           
+            var exception = Record.Exception(() => update.ToString());
+            Assert.Null(exception);
  
         }
 
-        [Test]
+        [Fact]
         public void TestInsert()
         {
             var update = new SparqlUpdate(@"INSERT DATA { GRAPH <http://example.org/TestModel> {ex:book dc:title 'This is an example title' .} }");
@@ -96,7 +94,7 @@ namespace Semiodesk.Trinity.Test
 
             var result = _model.ExecuteQuery(query);
 
-            Assert.AreEqual(true, result.GetAnswer());
+            Assert.True(result.GetAnswer());
 
             /// TEST WITH LANGUAGE TAG
             /// 
@@ -108,10 +106,10 @@ namespace Semiodesk.Trinity.Test
 
             result = _model.ExecuteQuery(query);
 
-            Assert.AreEqual(true, result.GetAnswer());
+            Assert.Equal(true, result.GetAnswer());
         }
 
-        [Test]
+        [Fact]
         public void TestModify()
         {
             var update = new SparqlUpdate(@"
@@ -131,15 +129,15 @@ namespace Semiodesk.Trinity.Test
             var query = new SparqlQuery(@"
                 ASK WHERE { ?s dc:title 'This is an example title' . }");
 
-            Assert.AreEqual(false, _model.ExecuteQuery(query).GetAnswer());
+            Assert.Equal(false, _model.ExecuteQuery(query).GetAnswer());
 
             query = new SparqlQuery(@"
                 ASK WHERE { ?s dc:title 'This is an example title too' . }");
 
-            Assert.AreEqual(true, _model.ExecuteQuery(query).GetAnswer());
+            Assert.Equal(true, _model.ExecuteQuery(query).GetAnswer());
         }
 
-        [Test]
+        [Fact]
         public void TestMultipleModify()
         {
             var update = new SparqlUpdate(@"
@@ -151,16 +149,16 @@ namespace Semiodesk.Trinity.Test
             var query = new SparqlQuery(@"
                 ASK WHERE { ?s dc:title 'This is an example title' . }");
 
-            Assert.AreEqual(true, _model.ExecuteQuery(query).GetAnswer());
+            Assert.Equal(true, _model.ExecuteQuery(query).GetAnswer());
 
             query = new SparqlQuery(@"
                 ASK WHERE { ?s dc:title 'This is an example title2' . }");
 
-            Assert.AreEqual(true, _model.ExecuteQuery(query).GetAnswer());
+            Assert.Equal(true, _model.ExecuteQuery(query).GetAnswer());
         }
 
 
-        [Test]
+        [Fact]
         public void TestDelete()
         {
             var update = new SparqlUpdate(@"
@@ -176,23 +174,22 @@ namespace Semiodesk.Trinity.Test
             var query = new SparqlQuery(@"
                 ASK WHERE { ?s dc:title 'This is an example title' . }");
 
-            Assert.AreEqual(false, _model.ExecuteQuery(query).GetAnswer());
+            Assert.Equal(false, _model.ExecuteQuery(query).GetAnswer());
         }
 
-        [Test]
+        [Fact(Skip = "Inconclusive")]
         public void TestLoad()
         {
-            Assert.Inconclusive();
             var update = new SparqlUpdate(@"LOAD <http://eurostat.linked-statistics.org/sparql> INTO <http://example.org/TestModel>");
 
             _model.ExecuteUpdate(update);
 
             var query = new SparqlQuery(@"SELECT * WHERE { ?s ?p ?o . }");
 
-            Assert.Greater(_model.ExecuteQuery(query).GetBindings().Count(), 0);
+            Assert.True(_model.ExecuteQuery(query).GetBindings().Any());
         }
 
-        [Test]
+        [Fact]
         public void TestClear()
         {
             var update = new SparqlUpdate(@"INSERT DATA { GRAPH <ex:TestModel> { ex:book dc:title 'This is an example title' . }}");
@@ -205,10 +202,10 @@ namespace Semiodesk.Trinity.Test
 
             var query = new SparqlQuery(@"ASK WHERE { ?s dc:title 'This is an example title' . }");
 
-            Assert.AreEqual(false, _model.ExecuteQuery(query).GetAnswer());
+            Assert.False(_model.ExecuteQuery(query).GetAnswer());
         }
 
-        [Test]
+        [Fact]
         public void TestUpdateParameters()
         {
             var update = new SparqlUpdate(@"
@@ -221,7 +218,7 @@ namespace Semiodesk.Trinity.Test
 
             var updateString = update.ToString();
 
-            Assert.IsFalse(string.IsNullOrEmpty(updateString));
+            Assert.False(string.IsNullOrEmpty(updateString));
 
             _model.ExecuteUpdate(update);
         }

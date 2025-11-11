@@ -27,12 +27,13 @@
 
 using System;
 using System.Linq;
-using NUnit.Framework;
+
 using Semiodesk.Trinity.Ontologies;
+using Xunit;
 
 namespace Semiodesk.Trinity.Test.Virtuoso
 {
-    [TestFixture]
+
     class SparqlQueryItemsProviderTest : SetupClass
     {
         protected IStore Store;
@@ -84,31 +85,31 @@ namespace Semiodesk.Trinity.Test.Virtuoso
             Store.Dispose();
         }
 
-        [Test]
+        [Fact]
         public void TestCount()
         {
             var q = new SparqlQuery("select ?s ?p ?o where { ?s ?p ?o. ?s a nco:PersonContact. }");
             var p = new SparqlQueryItemsProvider<Resource>(Model, q, false);
 
-            Assert.AreEqual(100, p.Count());
+            Assert.Equal(100, p.Count());
 
             q = new SparqlQuery("select ?s ?p ?o where { ?s ?p ?o. ?s a nco:Contact. }");
             p = new SparqlQueryItemsProvider<Resource>(Model, q, false);
 
-            Assert.AreEqual(0, p.Count());
+            Assert.Equal(0, p.Count());
         }
 
-        [Test]
+        [Fact]
         public void TestGetItems()
         {
             var q = new SparqlQuery("select ?s ?p ?o where { ?s rdf:type nco:PersonContact. ?s ?p ?o. }");
             var p = new SparqlQueryItemsProvider<Resource>(Model, q, false);
 
-            Assert.AreEqual(10, p.GetItems(0, 10).Count());
+            Assert.Equal(10, p.GetItems(0, 10).Count());
 
             q = new SparqlQuery("select ?s ?p ?o where { ?s rdf:type nco:Contact. ?s ?p ?o. }");
             p = new SparqlQueryItemsProvider<Resource>(Model, q, false);
-            Assert.AreEqual(0, p.GetItems(0, 10).Count());
+            Assert.Equal(0, p.GetItems(0, 10).Count());
         }
     }
 }

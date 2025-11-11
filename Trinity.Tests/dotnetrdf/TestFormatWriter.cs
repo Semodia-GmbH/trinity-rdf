@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using VDS.RDF;
 
 namespace Semiodesk.Trinity.Tests.dotnetrdf
@@ -7,11 +8,16 @@ namespace Semiodesk.Trinity.Tests.dotnetrdf
     /// <summary>
     /// A very simple custom RDF format writer. Writes a line for each triple.
     /// </summary>
-    class TestFormatWriter : IRdfWriter
+    public class TestFormatWriter : IRdfWriter
     {
         public event RdfWriterWarning Warning;
 
         public void Save(IGraph g, string filename)
+        {
+            throw new NotSupportedException();
+        }
+
+        public void Save(IGraph g, string filename, Encoding fileEncoding)
         {
             throw new NotSupportedException();
         }

@@ -15,10 +15,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NUnit" Version="3.13.3" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\Trinity.Tests\Trinity.Tests.csproj" />
     <ProjectReference Include="..\..\Trinity.Virtuoso\Trinity.Virtuoso.csproj" />
     <ProjectReference Include="..\..\Trinity\Trinity.csproj" />
@@ -47,6 +43,10 @@
     <None Update="ontologies\rdfs.n3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit.v3" Version="3.2.0" />
   </ItemGroup>
 
 </Project>

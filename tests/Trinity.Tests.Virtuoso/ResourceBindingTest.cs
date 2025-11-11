@@ -28,12 +28,12 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using NUnit.Framework;
+
 
 namespace Semiodesk.Trinity.Test.Virtuoso
 {
    
-    [TestFixture]
+
     public class ResourceBindingTest
     {
         Uri contactListUri = new Uri("semio:test:contactList");

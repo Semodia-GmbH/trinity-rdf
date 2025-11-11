@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 using System.IO;
-using NUnit.Framework;
+
 using Semiodesk.Trinity.Store.Fuseki;
 
 namespace Semiodesk.Trinity.Test.Fuseki

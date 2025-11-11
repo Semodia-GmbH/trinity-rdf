@@ -25,145 +25,145 @@
 //
 // Copyright (c) Semiodesk GmbH 2015-2019
 
-using NUnit.Framework;
+
 using System;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Xunit;
 
 namespace Semiodesk.Trinity.Test.Linq
 {
-    [TestFixture]
+
     public abstract class LinqTestBase : SetupClass
     {
         protected IStore Store;
 
         protected IModel Model;
 
-        [SetUp]
         public abstract void SetUp();
 
-        [Test]
+        [Fact]
         public void CanAskResourceWithBinaryExpressionOnBoolean()
         {
             var actual = (from person in Model.AsQueryable<Person>() where person.Status.Equals(true) select person).Any();
-            Assert.IsTrue(actual);
+            Assert.True(actual);
 
             actual = (from person in Model.AsQueryable<Person>() where !person.Status.Equals(true) select person).Any();
-            Assert.IsTrue(actual);
+            Assert.True(actual);
 
             actual = (from person in Model.AsQueryable<Person>() where person.Status select person).Any();
-            Assert.IsTrue(actual);
+            Assert.True(actual);
 
             actual = (from person in Model.AsQueryable<Person>() where person.Status == true select person).Any();
-            Assert.IsTrue(actual);
+            Assert.True(actual);
 
             actual = (from person in Model.AsQueryable<Person>() where person.Status.Equals(false) select person).Any();
-            Assert.IsTrue(actual);
+            Assert.True(actual);
 
             actual = (from person in Model.AsQueryable<Person>() where !person.Status select person).Any();
-            Assert.IsTrue(actual);
+            Assert.True(actual);
 
             actual = (from person in Model.AsQueryable<Person>() where person.Status == false select person).Any();
-            Assert.IsTrue(actual);
+            Assert.True(actual);
         }
 
-        [Test]
+        [Fact]
         public void CanAskResourceWithBinaryExpressionOnDateTime()
         {
             var value = new DateTime(1948, 2, 4);
 
             var actual = (from person in Model.AsQueryable<Person>() where person.Birthday.Equals(value) select person).Any();
-            Assert.IsTrue(actual);
+            Assert.True(actual);
 
             actual = (from person in Model.AsQueryable<Person>() where !person.Birthday.Equals(value) select person).Any();
-            Assert.IsTrue(actual);
+            Assert.True(actual);
 
             actual = (from person in Model.AsQueryable<Person>() where person.Birthday == value select person).Any();
-            Assert.IsTrue(actual);
+            Assert.True(actual);
 
             actual = (from person in Model.AsQueryable<Person>() where person.Birthday != value select person).Any();
-            Assert.IsTrue(actual);
+            Assert.True(actual);
 
             actual = (from person in Model.AsQueryable<Person>() where person.Birthday < value select person).Any();
-            Assert.IsTrue(actual);
+            Assert.True(actual);
 
             actual = (from person in Model.AsQueryable<Person>() where person.Birthday <= value select person).Any();
-            Assert.IsTrue(actual);
+            Assert.True(actual);
 
             actual = (from person in Model.AsQueryable<Person>() where person.Birthday >= value select person).Any();
-            Assert.IsTrue(actual);
+            Assert.True(actual);
 
             actual = (from person in Model.AsQueryable<Person>() where person.Birthday > value select person).Any();
-            Assert.IsTrue(actual);
+            Assert.True(actual);
 
             actual = (from person in Model.AsQueryable<Person>() where person.Birthday > DateTime.MaxValue select person).Any();
-            Assert.IsFalse(actual);
+            Assert.False(actual);
         }
 
-        [Test]
+        [Fact]
         public void CanAskResourceWithBinaryExpressionOnFloat()
         {
             float value = 100000;
 
             var actual = (from person in Model.AsQueryable<Person>() where person.AccountBalance.Equals(value) select person).Any();
-            Assert.IsTrue(actual);
+            Assert.True(actual);
 
             actual = (from person in Model.AsQueryable<Person>() where !person.AccountBalance.Equals(value) select person).Any();
-            Assert.IsTrue(actual);
+            Assert.True(actual);
 
             actual = (from person in Model.AsQueryable<Person>() where person.AccountBalance == value select person).Any();
-            Assert.IsTrue(actual);
+            Assert.True(actual);
 
             actual = (from person in Model.AsQueryable<Person>() where person.AccountBalance != value select person).Any();
-            Assert.IsTrue(actual);
+            Assert.True(actual);
 
             actual = (from person in Model.AsQueryable<Person>() where person.AccountBalance < value select person).Any();
-            Assert.IsTrue(actual);
+            Assert.True(actual);
 
             actual = (from person in Model.AsQueryable<Person>() where person.AccountBalance <= value select person).Any();
-            Assert.IsTrue(actual);
+            Assert.True(actual);
 
             actual = (from person in Model.AsQueryable<Person>() where person.AccountBalance >= value select person).Any();
-            Assert.IsTrue(actual);
+            Assert.True(actual);
 
             actual = (from person in Model.AsQueryable<Person>() where person.AccountBalance > value select person).Any();
-            Assert.IsTrue(actual);
+            Assert.True(actual);
 
             actual = (from person in Model.AsQueryable<Person>() where person.AccountBalance > float.MaxValue select person).Any();
-            Assert.IsFalse(actual);
+            Assert.False(actual);
         }
 
-        [Test]
+        [Fact]
         public void CanAskResourceWithBinaryExpressionOnString()
         {
             var actual = (from person in Model.AsQueryable<Person>() where person.FirstName == "Alice" select person).Any();
-            Assert.IsTrue(actual);
+            Assert.True(actual);
 
             actual = (from person in Model.AsQueryable<Person>() where person.LastName == "Alice" select person).Any();
-            Assert.IsFalse(actual);
+            Assert.False(actual);
 
             actual = (from person in Model.AsQueryable<Person>() where person.FirstName != "Alice" select person).Any();
-            Assert.IsTrue(actual);
+            Assert.True(actual);
         }
 
-        [Test]
+        [Fact]
         public void CanAskResourceWithBinaryExpressionOnResource()
         {
             var actual = (from person in Model.AsQueryable<Person>() where person.Group.Name.Equals("The Spiders") select person).Any();
-            Assert.IsTrue(actual);
+            Assert.True(actual);
 
             actual = (from person in Model.AsQueryable<Person>() where person.Group.Name == "The Spiders" select person).Any();
-            Assert.IsTrue(actual);
+            Assert.True(actual);
 
             actual = (from person in Model.AsQueryable<Person>() where person.Group.Name == "The Bugs" select person).Any();
-            Assert.IsFalse(actual);
+            Assert.False(actual);
 
             actual = (from person in Model.AsQueryable<Person>() where person.Group.Name != "The Spiders" select person).Any();
-            Assert.IsTrue(actual);
+            Assert.True(actual);
         }
 
-        [Test]
+        [Fact]
         public void CanSelectBooleanWithBinaryExpression()
         {
             // True
@@ -197,7 +197,7 @@ namespace Semiodesk.Trinity.Test.Linq
             CollectionAssert.AreEquivalent(expectedFalse, actual);
         }
 
-        [Test]
+        [Fact]
         public void CanSelectIntegerWithBinaryExpression()
         {
             // True
@@ -231,55 +231,55 @@ namespace Semiodesk.Trinity.Test.Linq
             CollectionAssert.AreEquivalent(expectedFalse, actual);
         }
 
-        [Test]
+        [Fact]
         public void CanSelectIntegerWithOrderBy()
         {
             var actual = (from person in Model.AsQueryable<Person>() orderby person.KnownPeople.Count select person.KnownPeople.Count).ToList();
-            CollectionAssert.AreEqual(new[] { 0, 1, 2 }, actual);
+            CollectionAssert.Equal(new[] { 0, 1, 2 }, actual);
 
             actual = (from person in Model.AsQueryable<Person>() orderby person.KnownPeople.Count descending select person.KnownPeople.Count).ToList();
-            CollectionAssert.AreEqual(new[] { 2, 1, 0 }, actual);
+            CollectionAssert.Equal(new[] { 2, 1, 0 }, actual);
 
             actual = (from person in Model.AsQueryable<Person>() select person.KnownPeople.Count).OrderBy(i => i).ToList();
-            CollectionAssert.AreEqual(new[] { 0, 1, 2 }, actual);
+            CollectionAssert.Equal(new[] { 0, 1, 2 }, actual);
 
             actual = (from person in Model.AsQueryable<Person>() select person.KnownPeople.Count).OrderByDescending(i => i).ToList();
-            CollectionAssert.AreEqual(new[] { 2, 1, 0 }, actual);
+            CollectionAssert.Equal(new[] { 2, 1, 0 }, actual);
         }
 
-        [Test]
+        [Fact]
         public void CanSelectIntegerWithResultOperatorSkip()
         {
             var actual = (from person in Model.AsQueryable<Person>() orderby person.Age select person.Age).Skip(0).ToList();
-            CollectionAssert.AreEqual(new[] { 38, 69, 76 }, actual);
+            CollectionAssert.Equal(new[] { 38, 69, 76 }, actual);
 
             actual = (from person in Model.AsQueryable<Person>() orderby person.Age select person.Age).Skip(1).ToList();
-            CollectionAssert.AreEqual(new[] { 69, 76 }, actual);
+            CollectionAssert.Equal(new[] { 69, 76 }, actual);
 
             actual = (from person in Model.AsQueryable<Person>() orderby person.Age select person.Age).Skip(2).ToList();
-            CollectionAssert.AreEqual(new[] { 76 }, actual);
+            CollectionAssert.Equal(new[] { 76 }, actual);
 
             actual = (from person in Model.AsQueryable<Person>() orderby person.Age select person.Age).Skip(3).ToList();
             CollectionAssert.IsEmpty(actual);
         }
 
-        [Test]
+        [Fact]
         public void CanSelectIntegerWithResultOperatorTake()
         {
             var actual = (from person in Model.AsQueryable<Person>() orderby person.Age select person.Age).Take(0).ToList();
             CollectionAssert.IsEmpty(actual);
 
             actual = (from person in Model.AsQueryable<Person>() orderby person.Age select person.Age).Take(1).ToList();
-            CollectionAssert.AreEqual(new[] { 38 }, actual);
+            CollectionAssert.Equal(new[] { 38 }, actual);
 
             actual = (from person in Model.AsQueryable<Person>() orderby person.Age select person.Age).Take(2).ToList();
-            CollectionAssert.AreEqual(new[] { 38, 69 }, actual);
+            CollectionAssert.Equal(new[] { 38, 69 }, actual);
 
             actual = (from person in Model.AsQueryable<Person>() orderby person.Age select person.Age).Take(3).ToList();
-            CollectionAssert.AreEqual(new[] { 38, 69, 76 }, actual);
+            CollectionAssert.Equal(new[] { 38, 69, 76 }, actual);
         }
 
-        [Test]
+        [Fact]
         public void CanSelectDateTimeWithBinaryExpression()
         {
             // True
@@ -313,7 +313,7 @@ namespace Semiodesk.Trinity.Test.Linq
             CollectionAssert.AreEquivalent(expectedFalse, actual);
         }
 
-        [Test]
+        [Fact]
         public void CanSelectStringWithBinaryExpression()
         {
             // True
@@ -347,7 +347,7 @@ namespace Semiodesk.Trinity.Test.Linq
             CollectionAssert.AreEquivalent(expectedFalse, actual);
         }
 
-        [Test]
+        [Fact]
         public void CanSelectStringWithBinaryExpressionOnStringLength()
         {
             var actual = (from person in Model.AsQueryable<Person>() where person.FirstName.Length == 5 select person.FirstName).ToList();
@@ -369,7 +369,7 @@ namespace Semiodesk.Trinity.Test.Linq
             CollectionAssert.AreEquivalent(new[] { "Alice" }, actual);
         }
 
-        [Test]
+        [Fact]
         public void CanSelectStringWithAsQueryable()
         {
             var actual = (Model.AsQueryable<Person>().Select(p => p.FirstName));
@@ -379,7 +379,7 @@ namespace Semiodesk.Trinity.Test.Linq
             CollectionAssert.AreEquivalent(new[] { "Alice", "Bob", "Eve" }, actual);
         }
 
-        [Test]
+        [Fact]
         public void CanSelectStringWithMethodEquals()
         {
             var actual = (from person in Model.AsQueryable<Person>() where person.FirstName.Equals("Alice") select person.FirstName).ToList();
@@ -389,7 +389,7 @@ namespace Semiodesk.Trinity.Test.Linq
             CollectionAssert.AreEquivalent(new [] { "Bob", "Eve" }, actual);
         }
 
-        [Test]
+        [Fact]
         public void CanSelectStringWithMethodContains()
         {
             var actual = (from person in Model.AsQueryable<Person>() where person.FirstName.Contains("e") select person.FirstName).ToList();
@@ -399,32 +399,32 @@ namespace Semiodesk.Trinity.Test.Linq
             CollectionAssert.AreEquivalent(new [] { "Bob" }, actual);
         }
 
-        [Test]
+        [Fact]
         public void CanSelectStringWithMethodCount()
         {
             var actual = Model.AsQueryable<Person>().Count(p => p.FirstName == "Bob");
-            Assert.AreEqual(1, actual);
+            Assert.Equal(1, actual);
 
             actual = Model.AsQueryable<Person>().Count(p => p.FirstName != "Bob");
-            Assert.AreEqual(2, actual);
+            Assert.Equal(2, actual);
 
             actual = Model.AsQueryable<Agent>().Count(p => p.FirstName != "Bob");
-            Assert.AreEqual(1, actual);
+            Assert.Equal(1, actual);
 
             actual = Model.AsQueryable<Person>().Count(p => p.KnownPeople.Any(q => q.FirstName.Equals("Alice") && q.LastName.StartsWith("C")));
-            Assert.AreEqual(1, actual);
+            Assert.Equal(1, actual);
 
             actual = Model.AsQueryable<Person>().Count(p => p.KnownPeople.Any(q => q.FirstName.Equals("Alice") && q.LastName.StartsWith("X")));
-            Assert.AreEqual(0, actual);
+            Assert.Equal(0, actual);
 
             actual = Model.AsQueryable<Person>().Count(p => p.KnownPeople.Any(q => q.FirstName.Equals("Alice") || q.LastName.StartsWith("d", StringComparison.InvariantCultureIgnoreCase)));
-            Assert.AreEqual(2, actual);
+            Assert.Equal(2, actual);
 
             actual = Model.AsQueryable<Person>().Count(p => !p.Interests.Any());
-            Assert.AreEqual(2, actual);
+            Assert.Equal(2, actual);
         }
 
-        [Test]
+        [Fact]
         public void CanSelectStringWithMethodStartsWith()
         {
             var expected = new [] { "Alice" };
@@ -444,7 +444,7 @@ namespace Semiodesk.Trinity.Test.Linq
             CollectionAssert.AreEquivalent(expected, actual);
         }
 
-        [Test]
+        [Fact]
         public void CanSelectStringWithMethodEndsWith()
         {
             var expected = new [] { "Alice", "Eve" };
@@ -464,7 +464,7 @@ namespace Semiodesk.Trinity.Test.Linq
             CollectionAssert.AreEquivalent(expected, actual);
         }
 
-        [Test]
+        [Fact]
         public void CanSelectStringWithRegexIsMatch()
         {
             var expected = new [] { "Alice" };
@@ -478,7 +478,7 @@ namespace Semiodesk.Trinity.Test.Linq
             CollectionAssert.AreEquivalent(expected, actual);
         }
 
-        [Test]
+        [Fact]
         public void CanSelectResourcesWithAsQueryable()
         {
             var expected = new [] { ex.Alice, ex.Bob, ex.Eve };
@@ -487,7 +487,7 @@ namespace Semiodesk.Trinity.Test.Linq
             CollectionAssert.AreEquivalent(expected, actual.Select(p => p.Uri));
         }
 
-        [Test]
+        [Fact]
         public void CanSelectResourceWithBinaryExpression()
         {
             // True
@@ -518,7 +518,7 @@ namespace Semiodesk.Trinity.Test.Linq
             CollectionAssert.AreEquivalent(expectedFalse, actual.Select(p => p.Uri));
         }
 
-        [Test]
+        [Fact]
         public void CanSelectResourcesWithBinaryExpressionOnBoolean()
         {
             // True
@@ -552,7 +552,7 @@ namespace Semiodesk.Trinity.Test.Linq
             CollectionAssert.AreEquivalent(expectedFalse, actual.Select(p => p.Uri));
         }
 
-        [Test]
+        [Fact]
         public void CanSelectResourcesWithBinaryExpressionOnDateTime()
         {
             var value = new DateTime(1948, 2, 4);
@@ -600,7 +600,7 @@ namespace Semiodesk.Trinity.Test.Linq
             CollectionAssert.AreEquivalent(expectedGreaterOrEqual, actual.Select(p => p.Uri));
         }
 
-        [Test]
+        [Fact]
         public void CanSelectResourcesWithBinaryExpressionOnInteger()
         {
             var value = 69;
@@ -648,7 +648,7 @@ namespace Semiodesk.Trinity.Test.Linq
             CollectionAssert.AreEquivalent(expectedGreaterOrEqual, actual.Select(p => p.Uri));
         }
 
-        [Test]
+        [Fact]
         public void CanSelectResourcesWithBinaryExpressionOnFloat()
         {
             var value = 100000f;
@@ -696,7 +696,7 @@ namespace Semiodesk.Trinity.Test.Linq
             CollectionAssert.AreEquivalent(expectedGreaterOrEqual, actual.Select(p => p.Uri));
         }
 
-        [Test]
+        [Fact]
         public void CanSelectResourcesWithBinaryExpressionOnString()
         {
             var value = "Alice";
@@ -720,7 +720,7 @@ namespace Semiodesk.Trinity.Test.Linq
             CollectionAssert.AreEquivalent(expectedNotEqual, actual.Select(p => p.Uri));
         }
 
-        [Test]
+        [Fact]
         public void CanSelectResourcesWithBinaryExpressionOnResource()
         {
             var value = new Person(ex.Alice);
@@ -744,7 +744,7 @@ namespace Semiodesk.Trinity.Test.Linq
             CollectionAssert.AreEquivalent(expectedNotEqual, actual.Select(p => p.Uri));
         }
 
-        [Test]
+        [Fact]
         public void CanSelectResourcesWithBinaryExpressionOnResourceMember()
         {
             var value = "The Spiders";
@@ -768,7 +768,7 @@ namespace Semiodesk.Trinity.Test.Linq
             CollectionAssert.AreEquivalent(expectedNotEqual, actual.Select(p => p.Uri));
         }
 
-        [Test]
+        [Fact]
         public void CanSelectResourcesWithBinaryExpressionOnUri()
         {
             var value = new Person(ex.Alice);
@@ -798,7 +798,7 @@ namespace Semiodesk.Trinity.Test.Linq
             CollectionAssert.AreEquivalent(expectedNotEqual, actual.Select(p => p.Uri));
         }
 
-        [Test]
+        [Fact]
         public void CanSelectResourcesWithBinaryExpressionOnNull()
         {
             var value = "Bob";
@@ -816,7 +816,7 @@ namespace Semiodesk.Trinity.Test.Linq
             CollectionAssert.AreEquivalent(new[] { ex.Alice, ex.Eve }, actual.Select(p => p.Uri));
         }
 
-        [Test]
+        [Fact]
         public void CanSelectResourcesWithNodeTypeAndAlso()
         {
             var actual = (from person in Model.AsQueryable<Person>() where person.FirstName == "Alice" && person.LastName == "Cooper" select person).ToList();
@@ -832,7 +832,7 @@ namespace Semiodesk.Trinity.Test.Linq
             CollectionAssert.AreEquivalent(new[] { ex.Bob }, actual.Select(p => p.Uri));
         }
 
-        [Test]
+        [Fact]
         public void CanSelectResourcesWithNodeTypeOrElse()
         {
             var actual = (from person in Model.AsQueryable<Person>() where person.FirstName == "Alice" || person.FirstName == "Bob" select person).ToList();
@@ -845,14 +845,14 @@ namespace Semiodesk.Trinity.Test.Linq
             CollectionAssert.AreEquivalent(new[] { ex.Alice, ex.Bob, ex.Eve }, actual.Select(p => p.Uri));
         }
 
-        [Test]
+        [Fact]
         public void CanSelectResourcesWithEqualsOnString()
         {
             var actual = (from person in Model.AsQueryable<Person>() where person.FirstName.Equals("Alice") select person).ToList();
             CollectionAssert.AreEquivalent(new[] { ex.Alice }, actual.Select(p => p.Uri));
         }
 
-        [Test]
+        [Fact]
         public void CanSelectResourcesWithResultOperatorCount()
         {
             var actual = (from person in Model.AsQueryable<Person>() where person.KnownPeople.Count != 1 select person).ToList();
@@ -871,7 +871,7 @@ namespace Semiodesk.Trinity.Test.Linq
             CollectionAssert.AreEquivalent(new[] { ex.Alice, ex.Eve }, actual.Select(p => p.Uri));
         }
 
-        [Test]
+        [Fact]
         public void CanSelectResourcesWithResultOperatorFirst()
         {
             Assert.Throws<InvalidOperationException>(() =>
@@ -880,39 +880,39 @@ namespace Semiodesk.Trinity.Test.Linq
             });
         }
 
-        [Test]
+        [Fact]
         public void CanSelectResourcesWithResultOperatorFirstOrDefault()
         {
             var persons = Model.AsQueryable<Person>().OrderBy(p => p.FirstName).ToList();
             var person = Model.AsQueryable<Person>().OrderBy(p => p.FirstName).FirstOrDefault();
 
             Assert.IsNotNull(person);
-            Assert.AreEqual(person, persons.FirstOrDefault());
+            Assert.Equal(person, persons.FirstOrDefault());
 
             persons = Model.AsQueryable<Person>().OrderBy(p => p.Age).ToList();
             person = Model.AsQueryable<Person>().OrderBy(p => p.Age).FirstOrDefault();
 
             Assert.IsNotNull(person);
-            Assert.AreEqual(person, persons.FirstOrDefault());
+            Assert.Equal(person, persons.FirstOrDefault());
 
             persons = Model.AsQueryable<Person>().OrderBy(p => p.Birthday).ToList();
             person = Model.AsQueryable<Person>().OrderBy(p => p.Birthday).FirstOrDefault();
 
             Assert.IsNotNull(person);
-            Assert.AreEqual(person, persons.FirstOrDefault());
+            Assert.Equal(person, persons.FirstOrDefault());
 
             persons = Model.AsQueryable<Person>().OrderBy(p => p.FirstName).Where(p => p.Age > 40).ToList();
             person = Model.AsQueryable<Person>().OrderBy(p => p.FirstName).FirstOrDefault(p => p.Age > 40);
 
             Assert.IsNotNull(person);
-            Assert.AreEqual(person, persons.FirstOrDefault());
-            Assert.IsTrue(person.Age > 40);
+            Assert.Equal(person, persons.FirstOrDefault());
+            Assert.True(person.Age > 40);
 
             person = Model.AsQueryable<Person>().OrderBy(p => p.FirstName).Where(p => p.Age > 40).FirstOrDefault();
 
             Assert.IsNotNull(person);
-            Assert.AreEqual(person, persons.FirstOrDefault());
-            Assert.IsTrue(person.Age > 40);
+            Assert.Equal(person, persons.FirstOrDefault());
+            Assert.True(person.Age > 40);
 
             persons = Model.AsQueryable<Person>().OrderBy(p => p.FirstName).Where(p => p.Age > 40 && p.Age < 40).ToList();
             person = Model.AsQueryable<Person>().OrderBy(p => p.FirstName).FirstOrDefault(p => p.Age > 40 && p.Age < 40);
@@ -929,27 +929,27 @@ namespace Semiodesk.Trinity.Test.Linq
             person = Model.AsQueryable<Person>().OrderBy(p => p.FirstName).FirstOrDefault(p => p.Age < 10 || p.Age > 40);
 
             Assert.IsNotNull(person);
-            Assert.AreEqual(person, persons.FirstOrDefault());
-            Assert.IsTrue(person.Age < 10 || person.Age > 40);
+            Assert.Equal(person, persons.FirstOrDefault());
+            Assert.True(person.Age < 10 || person.Age > 40);
 
             person = Model.AsQueryable<Person>().OrderBy(p => p.FirstName).Where(p => p.Age < 10 || p.Age > 40).FirstOrDefault();
 
             Assert.IsNotNull(person);
-            Assert.AreEqual(person, persons.FirstOrDefault());
-            Assert.IsTrue(person.Age < 10 || person.Age > 40);
+            Assert.Equal(person, persons.FirstOrDefault());
+            Assert.True(person.Age < 10 || person.Age > 40);
 
             persons = Model.AsQueryable<Person>().OrderBy(p => p.FirstName).Where(p => p.KnownPeople.Any(p0 => p0.FirstName == "Alice")).ToList();
             person = Model.AsQueryable<Person>().OrderBy(p => p.FirstName).FirstOrDefault(p => p.KnownPeople.Any(p0 => p0.FirstName == "Alice"));
 
             Assert.IsNotNull(person);
-            Assert.AreEqual(person, persons.FirstOrDefault());
-            Assert.IsTrue(person.KnownPeople.Any(p0 => p0.FirstName == "Alice"));
+            Assert.Equal(person, persons.FirstOrDefault());
+            Assert.True(person.KnownPeople.Any(p0 => p0.FirstName == "Alice"));
 
             person = Model.AsQueryable<Person>().OrderBy(p => p.FirstName).Where(p => p.KnownPeople.Any(p0 => p0.FirstName == "Alice")).FirstOrDefault();
 
             Assert.IsNotNull(person);
-            Assert.AreEqual(person, persons.FirstOrDefault());
-            Assert.IsTrue(person.KnownPeople.Any(p0 => p0.FirstName == "Alice"));
+            Assert.Equal(person, persons.FirstOrDefault());
+            Assert.True(person.KnownPeople.Any(p0 => p0.FirstName == "Alice"));
 
             // Note: Using FirstOrDefault in subqueries is not yet supported.
             Assert.Throws<NotSupportedException>(() =>
@@ -960,7 +960,7 @@ namespace Semiodesk.Trinity.Test.Linq
 
                 //foreach (Person p in persons)
                 //{
-                //    Assert.AreEqual(1, p.KnownPeople.OrderBy(q => q.FirstName).FirstOrDefault().KnownPeople.Count);
+                //    Assert.Equal(1, p.KnownPeople.OrderBy(q => q.FirstName).FirstOrDefault().KnownPeople.Count);
                 //}
             });
 
@@ -972,12 +972,12 @@ namespace Semiodesk.Trinity.Test.Linq
 
                 //foreach (Person p in persons)
                 //{
-                //    Assert.AreEqual(1, p.KnownPeople.OrderBy(q => q.FirstName).FirstOrDefault().KnownPeople.Count);
+                //    Assert.Equal(1, p.KnownPeople.OrderBy(q => q.FirstName).FirstOrDefault().KnownPeople.Count);
                 //}
             });
         }
 
-        [Test]
+        [Fact]
         public void CanSelectResourcesWithResultOperatorLast()
         {
             Assert.Throws<InvalidOperationException>(() =>
@@ -986,33 +986,33 @@ namespace Semiodesk.Trinity.Test.Linq
             });
         }
 
-        [Test]
+        [Fact]
         public void CanSelectResourcesWithResultOperatorLastOrDefault()
         {
             var persons = Model.AsQueryable<Person>().OrderBy(p => p.FirstName).ToList();
             var person = Model.AsQueryable<Person>().OrderBy(p => p.FirstName).LastOrDefault();
 
             Assert.IsNotNull(person);
-            Assert.AreEqual(person, persons.LastOrDefault());
+            Assert.Equal(person, persons.LastOrDefault());
 
             persons = Model.AsQueryable<Person>().OrderBy(p => p.Age).ToList();
             person = Model.AsQueryable<Person>().OrderBy(p => p.Age).LastOrDefault();
 
             Assert.IsNotNull(person);
-            Assert.AreEqual(person, persons.LastOrDefault());
+            Assert.Equal(person, persons.LastOrDefault());
 
             persons = Model.AsQueryable<Person>().OrderBy(p => p.Birthday).ToList();
             person = Model.AsQueryable<Person>().OrderBy(p => p.Birthday).LastOrDefault();
 
             Assert.IsNotNull(person);
-            Assert.AreEqual(person, persons.LastOrDefault());
+            Assert.Equal(person, persons.LastOrDefault());
 
             persons = Model.AsQueryable<Person>().OrderBy(p => p.FirstName).Where(p => p.Age > 40).ToList();
             person = Model.AsQueryable<Person>().OrderBy(p => p.FirstName).LastOrDefault(p => p.Age > 40);
 
             Assert.IsNotNull(person);
-            Assert.AreEqual(person, persons.LastOrDefault());
-            Assert.IsTrue(person.Age > 40);
+            Assert.Equal(person, persons.LastOrDefault());
+            Assert.True(person.Age > 40);
 
             persons = Model.AsQueryable<Person>().OrderBy(p => p.FirstName).Where(p => p.Age > 40 && p.Age < 40).ToList();
             person = Model.AsQueryable<Person>().OrderBy(p => p.FirstName).LastOrDefault(p => p.Age > 40 && p.Age < 40);
@@ -1029,27 +1029,27 @@ namespace Semiodesk.Trinity.Test.Linq
             person = Model.AsQueryable<Person>().OrderBy(p => p.FirstName).LastOrDefault(p => p.Age < 10 || p.Age > 40);
 
             Assert.IsNotNull(person);
-            Assert.AreEqual(person, persons.LastOrDefault());
-            Assert.IsTrue(person.Age < 10 || person.Age > 40);
+            Assert.Equal(person, persons.LastOrDefault());
+            Assert.True(person.Age < 10 || person.Age > 40);
 
             person = Model.AsQueryable<Person>().OrderBy(p => p.FirstName).Where(p => p.Age < 10 || p.Age > 40).LastOrDefault();
 
             Assert.IsNotNull(person);
-            Assert.AreEqual(person, persons.LastOrDefault());
-            Assert.IsTrue(person.Age < 10 || person.Age > 40);
+            Assert.Equal(person, persons.LastOrDefault());
+            Assert.True(person.Age < 10 || person.Age > 40);
 
             persons = Model.AsQueryable<Person>().OrderBy(p => p.FirstName).Where(p => p.KnownPeople.Any(p0 => p0.FirstName == "Alice")).ToList();
             person = Model.AsQueryable<Person>().OrderBy(p => p.FirstName).LastOrDefault(p => p.KnownPeople.Any(p0 => p0.FirstName == "Alice"));
 
             Assert.IsNotNull(person);
-            Assert.AreEqual(person, persons.LastOrDefault());
-            Assert.IsTrue(person.KnownPeople.Any(p0 => p0.FirstName == "Alice"));
+            Assert.Equal(person, persons.LastOrDefault());
+            Assert.True(person.KnownPeople.Any(p0 => p0.FirstName == "Alice"));
 
             person = Model.AsQueryable<Person>().OrderBy(p => p.FirstName).Where(p => p.KnownPeople.Any(p0 => p0.FirstName == "Alice")).LastOrDefault();
 
             Assert.IsNotNull(person);
-            Assert.AreEqual(person, persons.LastOrDefault());
-            Assert.IsTrue(person.KnownPeople.Any(p0 => p0.FirstName == "Alice"));
+            Assert.Equal(person, persons.LastOrDefault());
+            Assert.True(person.KnownPeople.Any(p0 => p0.FirstName == "Alice"));
 
             // Note: Using LastOrDefault in subqueries is not yet supported.
             Assert.Throws<NotSupportedException>(() =>
@@ -1060,7 +1060,7 @@ namespace Semiodesk.Trinity.Test.Linq
 
                 //foreach (Person p in persons)
                 //{
-                //    Assert.AreEqual(1, p.KnownPeople.OrderBy(q => q.FirstName).LastOrDefault().KnownPeople.Count);
+                //    Assert.Equal(1, p.KnownPeople.OrderBy(q => q.FirstName).LastOrDefault().KnownPeople.Count);
                 //}
             });
 
@@ -1072,12 +1072,12 @@ namespace Semiodesk.Trinity.Test.Linq
 
                 //foreach (Person p in persons)
                 //{
-                //    Assert.AreEqual(1, p.KnownPeople.OrderBy(q => q.FirstName).LastOrDefault().KnownPeople.Count);
+                //    Assert.Equal(1, p.KnownPeople.OrderBy(q => q.FirstName).LastOrDefault().KnownPeople.Count);
                 //}
             });
         }
 
-        [Test]
+        [Fact]
         public void CanSelectResourcesWithResultOperatorSkip()
         {
             var actual = (from person in Model.AsQueryable<Person>() orderby person.FirstName select person).Skip(0).ToList();
@@ -1093,7 +1093,7 @@ namespace Semiodesk.Trinity.Test.Linq
             CollectionAssert.IsEmpty(actual);
         }
 
-        [Test]
+        [Fact]
         public void CanSelectResourcesWithResultOperatorTake()
         {
             var actual = (from person in Model.AsQueryable<Person>() orderby person.FirstName select person).Take(0).ToList();
@@ -1109,48 +1109,48 @@ namespace Semiodesk.Trinity.Test.Linq
             CollectionAssert.AreEquivalent(new[] { ex.Alice, ex.Bob, ex.Eve }, actual.Select(p => p.Uri));
         }
 
-        [Test]
+        [Fact]
         public void CanSelectResourcesWithOperatorTypeOf()
         {
             var actual0 = (from resource in Model.AsQueryable<Resource>() select resource).ToList();
             CollectionAssert.AllItemsAreInstancesOfType(actual0, typeof(Resource));
-            Assert.AreEqual(7, actual0.Count);
+            Assert.Equal(7, actual0.Count);
 
             actual0 = (from resource in Model.AsQueryable<Resource>() where resource is Person select resource).ToList();
             CollectionAssert.AllItemsAreInstancesOfType(actual0, typeof(Resource));
-            Assert.AreEqual(3, actual0.Count);
+            Assert.Equal(3, actual0.Count);
 
             var actual1 = (from person in Model.AsQueryable<Person>() where person.Interests.OfType<Group>().Count() > 0 select person).ToList();
             CollectionAssert.AllItemsAreInstancesOfType(actual1, typeof(Person));
-            Assert.AreEqual(1, actual1.Count);
+            Assert.Equal(1, actual1.Count);
 
             actual1 = (from person in Model.AsQueryable<Person>() where person.Interests.OfType<Person>().Count() > 0 select person).ToList();
             CollectionAssert.AllItemsAreInstancesOfType(actual1, typeof(Person));
-            Assert.AreEqual(1, actual1.Count);
+            Assert.Equal(1, actual1.Count);
 
             // TODO: Implement and test NotEquals.
             actual1 = (from person in Model.AsQueryable<Person>() where person.Group.GetType() == typeof(Group) select person).ToList();
             CollectionAssert.AllItemsAreInstancesOfType(actual1, typeof(Person));
-            Assert.AreEqual(2, actual1.Count);
+            Assert.Equal(2, actual1.Count);
 
             actual1 = (from person in Model.AsQueryable<Person>() where person.Group.GetType() == typeof(Person) select person).ToList();
             CollectionAssert.AllItemsAreInstancesOfType(actual1, typeof(Person));
-            Assert.AreEqual(0, actual1.Count);
+            Assert.Equal(0, actual1.Count);
 
             actual1 = (from person in Model.AsQueryable<Person>() where person.Group.GetType() != typeof(Person) select person).ToList();
             CollectionAssert.AllItemsAreInstancesOfType(actual1, typeof(Person));
-            Assert.AreEqual(2, actual1.Count);
+            Assert.Equal(2, actual1.Count);
 
             actual1 = (from person in Model.AsQueryable<Person>() where person.GetType() != typeof(Person) select person).ToList();
             CollectionAssert.AllItemsAreInstancesOfType(actual1, typeof(Person));
-            Assert.AreEqual(0, actual1.Count);
+            Assert.Equal(0, actual1.Count);
 
             var actual2 = (from agent in Model.AsQueryable<Agent>() where agent.GetType() == typeof(Person) select agent).ToList();
             CollectionAssert.AllItemsAreInstancesOfType(actual2, typeof(Person));
-            Assert.AreEqual(3, actual2.Count);
+            Assert.Equal(3, actual2.Count);
         }
 
-        [Test]
+        [Fact]
         public void CanSelectResourcesWithSubQuery()
         {
             var actual = (from person in Model.AsQueryable<Person>() where person.KnownPeople.Any(p => p.FirstName == "Alice") select person).ToList();
@@ -1166,51 +1166,51 @@ namespace Semiodesk.Trinity.Test.Linq
             CollectionAssert.AreEquivalent(new[] { ex.Alice, ex.Bob }, actual.Select(p => p.Uri));
         }
 
-        [Test]
+        [Fact]
         public void CanSelectResourcesWithOrderBy()
         {
             var actual = (from person in Model.AsQueryable<Person>() orderby person.KnownPeople.Count select person).ToList();
 
-            Assert.AreEqual(3, actual.Count);
-            Assert.AreEqual(0, actual[0].KnownPeople.Count);
-            Assert.AreEqual(1, actual[1].KnownPeople.Count);
-            Assert.AreEqual(2, actual[2].KnownPeople.Count);
+            Assert.Equal(3, actual.Count);
+            Assert.Equal(0, actual[0].KnownPeople.Count);
+            Assert.Equal(1, actual[1].KnownPeople.Count);
+            Assert.Equal(2, actual[2].KnownPeople.Count);
             CollectionAssert.AllItemsAreInstancesOfType(actual, typeof(Person));
             CollectionAssert.AllItemsAreInstancesOfType(actual[1].KnownPeople, typeof(Person));
             CollectionAssert.AllItemsAreInstancesOfType(actual[2].KnownPeople, typeof(Person));
 
             actual = (from person in Model.AsQueryable<Person>() orderby person.KnownPeople.Count descending select person).ToList();
 
-            Assert.AreEqual(3, actual.Count);
-            Assert.AreEqual(2, actual[0].KnownPeople.Count);
-            Assert.AreEqual(1, actual[1].KnownPeople.Count);
-            Assert.AreEqual(0, actual[2].KnownPeople.Count);
+            Assert.Equal(3, actual.Count);
+            Assert.Equal(2, actual[0].KnownPeople.Count);
+            Assert.Equal(1, actual[1].KnownPeople.Count);
+            Assert.Equal(0, actual[2].KnownPeople.Count);
             CollectionAssert.AllItemsAreInstancesOfType(actual, typeof(Person));
             CollectionAssert.AllItemsAreInstancesOfType(actual[0].KnownPeople, typeof(Person));
             CollectionAssert.AllItemsAreInstancesOfType(actual[1].KnownPeople, typeof(Person));
 
             actual = (from person in Model.AsQueryable<Person>() select person).OrderBy(p => p.KnownPeople.Count).ToList();
 
-            Assert.AreEqual(3, actual.Count);
-            Assert.AreEqual(0, actual[0].KnownPeople.Count);
-            Assert.AreEqual(1, actual[1].KnownPeople.Count);
-            Assert.AreEqual(2, actual[2].KnownPeople.Count);
+            Assert.Equal(3, actual.Count);
+            Assert.Equal(0, actual[0].KnownPeople.Count);
+            Assert.Equal(1, actual[1].KnownPeople.Count);
+            Assert.Equal(2, actual[2].KnownPeople.Count);
             CollectionAssert.AllItemsAreInstancesOfType(actual, typeof(Person));
             CollectionAssert.AllItemsAreInstancesOfType(actual[1].KnownPeople, typeof(Person));
             CollectionAssert.AllItemsAreInstancesOfType(actual[2].KnownPeople, typeof(Person));
 
             actual = (from person in Model.AsQueryable<Person>() select person).OrderByDescending(p => p.KnownPeople.Count).ToList();
 
-            Assert.AreEqual(3, actual.Count);
-            Assert.AreEqual(2, actual[0].KnownPeople.Count);
-            Assert.AreEqual(1, actual[1].KnownPeople.Count);
-            Assert.AreEqual(0, actual[2].KnownPeople.Count);
+            Assert.Equal(3, actual.Count);
+            Assert.Equal(2, actual[0].KnownPeople.Count);
+            Assert.Equal(1, actual[1].KnownPeople.Count);
+            Assert.Equal(0, actual[2].KnownPeople.Count);
             CollectionAssert.AllItemsAreInstancesOfType(actual, typeof(Person));
             CollectionAssert.AllItemsAreInstancesOfType(actual[0].KnownPeople, typeof(Person));
             CollectionAssert.AllItemsAreInstancesOfType(actual[1].KnownPeople, typeof(Person));
         }
 
-        [Test]
+        [Fact]
         public void CanSelectResourcesWithVariableExpression()
         {
             foreach (var age in new[] { 40, 50, 60 })
@@ -1219,12 +1219,12 @@ namespace Semiodesk.Trinity.Test.Linq
             }
         }
 
-        [Test]
+        [Fact]
         public void CanSelectResourcesWhichImplementInterface()
         {
             var actual = (from image in Model.AsQueryable<Image>() where image.DepictedAgent.Uri == ex.Alice select image).ToList();
 
-            Assert.AreEqual(1, actual.Count);
+            Assert.Equal(1, actual.Count);
             CollectionAssert.AllItemsAreInstancesOfType(actual, typeof(Image));
 
             // Tests if retrieving resources is possible through extension methods 
@@ -1233,40 +1233,40 @@ namespace Semiodesk.Trinity.Test.Linq
 
             actual = agent.GetImages<Image>(Model).Where(i => i.DepictedAgent == agent).ToList();
 
-            Assert.AreEqual(1, actual.Count);
+            Assert.Equal(1, actual.Count);
             CollectionAssert.AllItemsAreInstancesOfType(actual, typeof(Image));
         }
 
-        [Test]
+        [Fact]
         public void CanSelectResourcesFromQuerySourceProperty()
         {
             var actual = (from image in Model.AsQueryable<Image>(true) where image.DepictedAgent.FirstName == "Alice" select image.DepictedAgent).ToList();
 
-            Assert.AreEqual(1, actual.Count);
-            Assert.AreEqual("Alice", actual.First().FirstName);
+            Assert.Equal(1, actual.Count);
+            Assert.Equal("Alice", actual.First().FirstName);
             CollectionAssert.AllItemsAreInstancesOfType(actual, typeof(Agent));
         }
 
-        [Test]
+        [Fact]
         public void SelectAdditionalFrom()
         {
             var actual = (from user in Model.AsQueryable<Person>(true) from person in user.KnownPeople where user.FirstName == "Alice" && person.FirstName == "Bob" select user).ToList();
 
-            Assert.AreEqual(1, actual.Count);
-            Assert.AreEqual("Alice", actual.First().FirstName);
+            Assert.Equal(1, actual.Count);
+            Assert.Equal("Alice", actual.First().FirstName);
             CollectionAssert.AllItemsAreInstancesOfType(actual, typeof(Agent));
         }
 
-        [Test]
+        [Fact]
         public void ProjectionTest()
         {
             var actual = (from person in Model.AsQueryable<Person>() where person.FirstName == "Alice" select new { person.FirstName, person.Birthday }).ToList();
 
-            Assert.AreEqual(1, actual.Count);
-            Assert.AreEqual("Alice", actual.First().FirstName);
+            Assert.Equal(1, actual.Count);
+            Assert.Equal("Alice", actual.First().FirstName);
         }
 
-        [Test]
+        [Fact]
         public void CanExecuteCollectionWithInferencingEnabled()
         {
             // Check if inferencing works on resource queries.
@@ -1284,43 +1284,43 @@ namespace Semiodesk.Trinity.Test.Linq
             CollectionAssert.AreEquivalent(new[] { "John", "Alice", "Bob", "Eve" }, actual1);
         }
 
-        [Test]
+        [Fact]
         public void CanExecuteScalarWithInferencingEnabled()
         {
             // See if inferencing works for boolean (ASK) queries.
             var hasAgent = Model.AsQueryable<Agent>().Where(a => a.FirstName == "Alice").Any();
-            Assert.IsFalse(hasAgent);
+            Assert.False(hasAgent);
 
             hasAgent = Model.AsQueryable<Agent>(true).Where(a => a.FirstName == "Alice").Any();
-            Assert.IsTrue(hasAgent);
+            Assert.True(hasAgent);
 
             // See if inferencing works for queries that return numeric bindings.
             var agentCount = Model.AsQueryable<Agent>().Where(a => a.FirstName == "Alice").Count();
-            Assert.AreEqual(0, agentCount);
+            Assert.Equal(0, agentCount);
 
             agentCount = Model.AsQueryable<Agent>(true).Where(a => a.FirstName == "Alice").Count();
-            Assert.AreEqual(1, agentCount);
+            Assert.Equal(1, agentCount);
         }
 
         private void CanSelectResourcesWithVariableExpression(int minAge)
         {
             var actual = (from person in Model.AsQueryable<Person>() where person.Age > minAge select person).ToList();
-            Assert.AreEqual(2, actual.Count);
+            Assert.Equal(2, actual.Count);
 
             actual = (from person in Model.AsQueryable<Person>() where person.Age >= minAge select person).ToList();
-            Assert.AreEqual(2, actual.Count);
+            Assert.Equal(2, actual.Count);
 
             actual = (from person in Model.AsQueryable<Person>() where person.Age < minAge select person).ToList();
-            Assert.AreEqual(1, actual.Count);
+            Assert.Equal(1, actual.Count);
 
             actual = (from person in Model.AsQueryable<Person>() where person.Age <= minAge select person).ToList();
-            Assert.AreEqual(1, actual.Count);
+            Assert.Equal(1, actual.Count);
 
             actual = (from person in Model.AsQueryable<Person>() where person.Age != minAge select person).ToList();
-            Assert.AreEqual(3, actual.Count);
+            Assert.Equal(3, actual.Count);
 
             actual = (from person in Model.AsQueryable<Person>() where person.Age == minAge select person).ToList();
-            Assert.AreEqual(0, actual.Count);
+            Assert.Equal(0, actual.Count);
         }
     }
 }

@@ -46,7 +46,7 @@ namespace Semiodesk.Trinity.Store
     {
         #region Members
 
-        TripleStore _store;
+        IInferencingTripleStore _store;
 
         ISparqlUpdateProcessor _updateProcessor;
 
@@ -67,9 +67,9 @@ namespace Semiodesk.Trinity.Store
         /// <param name="schemes">A list of ontology file paths relative to this assembly. The store will be populated with these ontologies.</param>
         public dotNetRDFStore(string[] schemes)
         {
-            _store = new TripleStore();
-            _updateProcessor = new LeviathanUpdateProcessor(_store);
-            _queryProcessor = new LeviathanQueryProcessor(_store);
+            _store = new InferencingTripleStore();
+            _updateProcessor = new LeviathanUpdateProcessor((IInMemoryQueryableStore) _store);
+            _queryProcessor = new LeviathanQueryProcessor((IInMemoryQueryableStore) _store);
             _parser = new SparqlUpdateParser();
 
             if (schemes != null)

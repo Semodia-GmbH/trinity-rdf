@@ -82,10 +82,10 @@
 
     <!-- ALL TARGETS -->
     <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
         <PackageReference Include="Remotion.Linq" Version="2.2.0" />
-        <PackageReference Include="dotNetRDF" Version="2.7.5" />
-        <PackageReference Include="System.Composition" Version="6.0.0" />
+        <PackageReference Include="dotNetRDF" Version="3.4.1" />
+        <PackageReference Include="System.Composition" Version="9.0.10" />
     </ItemGroup>
     
     <ItemGroup>

@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.IO;
-using NUnit.Framework;
+using Xunit;
+
 
 namespace Semiodesk.Trinity.Test
 {

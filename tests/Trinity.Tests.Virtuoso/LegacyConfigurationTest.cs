@@ -25,15 +25,15 @@
 //
 // Copyright (c) Semiodesk GmbH 2015-2019
 
-using NUnit.Framework;
+
+using Xunit;
 
 namespace Semiodesk.Trinity.Test.Virtuoso
 {
-    [TestFixture]
-    class LegacyConfigurationTest : SetupClass
+    public class LegacyConfigurationTest : SetupClass
     {
 
-        [Test]
+        [Fact]
         public void TestInitialize()
         {
             var connectionString = SetupClass.ConnectionString;

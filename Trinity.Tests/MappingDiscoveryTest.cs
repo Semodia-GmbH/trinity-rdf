@@ -1,7 +1,8 @@
-﻿using NUnit.Framework;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Xunit;
 
 namespace Semiodesk.Trinity.Test
 {
@@ -71,70 +72,66 @@ namespace Semiodesk.Trinity.Test
     /// <summary>
     /// This class should test more, if we don't derive from SetupClass we can compare before and after discovery also.
     /// </summary>
-    [TestFixture]
+
     public class MappingDiscoveryTest : SetupClass
     {
-        [SetUp]
-        public void SetUp()
-        {
-        }
 
-        [Test]
+        [Fact]
         public void TestGetRdfClasses()
         {
             var classTypes = MappingDiscovery.GetRdfClasses(typeof(BaseClass)).ToList();
-            Assert.AreEqual(1, classTypes.Count());
+            Assert.Equal(1, classTypes.Count());
             Assert.Contains(MappingTestOntology.BaseClass, classTypes);
 
             classTypes = MappingDiscovery.GetRdfClasses(typeof(SubClass)).ToList();
-            Assert.AreEqual(1, classTypes.Count());
+            Assert.Equal(1, classTypes.Count());
             Assert.Contains(MappingTestOntology.SubClass, classTypes);
 
             classTypes = MappingDiscovery.GetRdfClasses(typeof(AnotherBaseClas)).ToList();
-            Assert.AreEqual(2, classTypes.Count());
+            Assert.Equal(2, classTypes.Count());
             Assert.Contains(MappingTestOntology.BaseClass, classTypes);
             Assert.Contains(MappingTestOntology.BaseClass, classTypes);
         }
 
-        [Test]
+        [Fact]
         public void TestGetBaseClasses()
         {
             var baseTypes = new List<Class>();
             MappingDiscovery.GetBaseTypes(typeof(BaseClass), ref baseTypes);
-            Assert.AreEqual(0, baseTypes.Count());
+            Assert.Empty(baseTypes);
 
             baseTypes = new List<Class>();
             MappingDiscovery.GetBaseTypes(typeof(SubClass), ref baseTypes);
-            Assert.AreEqual(1, baseTypes.Count());
+            Assert.Single(baseTypes);
             Assert.Contains(MappingTestOntology.BaseClass, baseTypes);
 
             baseTypes = new List<Class>();
             MappingDiscovery.GetBaseTypes(typeof(SubSubClass), ref baseTypes);
-            Assert.AreEqual(2, baseTypes.Count());
+            Assert.Equal(2, baseTypes.Count());
             Assert.Contains(MappingTestOntology.BaseClass, baseTypes);
             Assert.Contains(MappingTestOntology.SubClass, baseTypes);
         }
 
-        [Test]
+        [Fact]
         public void TestGetMatchingTypes()
         {
             var types = new[] { MappingTestOntology.BaseClass };
             var res = MappingDiscovery.GetMatchingTypes(types, typeof(BaseClass), false);
 
-            Assert.AreEqual(1, res.Length);
-            Assert.AreEqual(typeof(BaseClass), res.First());
+            Assert.Single(res);
+            Assert.Equal(typeof(BaseClass), res.First());
 
             types = new[] { MappingTestOntology.BaseClass, MappingTestOntology.SubClass };
             res = MappingDiscovery.GetMatchingTypes(types, typeof(BaseClass), true);
 
-            //Assert.AreEqual(1, res.Length);
-            Assert.AreEqual(typeof(SubClass), res.First());
+            //Assert.Equal(1, res.Length);
+            Assert.Equal(typeof(SubClass), res.First());
 
             types = new[] { MappingTestOntology.SubClass, MappingTestOntology.BaseClass };
             res = MappingDiscovery.GetMatchingTypes(types, typeof(BaseClass), true);
 
-            //Assert.AreEqual(1, res.Length);
-            Assert.AreEqual(typeof(SubClass), res.First());
+            //Assert.Equal(1, res.Length);
+            Assert.Equal(typeof(SubClass), res.First());
         }
     }
 }

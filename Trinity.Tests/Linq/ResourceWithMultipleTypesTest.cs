@@ -1,23 +1,28 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using NUnit.Framework;
+using Xunit;
+
 
 namespace Semiodesk.Trinity.Test.Linq
 {
-    [TestFixture]
-    public class ResourceWithMultipleTypesTest
+    public class ResourceWithMultipleTypesTest : IDisposable
+
     {
-        IStore Store;
-        IModel Model;
+        private IStore _store;
+        private IModel Model;
 
         Songwriter sw;
 
-        [SetUp]
-        public void SetUp()
+        public ResourceWithMultipleTypesTest()
         {
-            Directory.SetCurrentDirectory(TestContext.CurrentContext.TestDirectory);
+            SetUp();
+        }
+
+
+        private void SetUp()
+        {
+            // Directory.SetCurrentDirectory(TestContext.CurrentContext.TestDirectory);
 
             // DotNetRdf memory store.
             var connectionString = "provider=dotnetrdf";
@@ -29,11 +34,11 @@ namespace Semiodesk.Trinity.Test.Linq
             //string connectionString = string.Format("{0};rule=urn:semiodesk/test/ruleset", SetupClass.ConnectionString);
 
 
-            Store = StoreFactory.CreateStore(connectionString);
-            Store.InitializeFromConfiguration();
-            Store.Log = (l) => Debug.WriteLine(l);
+            _store = StoreFactory.CreateStore(connectionString);
+            _store.InitializeFromConfiguration();
+            _store.Log = (l) => Debug.WriteLine(l);
 
-            Model = Store.CreateModel(ex.Namespace);
+            Model = _store.CreateModel(ex.Namespace);
             Model.Clear();
 
             var typeProperty = new Property(new Uri("rdf:type"));
@@ -71,38 +76,37 @@ namespace Semiodesk.Trinity.Test.Linq
             al1.Commit();
         }
 
-        [TearDown]
-        public void TearDown()
+        public void Dispose()
         {
-            Store.Dispose();
-            Store = null;
+            _store.Dispose();
+            _store = null;
         }
 
-        [Test]
+        [Fact]
         public void CanSelectResourcesWithMultipleTypes()
         {
             var actual = Model.AsQueryable<Band>().ToList();
-            Assert.AreEqual(1, actual.Count, "bands found");
+            Assert.True(1 == actual.Count, "bands found");
 
             var b = actual[0];
 
-            Assert.AreEqual(ex.TheBeatles, b.Uri, "The Beatles are the band");
-            Assert.AreEqual(1, b.Members.Count, "band member count");
-            Assert.AreEqual(ex.JohnLennon, b.Members[0].Uri, "john lennon is the band member");
+            Assert.True(ex.TheBeatles == b.Uri, "The Beatles are the band");
+            Assert.True(1 == b.Members.Count, "band member count");
+            Assert.True(ex.JohnLennon == b.Members[0].Uri, "john lennon is the band member");
 
             var albums = (from album in Model.AsQueryable<Album>() where album.Artist.Uri == ex.TheBeatles select album).ToList();
-            Assert.AreEqual(1, albums.Count, "album count");
+            Assert.True(1 == albums.Count, "album count");
 
             var a = albums[0];
 
-            Assert.AreEqual(ex.TheBeatlesAlbum, a.Uri, "The Beatles Album is the album");
-            Assert.AreEqual(1, a.Tracks.Count, "Album track count");
+            Assert.True(ex.TheBeatlesAlbum == a.Uri, "The Beatles Album is the album");
+            Assert.True(1 == a.Tracks.Count, "Album track count");
 
             var s = a.Tracks[0];
-            Assert.AreEqual(ex.BackInTheUSSR, s.Uri, "'Back in the USSR' is the song");
+            Assert.True(ex.BackInTheUSSR == s.Uri, "'Back in the USSR' is the song");
 
-            Assert.AreEqual(2, s.Writers.Count, "Song writers count");
-            Assert.IsTrue(s.Writers.Contains(sw), "Song writers' collection contains Lennon");
+            Assert.True(2 == s.Writers.Count, "Song writers count");
+            Assert.True(s.Writers.Contains(sw), "Song writers' collection contains Lennon");
         }
     }
 }

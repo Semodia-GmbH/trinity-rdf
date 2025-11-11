@@ -29,18 +29,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Semiodesk.Trinity;
-using NUnit.Framework;
+
 using System.Globalization;
+using Xunit;
 
 namespace dotNetRDFStore.Test
 {
-    class ResourceTest
+    public class ResourceTest: IDisposable
     {
         IStore Store;
         IModel Model;
 
-        [SetUp]
-        public void SetUp()
+        public ResourceTest()
         {
             Store = StoreFactory.CreateStore("provider=dotnetrdf");
 
@@ -48,8 +48,7 @@ namespace dotNetRDFStore.Test
             Model = Store.CreateModel(testModel);
         }
 
-        [TearDown]
-        public void TearDown()
+        public void Dispose()
         {
             Store.Dispose();
             Store = null;
@@ -57,7 +56,7 @@ namespace dotNetRDFStore.Test
 
         #region Datatype fidelity Test
 
-        [Test]
+        [Fact]
         public void TestBool()
         {
             var resourceUri = new Uri("ex:myResource");
@@ -71,11 +70,11 @@ namespace dotNetRDFStore.Test
 
             var res = r1.ListValues(myProperty).First();
 
-            Assert.AreEqual(typeof(bool), res.GetType());
-            Assert.AreEqual(val, res);
+            Assert.Equal(typeof(bool), res.GetType());
+            Assert.Equal(val, res);
         }
 
-        [Test]
+        [Fact]
         public void TestInt()
         {
             var resourceUri = new Uri("ex:myResource");
@@ -89,11 +88,11 @@ namespace dotNetRDFStore.Test
 
             var res = r1.ListValues(myProperty).First();
 
-            Assert.AreEqual(typeof(int), res.GetType());
-            Assert.AreEqual(val, res);
+            Assert.Equal(typeof(int), res.GetType());
+            Assert.Equal(val, res);
         }
 
-        [Test]
+        [Fact]
         public void TestInt16()
         {
             var resourceUri = new Uri("ex:myResource");
@@ -106,12 +105,12 @@ namespace dotNetRDFStore.Test
 
             var res = r1.ListValues(myProperty).First();
 
-            Assert.AreEqual(typeof(short), res.GetType());
-            Assert.AreEqual(val, res);
+            Assert.Equal(typeof(short), res.GetType());
+            Assert.Equal(val, res);
 
         }
 
-        [Test]
+        [Fact]
         public void TestInt32()
         {
             var resourceUri = new Uri("ex:myResource");
@@ -124,184 +123,184 @@ namespace dotNetRDFStore.Test
 
             var res = r1.ListValues(myProperty).First();
 
-            Assert.AreEqual(typeof(int), res.GetType());
-            Assert.AreEqual(val, res);
+            Assert.Equal(typeof(int), res.GetType());
+            Assert.Equal(val, res);
 
         }
 
-        [Test]
+        [Fact]
         public void TestInt64()
         {
             var resourceUri = new Uri("ex:myResource");
             var myProperty = new Property(new Uri("ex:myProperty"));
             var r1 = Model.CreateResource<Resource>(resourceUri);
-            long val = 126;
+            const long val = 126;
             r1.AddProperty(myProperty, val);
             r1.Commit();
             r1 = Model.GetResource<Resource>(resourceUri);
 
             var res = r1.ListValues(myProperty).First();
 
-            Assert.AreEqual(typeof(long), res.GetType());
-            Assert.AreEqual(val, res);
+            Assert.Equal(typeof(long), res.GetType());
+            Assert.Equal(val, res);
         }
 
-        [Test]
+        [Fact]
         public void TestUint()
         {
             var resourceUri = new Uri("ex:myResource");
             var myProperty = new Property(new Uri("ex:myProperty"));
             var r1 = Model.CreateResource<Resource>(resourceUri);
-            uint val = 126;
+            const uint val = 126;
             r1.AddProperty(myProperty, val);
             r1.Commit();
             r1 = Model.GetResource<Resource>(resourceUri);
 
             var res = r1.ListValues(myProperty).First();
 
-            Assert.AreEqual(typeof(uint), res.GetType());
-            Assert.AreEqual(val, res);
+            Assert.Equal(typeof(uint), res.GetType());
+            Assert.Equal(val, res);
         }
 
-        [Test]
+        [Fact]
         public void TestUint16()
         {
             var resourceUri = new Uri("ex:myResource");
             var myProperty = new Property(new Uri("ex:myProperty"));
             var r1 = Model.CreateResource<Resource>(resourceUri);
-            ushort val = 126;
+            const ushort val = 126;
             r1.AddProperty(myProperty, val);
             r1.Commit();
             r1 = Model.GetResource<Resource>(resourceUri);
 
             var res = r1.ListValues(myProperty).First();
 
-            Assert.AreEqual(typeof(ushort), res.GetType());
-            Assert.AreEqual(val, res);
+            Assert.Equal(typeof(ushort), res.GetType());
+            Assert.Equal(val, res);
         }
 
-        [Test]
+        [Fact]
         public void TestUint32()
         {
             var resourceUri = new Uri("ex:myResource");
             var myProperty = new Property(new Uri("ex:myProperty"));
             var r1 = Model.CreateResource<Resource>(resourceUri);
-            uint val = 126;
+            const uint val = 126;
             r1.AddProperty(myProperty, val);
             r1.Commit();
             r1 = Model.GetResource<Resource>(resourceUri);
 
             var res = r1.ListValues(myProperty).First();
 
-            Assert.AreEqual(typeof(uint), res.GetType());
-            Assert.AreEqual(val, res);
+            Assert.Equal(typeof(uint), res.GetType());
+            Assert.Equal(val, res);
         }
 
-        [Test]
+        [Fact]
         public void TestUint64()
         {
             var resourceUri = new Uri("ex:myResource");
             var myProperty = new Property(new Uri("ex:myProperty"));
             var r1 = Model.CreateResource<Resource>(resourceUri);
-            ulong val = 126;
+            const ulong val = 126;
             r1.AddProperty(myProperty, val);
             r1.Commit();
             r1 = Model.GetResource<Resource>(resourceUri);
 
             var res = r1.ListValues(myProperty).First();
 
-            Assert.AreEqual(typeof(ulong), res.GetType());
-            Assert.AreEqual(val, res);
+            Assert.Equal(typeof(ulong), res.GetType());
+            Assert.Equal(val, res);
         }
 
-        [Test]
+        [Fact]
         public void TestFloat()
         {
             var resourceUri = new Uri("ex:myResource");
             var myProperty = new Property(new Uri("ex:myProperty"));
             var r1 = Model.CreateResource<Resource>(resourceUri);
-            var val = 1.234F;
+            const float val = 1.234F;
             r1.AddProperty(myProperty, val);
             r1.Commit();
             r1 = Model.GetResource<Resource>(resourceUri);
 
             var res = r1.ListValues(myProperty).First();
 
-            Assert.AreEqual(typeof(float), res.GetType());
-            Assert.AreEqual(val, res);
+            Assert.Equal(typeof(float), res.GetType());
+            Assert.Equal(val, res);
         }
 
-        [Test]
+        [Fact]
         public void TestDouble()
         {
             var resourceUri = new Uri("ex:myResource");
             var myProperty = new Property(new Uri("ex:myProperty"));
             var r1 = Model.CreateResource<Resource>(resourceUri);
-            var val = 1.223;
+            const double val = 1.223;
             r1.AddProperty(myProperty, val);
             r1.Commit();
             r1 = Model.GetResource<Resource>(resourceUri);
 
             var res = r1.ListValues(myProperty).First();
 
-            Assert.AreEqual(typeof(double), res.GetType());
-            Assert.AreEqual(val, res);
+            Assert.Equal(typeof(double), res.GetType());
+            Assert.Equal(val, res);
         }
 
-        [Test]
+        [Fact]
         public void TestSingle()
         {
             var resourceUri = new Uri("ex:myResource");
             var myProperty = new Property(new Uri("ex:myProperty"));
             var r1 = Model.CreateResource<Resource>(resourceUri);
-            var val = 1.223F;
+            const float val = 1.223F;
             r1.AddProperty(myProperty, val);
             r1.Commit();
             r1 = Model.GetResource<Resource>(resourceUri);
 
             var res = r1.ListValues(myProperty).First();
 
-            Assert.AreEqual(typeof(float), res.GetType());
-            Assert.AreEqual(val, res);
+            Assert.Equal(typeof(float), res.GetType());
+            Assert.Equal(val, res);
         }
 
-        [Test]
+        [Fact]
         public void TestString()
         {
             var resourceUri = new Uri("ex:myResource");
             var myProperty = new Property(new Uri("ex:myProperty"));
             var r1 = Model.CreateResource<Resource>(resourceUri);
-            var val = "Hello World!";
+            const string val = "Hello World!";
             r1.AddProperty(myProperty, val);
             r1.Commit();
             r1 = Model.GetResource<Resource>(resourceUri);
 
             var res = r1.ListValues(myProperty).First();
 
-            Assert.AreEqual(typeof(string), res.GetType());
-            Assert.AreEqual(val, res);
+            Assert.Equal(typeof(string), res.GetType());
+            Assert.Equal(val, res);
         }
 
-        [Test]
+        [Fact]
         public void TestLocalizedString()
         {
             var myProperty = new Property(new Uri("ex:myProperty"));
             var r = Model.CreateResource<Resource>(new Uri("ex:myResource"));
-            var val = "Hello World!";
+            const string val = "Hello World!";
             var ci = CultureInfo.CreateSpecificCulture("EN");
             r.AddProperty(myProperty, val, ci);
             r.Commit();
 
             var r1 = Model.GetResource<Resource>(r.Uri);
             var res = r1.ListValues(myProperty).First();
-            Assert.AreEqual(typeof(Tuple<string, string>), res.GetType());
+            Assert.Equal(typeof(Tuple<string, string>), res.GetType());
             var v = res as Tuple<string, string>;
-            Assert.AreEqual(val, v.Item1);
-            Assert.AreEqual(ci.Name.ToLower(), v.Item2.ToLower());
+            Assert.Equal(val, v.Item1);
+            Assert.Equal(ci.Name.ToLower(), v.Item2.ToLower());
             r.RemoveProperty(myProperty, val, ci);
         }
         
-        [Test]
+        [Fact]
         public void TestLocalizedStringCollection()
         {
             var myProperty = new Property(new Uri("ex:myProperty"));
@@ -318,15 +317,15 @@ namespace dotNetRDFStore.Test
 
             var r1 = Model.GetResource<Resource>(r.Uri);
             var res = r1.ListValues(myProperty).ToList();
-            Assert.AreEqual(typeof(List<Tuple<string, CultureInfo>>), res.GetType()); 
+            Assert.Equal(typeof(List<Tuple<string, CultureInfo>>), res.GetType()); 
             var v = res as IEnumerable<Tuple<string, CultureInfo>>;
             
-            //Assert.AreEqual(val, v.Item1);
-            //Assert.AreEqual(ci.Name.ToLower(), v.Item2.ToLower());
+            //Assert.Equal(val, v.Item1);
+            //Assert.Equal(ci.Name.ToLower(), v.Item2.ToLower());
             //r.RemoveProperty(myProperty, val);
         }
 
-        [Test]
+        [Fact]
         public void TestDateTime()
         {
             var resourceUri = new Uri("ex:myResource");
@@ -339,11 +338,11 @@ namespace dotNetRDFStore.Test
 
             var res = r1.ListValues(myProperty).First();
 
-            Assert.AreEqual(typeof(DateTime), res.GetType());
-            Assert.AreEqual(val.ToLocalTime(), ((DateTime)res).ToLocalTime());
+            Assert.Equal(typeof(DateTime), res.GetType());
+            Assert.Equal(val.ToLocalTime(), ((DateTime)res).ToLocalTime());
         }
 
-        [Test]
+        [Fact]
         public void TimeSpanResourceTest()
         {
             var resUri = new Uri("http://example.org/DateTimeTest");
@@ -358,13 +357,13 @@ namespace dotNetRDFStore.Test
 
             var actual = Model.GetResource(resUri);
             var o = actual.GetValue(property);
-            Assert.AreEqual(typeof(TimeSpan), o.GetType());
+            Assert.Equal(typeof(TimeSpan), o.GetType());
             var actualDateTime = (TimeSpan)actual.GetValue(property);
 
-            Assert.AreEqual(t.TotalMinutes, actualDateTime.TotalMinutes);
+            Assert.Equal(t.TotalMinutes, actualDateTime.TotalMinutes);
         }
 
-        [Test]
+        [Fact]
         public void TestByteArray()
         {
             var resourceUri = new Uri("ex:myResource");
@@ -379,8 +378,8 @@ namespace dotNetRDFStore.Test
 
             var res = r1.ListValues(myProperty).First();
 
-            Assert.AreEqual(typeof(byte[]), res.GetType());
-            Assert.AreEqual(val, res);
+            Assert.Equal(typeof(byte[]), res.GetType());
+            Assert.Equal(val, res);
 
         }
 

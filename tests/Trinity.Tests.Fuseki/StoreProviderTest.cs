@@ -1,13 +1,14 @@
-﻿using NUnit.Framework;
+﻿
 using Semiodesk.Trinity.Store.Fuseki;
+using Xunit;
 
 namespace Semiodesk.Trinity.Test.Fuseki
 {
-    [TestFixture]
+
     public class StoreProviderTest : SetupClass
     {
 
-        [Test]
+        [Fact]
         public void FusekiConfigurationStringTest()
         {
 

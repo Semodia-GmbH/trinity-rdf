@@ -25,81 +25,82 @@
 //
 // Copyright (c) Semiodesk GmbH 2015-2019
 
-using NUnit.Framework;
+
 using System;
+using Xunit;
 
 namespace Semiodesk.Trinity.Test
 {
-    [TestFixture]
+
     public class UriRefTest
     {
-        [Test]
+        [Fact]
         public void EqualsTest()
         {
             var u0 = new UriRef("http://semiodesk.com/ontologies/ppo");
             var u1 = new UriRef("http://semiodesk.com/ontologies/ppo#UriScehma");
 
-            Assert.IsFalse(ReferenceEquals(u0, u1));
-            Assert.AreEqual(u0, u0);
-            Assert.AreNotEqual(u0, u1);
-            Assert.IsFalse(u0 == u1);
+            Assert.False(ReferenceEquals(u0, u1));
+            Assert.Equal(u0, u0);
+            Assert.NotEqual(u0, u1);
+            Assert.False(u0 == u1);
 
             var u2 = new UriRef("file://D:/Documents/x.doc");
             var u3 = new UriRef("file://D:/Documents/2012/../x.doc");
 
-            Assert.IsFalse(ReferenceEquals(u2, u3));
-            Assert.AreEqual(u2, u3);
-            Assert.IsTrue(u2 == u3);
+            Assert.False(ReferenceEquals(u2, u3));
+            Assert.Equal(u2, u3);
+            Assert.True(u2 == u3);
 
             var u4 = new UriRef("file://D:/Documents/x.doc#Metadata");
             var u5 = new UriRef("file://D:/Documents/2012/../x.doc#Metadata");
 
-            Assert.IsFalse(ReferenceEquals(u4, u5));
-            Assert.AreEqual(u4, u5);
-            Assert.IsTrue(u4 == u5);
+            Assert.False(ReferenceEquals(u4, u5));
+            Assert.Equal(u4, u5);
+            Assert.True(u4 == u5);
 
             var u6 = new UriRef("_:b0", true);
             var u7 = new UriRef("_:b0", true);
             var u8 = new UriRef("_:b1", true);
 
-            Assert.IsFalse(ReferenceEquals(u6, u7));
-            Assert.AreEqual(u6, u7);
-            Assert.IsTrue(u6.Equals(u7));
-            Assert.IsTrue(u6 == u7);
+            Assert.False(ReferenceEquals(u6, u7));
+            Assert.Equal(u6, u7);
+            Assert.True(u6.Equals(u7));
+            Assert.True(u6 == u7);
 
-            Assert.IsFalse(ReferenceEquals(u7, u8));
-            Assert.AreNotEqual(u7, u8);
-            Assert.IsFalse(u7.Equals(u8));
-            Assert.IsFalse(u7 == u8);
+            Assert.False(ReferenceEquals(u7, u8));
+            Assert.NotEqual(u7, u8);
+            Assert.False(u7.Equals(u8));
+            Assert.False(u7 == u8);
         }
 
-        [Test]
+        [Fact]
         public void ToStringTest()
         {
             var u0 = new UriRef("http://semiodesk.com/ontologies/ppo#UriScehma");
             var u1 = "http://semiodesk.com/ontologies/ppo#UriScehma";
 
-            Assert.AreEqual(u1, u0.ToString());
+            Assert.Equal(u1, u0.ToString());
         }
 
-        [Test]
+        [Fact]
         public void ToUriRefTest()
         {
             var uriString = "http://semiodesk.com/ontologies/ppo#UriScehma";
             var u0 = uriString.ToUriRef();
-            Assert.AreEqual(uriString, u0.OriginalString);
+            Assert.Equal(uriString, u0.OriginalString);
         }
 
-        [Test]
+        [Fact]
         public void GetHashCodeTest()
         {
             var absoluteUri = new UriRef("http://trinity-rdf.net");
 
-            Assert.AreEqual(671617664, absoluteUri.GetHashCode());
+            Assert.Equal(671617664, absoluteUri.GetHashCode());
 
             var absoluteUriRef = new UriRef("http://trinity-rdf.net#download");
 
-            Assert.AreEqual(671107712, absoluteUriRef.GetHashCode());
+            Assert.Equal(671107712, absoluteUriRef.GetHashCode());
 
             var relativeUri = new UriRef("#download", UriKind.Relative);
 
@@ -107,7 +108,7 @@ namespace Semiodesk.Trinity.Test
 
             var blankId = new UriRef("_:0", true);
 
-            Assert.AreEqual(-1219930229, blankId.GetHashCode());
+            Assert.Equal(-1219930229, blankId.GetHashCode());
         }
     }
 }

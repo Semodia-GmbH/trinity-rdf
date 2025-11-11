@@ -25,18 +25,19 @@
 //
 // Copyright (c) Semiodesk GmbH 2015-2019
 
-using NUnit.Framework;
+
 using System.Reflection;
+using Xunit;
 
 namespace Semiodesk.Trinity.Test
 {
     /// <summary>
     /// This test needs A LOT work!
     /// </summary>
-    [TestFixture]
+
     public class OntologyTest
     {
-        [Test]
+        [Fact]
         public void TestDiscovery()
         {
             OntologyDiscovery.AddAssembly(Assembly.GetExecutingAssembly());

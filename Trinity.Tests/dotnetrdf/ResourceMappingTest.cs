@@ -30,24 +30,24 @@ using System.Collections.Generic;
 using System.Linq;
 using Semiodesk.Trinity;
 using System.Reflection;
-using NUnit.Framework;
+
 using System.IO;
 using Semiodesk.Trinity.Ontologies;
 using Semiodesk.Trinity.Test;
+using Xunit;
 
 namespace dotNetRDFStore.Test
 {
 
-    [TestFixture]
-    public class ResourceMappingTest
+
+    public class ResourceMappingTest: IDisposable
     {
         public static bool RegisteredOntology;
 
         IStore Store;
         IModel Model;
 
-        [SetUp]
-        public void SetUp()
+        public ResourceMappingTest()
         {
             if (ResourceMappingTest.RegisteredOntology == false)
             {
@@ -61,22 +61,19 @@ namespace dotNetRDFStore.Test
             var testModel = new Uri("ex:Test");
             Model = Store.CreateModel(testModel);
         }
-
-
+        
         IModel GetModel()
         {
             return Model;
         }
 
-        [TearDown]
-        public void TearDown()
+        public void Dispose()
         {
             Store.Dispose();
         }
 
-
-
-        //[Test]
+        
+        //[Fact]
         // This test does not run, but it needs to.
         public void AddUnmappedType()
         {
@@ -93,16 +90,15 @@ namespace dotNetRDFStore.Test
             t1.AddProperty(TestOntology.uniqueResourceTest, r);
             t1.AddProperty(TestOntology.resourceTest, r);
 
-            Assert.IsNull(t1.uniqueResourceTest);
-            Assert.AreEqual(0, t1.resourceTest.Count);
+            Assert.Null(t1.uniqueResourceTest);
+            Assert.Empty(t1.resourceTest);
 
             m.Clear();
         }
 
-        [Test]
+        [Fact(Skip = "This test poses an interesting problem. If we remove the type of a mapped resource, how should we handle that.")]
         public void RemoveTypeTest()
         {
-            Assert.Inconclusive("This test poses an interesting problem. If we remove the type of a mapped resource, how should we handle that.");
             var m = GetModel();
             m.Clear();
 
@@ -111,13 +107,12 @@ namespace dotNetRDFStore.Test
 
             t1.RemoveProperty(rdf.type, TestOntology.TestClass);
 
-            Assert.False(t1.ListProperties().Contains(rdf.type));
-
-
+            Assert.DoesNotContain(rdf.type, t1.ListProperties());
+            
             m.Clear();
         }
 
-        [Test]
+        [Fact]
         public void AddRemoveIntegerTest()
         {
             var m = GetModel();
@@ -135,17 +130,17 @@ namespace dotNetRDFStore.Test
             var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
-            Assert.AreEqual(value, t_actual.uniqueIntTest);
+            Assert.Equal(value, t_actual.uniqueIntTest);
 
 
             // Test if property is present
             var l = t_actual.ListProperties();
             Assert.True(l.Contains(TestOntology.uniqueIntTest));
-            Assert.AreEqual(2, l.Count());
+            Assert.Equal(2, l.Count());
 
             // Test if ListValues works
-            Assert.AreEqual(typeof(int), t_actual.ListValues(TestOntology.uniqueIntTest).First().GetType());
-            Assert.AreEqual(value, t_actual.ListValues(TestOntology.uniqueIntTest).First());
+            Assert.Equal(typeof(int), t_actual.ListValues(TestOntology.uniqueIntTest).First().GetType());
+            Assert.Equal(value, t_actual.ListValues(TestOntology.uniqueIntTest).First());
 
             // Remove with RemoveProperty
             t1.RemoveProperty(TestOntology.uniqueIntTest, value);
@@ -158,12 +153,12 @@ namespace dotNetRDFStore.Test
             Assert.False(l.Contains(TestOntology.uniqueIntTest));
 
             // Test if ListValues works
-            Assert.AreEqual(0, t_actual.ListValues(TestOntology.uniqueIntTest).Count());
+            Assert.Equal(0, t_actual.ListValues(TestOntology.uniqueIntTest).Count());
 
             m.Clear();
         }
 
-        [Test]
+        [Fact]
         public void AddRemoveIntegerListTest()
         {
             var m = GetModel();
@@ -179,17 +174,17 @@ namespace dotNetRDFStore.Test
             var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
-            Assert.AreEqual(1, t_actual.intTest.Count());
-            Assert.AreEqual(value, t_actual.intTest[0]);
+            Assert.Equal(1, t_actual.intTest.Count());
+            Assert.Equal(value, t_actual.intTest[0]);
 
             // Test if property is present
             var l = t_actual.ListProperties();
             Assert.True(l.Contains(TestOntology.intTest));
-            Assert.AreEqual(2, l.Count());
+            Assert.Equal(2, l.Count());
 
             // Test if ListValues works
-            Assert.AreEqual(typeof(int), t_actual.ListValues(TestOntology.intTest).First().GetType());
-            Assert.AreEqual(value, t_actual.ListValues(TestOntology.intTest).First());
+            Assert.Equal(typeof(int), t_actual.ListValues(TestOntology.intTest).First().GetType());
+            Assert.Equal(value, t_actual.ListValues(TestOntology.intTest).First());
 
             // Add another value
             var value2 = -18583;
@@ -199,21 +194,21 @@ namespace dotNetRDFStore.Test
 
 
             // Test if value was stored
-            Assert.AreEqual(2, t_actual.intTest.Count());
-            Assert.IsTrue(t_actual.intTest.Contains(value));
-            Assert.IsTrue(t_actual.intTest.Contains(value2));
+            Assert.Equal(2, t_actual.intTest.Count());
+            Assert.True(t_actual.intTest.Contains(value));
+            Assert.True(t_actual.intTest.Contains(value2));
 
             // Test if property is present
             l = t_actual.ListProperties();
             Assert.True(l.Contains(TestOntology.intTest));
-            Assert.AreEqual(2, l.Count());
+            Assert.Equal(2, l.Count());
 
             // Test if ListValues works
             var res = t_actual.ListValues(TestOntology.intTest).ToList();
-            Assert.AreEqual(typeof(int), res[0].GetType());
-            Assert.AreEqual(typeof(int), res[1].GetType());
-            Assert.IsTrue(res.Contains(value));
-            Assert.IsTrue(res.Contains(value2));
+            Assert.Equal(typeof(int), res[0].GetType());
+            Assert.Equal(typeof(int), res[1].GetType());
+            Assert.True(res.Contains(value));
+            Assert.True(res.Contains(value2));
 
             // Remove value from mapped list
             t1.intTest.Remove(value2);
@@ -221,15 +216,15 @@ namespace dotNetRDFStore.Test
             t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if removed
-            Assert.AreEqual(1, t_actual.intTest.Count());
+            Assert.Equal(1, t_actual.intTest.Count());
 
             // Test if ListProperties works
             l = t_actual.ListProperties();
             Assert.True(l.Contains(TestOntology.intTest));
 
             // Test if first added property is still present
-            Assert.AreEqual(typeof(int), t_actual.ListValues(TestOntology.intTest).First().GetType());
-            Assert.AreEqual(value, t_actual.ListValues(TestOntology.intTest).First());
+            Assert.Equal(typeof(int), t_actual.ListValues(TestOntology.intTest).First().GetType());
+            Assert.Equal(value, t_actual.ListValues(TestOntology.intTest).First());
 
             t1.intTest.Remove(value);
             t1.Commit();
@@ -239,7 +234,7 @@ namespace dotNetRDFStore.Test
             Assert.False(l.Contains(TestOntology.intTest));
 
             // Test if ListValues works
-            Assert.AreEqual(0, t_actual.ListValues(TestOntology.intTest).Count());
+            Assert.Equal(0, t_actual.ListValues(TestOntology.intTest).Count());
 
             m.Clear();
         }
@@ -248,7 +243,7 @@ namespace dotNetRDFStore.Test
         /// This Test fails because the datatype "unsigned int" is not stored correctly in the database. 
         /// To be more specific the xsd type is missing although it is given at the insert.
         /// </summary>
-        //[Test]
+        //[Fact]
         public void AddRemoveUnsignedIntegerTest()
         {
             var m = GetModel();
@@ -265,17 +260,17 @@ namespace dotNetRDFStore.Test
             var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
-            Assert.AreEqual(uValue, t_actual.uniqueUintTest);
+            Assert.Equal(uValue, t_actual.uniqueUintTest);
 
 
             // Test if property is present
             var l = t1.ListProperties();
             Assert.True(l.Contains(TestOntology.uniqueUintTest));
-            Assert.AreEqual(2, l.Count());
+            Assert.Equal(2, l.Count());
 
             // Test if ListValues works
-            Assert.AreEqual(typeof(uint), t_actual.ListValues(TestOntology.uniqueUintTest).First().GetType());
-            Assert.AreEqual(uValue, t_actual.ListValues(TestOntology.uniqueUintTest).First());
+            Assert.Equal(typeof(uint), t_actual.ListValues(TestOntology.uniqueUintTest).First().GetType());
+            Assert.Equal(uValue, t_actual.ListValues(TestOntology.uniqueUintTest).First());
 
             // Remove with RemoveProperty
             t1.RemoveProperty(TestOntology.uniqueUintTest, uValue);
@@ -288,12 +283,12 @@ namespace dotNetRDFStore.Test
             Assert.False(l.Contains(TestOntology.uniqueUintTest));
 
             // Test if ListValues works
-            Assert.AreEqual(0, t_actual.ListValues(TestOntology.uniqueUintTest).Count());
+            Assert.Equal(0, t_actual.ListValues(TestOntology.uniqueUintTest).Count());
 
             m.Clear();
         }
 
-        //[Test]
+        //[Fact]
         public void AddRemoveUnsignedIntegerListTest()
         {
             var m = GetModel();
@@ -309,18 +304,18 @@ namespace dotNetRDFStore.Test
             var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
-            Assert.AreEqual(1, t_actual.uintTest.Count());
-            Assert.AreEqual(uValue, t_actual.uintTest[0]);
+            Assert.Equal(1, t_actual.uintTest.Count());
+            Assert.Equal(uValue, t_actual.uintTest[0]);
 
 
             // Test if property is present
             var l = t1.ListProperties();
             Assert.True(l.Contains(TestOntology.uintTest));
-            Assert.AreEqual(2, l.Count());
+            Assert.Equal(2, l.Count());
 
             // Test if ListValues works
-            Assert.AreEqual(typeof(uint), t_actual.ListValues(TestOntology.uintTest).First().GetType());
-            Assert.AreEqual(uValue, t_actual.ListValues(TestOntology.uintTest).First());
+            Assert.Equal(typeof(uint), t_actual.ListValues(TestOntology.uintTest).First().GetType());
+            Assert.Equal(uValue, t_actual.ListValues(TestOntology.uintTest).First());
 
             // Remove value from mapped list
             t1.uintTest.Remove(uValue);
@@ -329,18 +324,18 @@ namespace dotNetRDFStore.Test
             t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if removed
-            Assert.AreEqual(0, t_actual.uintTest.Count());
+            Assert.Equal(0, t_actual.uintTest.Count());
 
             // Test if ListProperties works
             l = (List<Property>)t_actual.ListProperties();
             Assert.False(l.Contains(TestOntology.uintTest));
 
             // Test if ListValues works
-            Assert.AreEqual(0, t_actual.ListValues(TestOntology.uintTest).Count());
+            Assert.Equal(0, t_actual.ListValues(TestOntology.uintTest).Count());
             m.Clear();
         }
 
-        [Test]
+        [Fact]
         public void AddRemoveStringTest()
         {
             var m = GetModel();
@@ -357,23 +352,23 @@ namespace dotNetRDFStore.Test
             var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
-            Assert.AreEqual(strValue, t_actual.uniqueStringTest);
+            Assert.Equal(strValue, t_actual.uniqueStringTest);
 
 
             // Test if property is present
             var l = t_actual.ListProperties();
             Assert.True(l.Contains(TestOntology.uniqueStringTest));
-            Assert.AreEqual(2, l.Count());
+            Assert.Equal(2, l.Count());
 
             var x = t_actual.HasProperty(TestOntology.uniqueStringTest);
-            Assert.IsTrue(x);
+            Assert.True(x);
 
             x = t_actual.HasProperty(TestOntology.uniqueStringTest, strValue);
-            Assert.IsTrue(x);
+            Assert.True(x);
 
             // Test if ListValues works
-            Assert.AreEqual(typeof(string), t_actual.ListValues(TestOntology.uniqueStringTest).First().GetType());
-            Assert.AreEqual(strValue, t1.ListValues(TestOntology.uniqueStringTest).First());
+            Assert.Equal(typeof(string), t_actual.ListValues(TestOntology.uniqueStringTest).First().GetType());
+            Assert.Equal(strValue, t1.ListValues(TestOntology.uniqueStringTest).First());
 
             // Remove with RemoveProperty
             t1.RemoveProperty(TestOntology.uniqueStringTest, strValue);
@@ -385,17 +380,17 @@ namespace dotNetRDFStore.Test
             Assert.False(l.Contains(TestOntology.uniqueStringTest));
 
             x = t_actual.HasProperty(TestOntology.uniqueStringTest);
-            Assert.IsFalse(x);
+            Assert.False(x);
 
             x = t_actual.HasProperty(TestOntology.uniqueStringTest, strValue);
-            Assert.IsFalse(x);
+            Assert.False(x);
 
             // Test if ListValues works
-            Assert.AreEqual(0, t_actual.ListValues(TestOntology.uniqueStringTest).Count());
+            Assert.Equal(0, t_actual.ListValues(TestOntology.uniqueStringTest).Count());
             m.Clear();
         }
 
-        [Test]
+        [Fact]
         public void AddRemoveLocalizedStringTest()
         {
             var m = GetModel();
@@ -412,7 +407,7 @@ namespace dotNetRDFStore.Test
         }
 
 
-        [Test]
+        [Fact]
         public void AddRemoveStringListTest()
         {
             var m = GetModel();
@@ -429,24 +424,24 @@ namespace dotNetRDFStore.Test
             var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
-            Assert.AreEqual(1, t_actual.stringTest.Count());
-            Assert.AreEqual(strValue, t_actual.stringTest[0]);
+            Assert.Equal(1, t_actual.stringTest.Count());
+            Assert.Equal(strValue, t_actual.stringTest[0]);
 
 
             // Test if property is present
             var l = t_actual.ListProperties();
             Assert.True(l.Contains(TestOntology.stringTest));
-            Assert.AreEqual(2, l.Count());
+            Assert.Equal(2, l.Count());
 
             var x = t_actual.HasProperty(TestOntology.stringTest);
-            Assert.IsTrue(x);
+            Assert.True(x);
 
             x = t_actual.HasProperty(TestOntology.stringTest, strValue);
-            Assert.IsTrue(x);
+            Assert.True(x);
 
             // Test if ListValues works
-            Assert.AreEqual(typeof(string), t_actual.ListValues(TestOntology.stringTest).First().GetType());
-            Assert.AreEqual(strValue, t_actual.ListValues(TestOntology.stringTest).First());
+            Assert.Equal(typeof(string), t_actual.ListValues(TestOntology.stringTest).First().GetType());
+            Assert.Equal(strValue, t_actual.ListValues(TestOntology.stringTest).First());
 
 
             // Remove value from mapped list
@@ -456,25 +451,25 @@ namespace dotNetRDFStore.Test
             t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if removed
-            Assert.AreEqual(0, t_actual.boolTest.Count());
+            Assert.Equal(0, t_actual.boolTest.Count());
 
             // Test if ListProperties works
             l = t_actual.ListProperties();
             Assert.False(l.Contains(TestOntology.stringTest));
 
             x = t_actual.HasProperty(TestOntology.stringTest);
-            Assert.IsFalse(x);
+            Assert.False(x);
 
             x = t_actual.HasProperty(TestOntology.stringTest, strValue);
-            Assert.IsFalse(x);
+            Assert.False(x);
 
             // Test if ListValues works
-            Assert.AreEqual(0, t_actual.ListValues(TestOntology.stringTest).Count());
+            Assert.Equal(0, t_actual.ListValues(TestOntology.stringTest).Count());
 
             m.Clear();
         }
 
-        [Test]
+        [Fact]
         public void AddRemoveBoolTest()
         {
             var m = GetModel();
@@ -492,17 +487,17 @@ namespace dotNetRDFStore.Test
             var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
-            Assert.AreEqual(bValue, t_actual.uniqueBoolTest);
+            Assert.Equal(bValue, t_actual.uniqueBoolTest);
 
 
             // Test if property is present
             var l = t_actual.ListProperties();
             Assert.True(l.Contains(TestOntology.uniqueBoolTest));
-            Assert.AreEqual(2, l.Count());
+            Assert.Equal(2, l.Count());
 
             // Test if ListValues works
-            Assert.AreEqual(typeof(bool), t_actual.ListValues(TestOntology.uniqueBoolTest).First().GetType());
-            Assert.AreEqual(bValue, t_actual.ListValues(TestOntology.uniqueBoolTest).First());
+            Assert.Equal(typeof(bool), t_actual.ListValues(TestOntology.uniqueBoolTest).First().GetType());
+            Assert.Equal(bValue, t_actual.ListValues(TestOntology.uniqueBoolTest).First());
 
             // Remove with RemoveProperty
             t1.RemoveProperty(TestOntology.uniqueBoolTest, bValue);
@@ -515,12 +510,12 @@ namespace dotNetRDFStore.Test
             Assert.False(l.Contains(TestOntology.uniqueBoolTest));
 
             // Test if ListValues works
-            Assert.AreEqual(0, t_actual.ListValues(TestOntology.uniqueBoolTest).Count());
+            Assert.Equal(0, t_actual.ListValues(TestOntology.uniqueBoolTest).Count());
 
             m.Clear();
         }
 
-        [Test]
+        [Fact]
         public void AddRemoveBoolListTest()
         {
             var m = GetModel();
@@ -537,18 +532,18 @@ namespace dotNetRDFStore.Test
             var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
-            Assert.AreEqual(1, t_actual.boolTest.Count());
-            Assert.AreEqual(value, t_actual.boolTest[0]);
+            Assert.Equal(1, t_actual.boolTest.Count());
+            Assert.Equal(value, t_actual.boolTest[0]);
 
 
             // Test if property is present
             var l = t_actual.ListProperties();
             Assert.True(l.Contains(TestOntology.boolTest));
-            Assert.AreEqual(2, l.Count());
+            Assert.Equal(2, l.Count());
 
             // Test if ListValues works
-            Assert.AreEqual(typeof(bool), t_actual.ListValues(TestOntology.boolTest).First().GetType());
-            Assert.AreEqual(value, t_actual.ListValues(TestOntology.boolTest).First());
+            Assert.Equal(typeof(bool), t_actual.ListValues(TestOntology.boolTest).First().GetType());
+            Assert.Equal(value, t_actual.ListValues(TestOntology.boolTest).First());
 
             // Remove value from mapped list
             t1.boolTest.Remove(value);
@@ -557,14 +552,14 @@ namespace dotNetRDFStore.Test
             t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if removed
-            Assert.AreEqual(0, t_actual.boolTest.Count());
+            Assert.Equal(0, t_actual.boolTest.Count());
 
             // Test if ListProperties works
             l = t_actual.ListProperties();
             Assert.False(l.Contains(TestOntology.boolTest));
 
             // Test if ListValues works
-            Assert.AreEqual(0, t_actual.ListValues(TestOntology.boolTest).Count());
+            Assert.Equal(0, t_actual.ListValues(TestOntology.boolTest).Count());
 
             m.Clear();
         }
@@ -573,7 +568,7 @@ namespace dotNetRDFStore.Test
         /// Note: 
         /// Datetime precision in Virtuoso is not as high as native .net datetime precision.
         /// </summary>
-        [Test]
+        [Fact]
         public void AddRemoveDateTimeTest()
         {
             var m = GetModel();
@@ -590,18 +585,18 @@ namespace dotNetRDFStore.Test
             var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
-            Assert.AreEqual(Value.ToUniversalTime(), t_actual.uniqueDateTimeTest.ToUniversalTime());
+            Assert.Equal(Value.ToUniversalTime(), t_actual.uniqueDateTimeTest.ToUniversalTime());
 
 
             // Test if property is present
             var l = t_actual.ListProperties();
             Assert.True(l.Contains(TestOntology.uniqueDatetimeTest));
-            Assert.AreEqual(2, l.Count());
+            Assert.Equal(2, l.Count());
 
             // Test if ListValues works
-            Assert.AreEqual(typeof(DateTime), t_actual.ListValues(TestOntology.uniqueDatetimeTest).First().GetType());
+            Assert.Equal(typeof(DateTime), t_actual.ListValues(TestOntology.uniqueDatetimeTest).First().GetType());
             var time = (DateTime)t_actual.ListValues(TestOntology.uniqueDatetimeTest).First();
-            Assert.AreEqual(Value.ToUniversalTime(), time.ToUniversalTime());
+            Assert.Equal(Value.ToUniversalTime(), time.ToUniversalTime());
 
             // Remove with RemoveProperty
             t1.RemoveProperty(TestOntology.uniqueDatetimeTest, Value);
@@ -614,22 +609,22 @@ namespace dotNetRDFStore.Test
             Assert.False(l.Contains(TestOntology.uniqueBoolTest));
 
             // Test if ListValues works
-            Assert.AreEqual(0, t_actual.ListValues(TestOntology.uniqueDatetimeTest).Count());
+            Assert.Equal(0, t_actual.ListValues(TestOntology.uniqueDatetimeTest).Count());
 
 
             var t = new DateTime();
-            Assert.IsTrue(DateTime.TryParse("2013-01-21T16:27:23.000Z", out t));
+            Assert.True(DateTime.TryParse("2013-01-21T16:27:23.000Z", out t));
 
             t1.uniqueDateTimeTest = t;
             t1.Commit();
 
             t_actual = m.GetResource<MappingTestClass>(t1Uri);
-            Assert.AreEqual(t1.uniqueDateTimeTest.ToUniversalTime(), t_actual.uniqueDateTimeTest.ToUniversalTime());
+            Assert.Equal(t1.uniqueDateTimeTest.ToUniversalTime(), t_actual.uniqueDateTimeTest.ToUniversalTime());
 
             m.Clear();
         }
 
-        [Test]
+        [Fact]
         public void TimeZoneTest()
         {
             var m = GetModel();
@@ -637,7 +632,7 @@ namespace dotNetRDFStore.Test
 
             var t1Uri = new Uri("semio:test:testInstance1");
             var t = new DateTime();
-            Assert.IsTrue(DateTime.TryParse("2013-01-21T16:27:23.000Z", out t));
+            Assert.True(DateTime.TryParse("2013-01-21T16:27:23.000Z", out t));
 
             var t1 = m.CreateResource<MappingTestClass>(t1Uri);
             t1.uniqueDateTimeTest = t;
@@ -646,7 +641,7 @@ namespace dotNetRDFStore.Test
             var t_actual = m.GetResource<MappingTestClass>(t1Uri);
         }
 
-        [Test]
+        [Fact]
         public void AddRemoveDateTimeListTest()
         {
             var m = GetModel();
@@ -662,19 +657,19 @@ namespace dotNetRDFStore.Test
             var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
-            Assert.AreEqual(1, t1.dateTimeTest.Count());
-            Assert.AreEqual(value, t1.dateTimeTest[0]);
+            Assert.Equal(1, t1.dateTimeTest.Count());
+            Assert.Equal(value, t1.dateTimeTest[0]);
 
 
             // Test if property is present
             var l = t1.ListProperties();
             Assert.True(l.Contains(TestOntology.datetimeTest));
-            Assert.AreEqual(2, l.Count());
+            Assert.Equal(2, l.Count());
 
             // Test if ListValues works
-            Assert.AreEqual(typeof(DateTime), t_actual.ListValues(TestOntology.datetimeTest).First().GetType());
+            Assert.Equal(typeof(DateTime), t_actual.ListValues(TestOntology.datetimeTest).First().GetType());
             var time = (DateTime)t_actual.ListValues(TestOntology.datetimeTest).First();
-            Assert.AreEqual(value.ToUniversalTime(), time.ToUniversalTime());
+            Assert.Equal(value.ToUniversalTime(), time.ToUniversalTime());
 
             // Remove value from mapped list
             t1.dateTimeTest.Remove(value);
@@ -683,21 +678,21 @@ namespace dotNetRDFStore.Test
             t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if removed
-            Assert.AreEqual(0, t_actual.dateTimeTest.Count());
+            Assert.Equal(0, t_actual.dateTimeTest.Count());
 
             // Test if ListProperties works
             l = t_actual.ListProperties();
             Assert.False(l.Contains(TestOntology.datetimeTest));
 
             // Test if ListValues works
-            Assert.AreEqual(0, t_actual.ListValues(TestOntology.datetimeTest).Count());
+            Assert.Equal(0, t_actual.ListValues(TestOntology.datetimeTest).Count());
         }
 
         /// <summary>
         /// Note: 
         /// Datetime precision in Virtuoso is not as high as native .net datetime precision.
         /// </summary>
-        [Test]
+        [Fact]
         public void AddRemoveTimeSpanTest()
         {
             var m = GetModel();
@@ -714,18 +709,18 @@ namespace dotNetRDFStore.Test
             var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
-            Assert.AreEqual(Value.TotalSeconds, t_actual.uniqueTimeSpanTest.TotalSeconds);
+            Assert.Equal(Value.TotalSeconds, t_actual.uniqueTimeSpanTest.TotalSeconds);
 
 
             // Test if property is present
             var l = t_actual.ListProperties();
             Assert.True(l.Contains(TestOntology.uniqueTimespanTest));
-            Assert.AreEqual(2, l.Count());
+            Assert.Equal(2, l.Count());
 
             // Test if ListValues works
-            Assert.AreEqual(typeof(TimeSpan), t_actual.ListValues(TestOntology.uniqueTimespanTest).First().GetType());
+            Assert.Equal(typeof(TimeSpan), t_actual.ListValues(TestOntology.uniqueTimespanTest).First().GetType());
             var time = (TimeSpan)t_actual.ListValues(TestOntology.uniqueTimespanTest).First();
-            Assert.AreEqual(Value.TotalSeconds, time.TotalSeconds);
+            Assert.Equal(Value.TotalSeconds, time.TotalSeconds);
 
             // Remove with RemoveProperty
             t1.RemoveProperty(TestOntology.uniqueTimespanTest, Value);
@@ -738,18 +733,18 @@ namespace dotNetRDFStore.Test
             Assert.False(l.Contains(TestOntology.uniqueBoolTest));
 
             // Test if ListValues works
-            Assert.AreEqual(0, t_actual.ListValues(TestOntology.uniqueTimespanTest).Count());
+            Assert.Equal(0, t_actual.ListValues(TestOntology.uniqueTimespanTest).Count());
 
 
             t1.uniqueTimeSpanTest = TimeSpan.FromSeconds(200);
             t1.Commit();
 
             t_actual = m.GetResource<MappingTestClass>(t1Uri);
-            Assert.AreEqual(t1.uniqueTimeSpanTest.TotalSeconds, t_actual.uniqueTimeSpanTest.TotalSeconds);
+            Assert.Equal(t1.uniqueTimeSpanTest.TotalSeconds, t_actual.uniqueTimeSpanTest.TotalSeconds);
 
             m.Clear();
         }
-        [Test]
+        [Fact]
         public void AddRemoveTimeSpanListTest()
         {
             var m = GetModel();
@@ -765,19 +760,19 @@ namespace dotNetRDFStore.Test
             var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if value was stored
-            Assert.AreEqual(1, t1.timeSpanTest.Count());
-            Assert.AreEqual(value, t1.timeSpanTest[0]);
+            Assert.Equal(1, t1.timeSpanTest.Count());
+            Assert.Equal(value, t1.timeSpanTest[0]);
 
 
             // Test if property is present
             var l = t1.ListProperties();
             Assert.True(l.Contains(TestOntology.timespanTest));
-            Assert.AreEqual(2, l.Count());
+            Assert.Equal(2, l.Count());
 
             // Test if ListValues works
-            Assert.AreEqual(typeof(TimeSpan), t_actual.ListValues(TestOntology.timespanTest).First().GetType());
+            Assert.Equal(typeof(TimeSpan), t_actual.ListValues(TestOntology.timespanTest).First().GetType());
             var time = (TimeSpan)t_actual.ListValues(TestOntology.timespanTest).First();
-            Assert.AreEqual(value.TotalSeconds, time.TotalSeconds);
+            Assert.Equal(value.TotalSeconds, time.TotalSeconds);
 
             // Remove value from mapped list
             t1.timeSpanTest.Remove(value);
@@ -786,17 +781,17 @@ namespace dotNetRDFStore.Test
             t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             // Test if removed
-            Assert.AreEqual(0, t_actual.timeSpanTest.Count());
+            Assert.Equal(0, t_actual.timeSpanTest.Count());
 
             // Test if ListProperties works
             l = t_actual.ListProperties();
             Assert.False(l.Contains(TestOntology.timespanTest));
 
             // Test if ListValues works
-            Assert.AreEqual(0, t_actual.ListValues(TestOntology.timespanTest).Count());
+            Assert.Equal(0, t_actual.ListValues(TestOntology.timespanTest).Count());
         }
 
-        [Test]
+        [Fact]
         public void AddRemoveResourceTest()
         {
             var m = GetModel();
@@ -812,25 +807,25 @@ namespace dotNetRDFStore.Test
             var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
 
-            Assert.AreEqual(t2, t_actual.uniqueResourceTest);
+            Assert.Equal(t2, t_actual.uniqueResourceTest);
 
             var l = t_actual.ListProperties().ToList();
             Assert.Contains(TestOntology.uniqueResourceTest, l);
-            Assert.AreEqual(2, l.Count());
+            Assert.Equal(2, l.Count());
 
             var x = t_actual.HasProperty(TestOntology.uniqueResourceTest);
-            Assert.IsTrue(x);
+            Assert.True(x);
 
             x = t_actual.HasProperty(TestOntology.uniqueResourceTest, t2);
-            Assert.IsTrue(x);
+            Assert.True(x);
 
             t_actual = m.GetResource<MappingTestClass>(t1Uri);
             var values = t_actual.ListValues().ToList();
             Assert.Contains(new Tuple<Property, object>(TestOntology.uniqueResourceTest, t2), values);
 
 
-            Assert.IsTrue(typeof(Resource).IsAssignableFrom(t_actual.ListValues(TestOntology.uniqueResourceTest).First().GetType()));
-            //Assert.AreEqual(t2, t_actual.ListValues(TestOntology.uniqeResourceTest).First());
+            Assert.True(typeof(Resource).IsAssignableFrom(t_actual.ListValues(TestOntology.uniqueResourceTest).First().GetType()));
+            //Assert.Equal(t2, t_actual.ListValues(TestOntology.uniqeResourceTest).First());
 
             t1.RemoveProperty(TestOntology.uniqueResourceTest, t2);
             t1.Commit();
@@ -841,16 +836,16 @@ namespace dotNetRDFStore.Test
             Assert.False(l.Contains(TestOntology.uniqueResourceTest));
 
             x = t_actual.HasProperty(TestOntology.uniqueResourceTest);
-            Assert.IsFalse(x);
+            Assert.False(x);
 
             x = t_actual.HasProperty(TestOntology.uniqueResourceTest, t2);
-            Assert.IsFalse(x);
+            Assert.False(x);
 
             // Test if ListValues works
-            Assert.AreEqual(0, t_actual.ListValues(TestOntology.uniqueResourceTest).Count());
+            Assert.Equal(0, t_actual.ListValues(TestOntology.uniqueResourceTest).Count());
         }
 
-        [Test]
+        [Fact]
         public void MappedResourceValueTest()
         {
             var m = GetModel();
@@ -866,12 +861,12 @@ namespace dotNetRDFStore.Test
             t1.uniqueResourceTest = t2;
             t1.Commit();
             var t_actual = m.GetResource<MappingTestClass>(t1Uri);
-            Assert.AreEqual("TestString", t_actual.uniqueResourceTest.uniqueStringTest);
+            Assert.Equal("TestString", t_actual.uniqueResourceTest.uniqueStringTest);
 
         }
 
 
-        [Test]
+        [Fact]
         public void AddRemoveResourceListTest()
         {
             var m = GetModel();
@@ -886,41 +881,41 @@ namespace dotNetRDFStore.Test
             t1.Commit();
             var t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
-            Assert.AreEqual(1, t_actual.resourceTest.Count);
-            Assert.AreEqual(t2, t_actual.resourceTest[0]);
+            Assert.Equal(1, t_actual.resourceTest.Count);
+            Assert.Equal(t2, t_actual.resourceTest[0]);
 
             var l = t_actual.ListProperties();
-            Assert.AreEqual(2, l.Count());
-            Assert.IsTrue(l.Contains(TestOntology.resourceTest));
+            Assert.Equal(2, l.Count());
+            Assert.True(l.Contains(TestOntology.resourceTest));
 
             var x = t_actual.HasProperty(TestOntology.resourceTest);
-            Assert.IsTrue(x);
+            Assert.True(x);
 
             x = t_actual.HasProperty(TestOntology.resourceTest, t2);
-            Assert.IsTrue(x);
+            Assert.True(x);
 
             var v = t_actual.ListValues(TestOntology.resourceTest);
-            Assert.AreEqual(2, l.Count());
-            Assert.IsTrue(v.Contains(t2));
+            Assert.Equal(2, l.Count());
+            Assert.True(v.Contains(t2));
 
-            Assert.AreEqual(t2.GetType(), v.First().GetType());
+            Assert.Equal(t2.GetType(), v.First().GetType());
 
             t1.resourceTest.Remove(t2);
             t1.Commit();
             t_actual = m.GetResource<MappingTestClass>(t1Uri);
 
             x = t_actual.HasProperty(TestOntology.resourceTest);
-            Assert.IsFalse(x);
+            Assert.False(x);
 
             x = t_actual.HasProperty(TestOntology.resourceTest, t2);
-            Assert.IsFalse(x);
+            Assert.False(x);
 
 
-            Assert.AreEqual(0, t_actual.resourceTest.Count);
+            Assert.Equal(0, t_actual.resourceTest.Count);
         }
 
 
-        [Test]
+        [Fact]
         public void LazyLoadResourceTest()
         {
             MappingDiscovery.RegisterCallingAssembly();
@@ -937,10 +932,10 @@ namespace dotNetRDFStore.Test
             t1.Commit();
 
             var p1 = model.GetResource<MappingTestClass>(testRes1);
-            //Assert.AreEqual(null, p1.uniqueResourceTest);
+            //Assert.Equal(null, p1.uniqueResourceTest);
 
             var v = p1.ListValues(TestOntology.uniqueResourceTest);
-            Assert.AreEqual(t2.Uri.OriginalString, (v.First() as IResource).Uri.OriginalString);
+            Assert.Equal(t2.Uri.OriginalString, (v.First() as IResource).Uri.OriginalString);
 
             model.DeleteResource(t1);
 
@@ -955,16 +950,16 @@ namespace dotNetRDFStore.Test
             t1.Commit();
 
             IResource tr1 = model.GetResource(testRes1, t1.GetType()) as Resource;
-            Assert.AreEqual(typeof(MappingTestClass), tr1.GetType());
+            Assert.Equal(typeof(MappingTestClass), tr1.GetType());
             var p2 = model.GetResource<MappingTestClass2>(testRes2);
 
-            Assert.AreEqual(t2, p1.uniqueResourceTest);
+            Assert.Equal(t2, p1.uniqueResourceTest);
 
             model.Clear();
         }
 
 
-        [Test]
+        [Fact]
         public void IterateOverEmptyModel()
         {
             var store = StoreFactory.CreateMemoryStore();
@@ -972,14 +967,13 @@ namespace dotNetRDFStore.Test
 
             var model = store.GetModel(modelUri);
             var res = model.GetResources<MappingTestClass>().FirstOrDefault();
-            Assert.IsNull(res);
+            Assert.Null(res);
         }
 
-        [Test]
+        [Fact]
         public void IterateOverJsonLdModel()
         {
-
-            var s = "{ \"@type\": \"semio:test:TestClass\", \"@id\": \"urn:ex:test\", \"http://schema.modom.io/path\": \"test\" }";
+            const string s = "{ \"@type\": \"semio:test:TestClass\", \"@id\": \"urn:ex:test\", \"http://schema.modom.io/path\": \"test\" }";
 
             using (var stream = new MemoryStream())
             {
@@ -997,7 +991,7 @@ namespace dotNetRDFStore.Test
             }
         }
 
-        [Test]
+        [Fact]
         public void IterateOverFaultyJsonLdModel()
         {
 
@@ -1019,7 +1013,7 @@ namespace dotNetRDFStore.Test
             }
         }
 
-        [Test]
+        [Fact]
         public void MappingTypeTest()
         {
             var m = GetModel();
@@ -1040,17 +1034,17 @@ namespace dotNetRDFStore.Test
             t3.Commit();
 
             var r1 = m.GetResource<Resource>(t1Uri);
-            Assert.AreEqual(t1, r1);
+            Assert.Equal(t1, r1);
 
             var r2 = m.GetResource<Resource>(t2Uri);
-            Assert.AreEqual(t2, r2);
+            Assert.Equal(t2, r2);
 
             var r3 = m.GetResource<Resource>(t3Uri);
-            Assert.AreEqual(t3, r3);
+            Assert.Equal(t3, r3);
         }
 
 
-        [Test]
+        [Fact]
         public void RollbackTest()
         {
             var m = GetModel();
@@ -1068,7 +1062,7 @@ namespace dotNetRDFStore.Test
             t1.Rollback();
 
 
-            Assert.AreEqual(strValue, t1.uniqueStringTest);
+            Assert.Equal(strValue, t1.uniqueStringTest);
 
             var newRef = m.GetResource<MappingTestClass>(t1Uri);
             newRef.stringTest.Add("Hi");
@@ -1078,9 +1072,9 @@ namespace dotNetRDFStore.Test
             t1.Rollback();
 
 
-            Assert.AreEqual(2, t1.stringTest.Count);
-            Assert.IsTrue(t1.stringTest.Contains("Hi"));
-            Assert.IsTrue(t1.stringTest.Contains("Blub"));
+            Assert.Equal(2, t1.stringTest.Count);
+            Assert.True(t1.stringTest.Contains("Hi"));
+            Assert.True(t1.stringTest.Contains("Blub"));
 
 
             var t2Uri = new Uri("semio:test:testInstance2");
@@ -1095,13 +1089,13 @@ namespace dotNetRDFStore.Test
             t1.Rollback();
 
 
-            Assert.IsTrue(t1.resourceTest.Count == 1);
-            Assert.IsTrue(t1.resourceTest.Contains(p));
+            Assert.True(t1.resourceTest.Count == 1);
+            Assert.True(t1.resourceTest.Contains(p));
 
         }
 
 
-        [Test]
+        [Fact]
         public void RollbackMappedResourcesTest()
         {
             var m = GetModel();
@@ -1111,7 +1105,7 @@ namespace dotNetRDFStore.Test
             var t1 = m.CreateResource<SingleResourceMappingTestClass>(t1Uri);
             t1.Commit();
 
-            Assert.IsTrue(t1.ResourceTest.Count == 0);
+            Assert.True(t1.ResourceTest.Count == 0);
 
             var t2Uri = new Uri("semio:test:testInstance2");
             var t2 = m.CreateResource<SingleMappingTestClass>(t2Uri);
@@ -1124,11 +1118,11 @@ namespace dotNetRDFStore.Test
 
             t1.Rollback();
 
-            Assert.IsTrue(t1.ResourceTest.Count == 1);
-            Assert.IsTrue(t1.ResourceTest.Contains(t2));
+            Assert.True(t1.ResourceTest.Count == 1);
+            Assert.True(t1.ResourceTest.Contains(t2));
         }
 
-        [Test]
+        [Fact]
         public void ListValuesTest()
         {
             var m = GetModel();
@@ -1153,14 +1147,14 @@ namespace dotNetRDFStore.Test
 
             var res1 = x.ToList();
             var res2 = x2.ToList();
-            Assert.AreEqual(res1.Count, res2.Count);
-            Assert.IsTrue(res2.Contains(res1[0]));
-            Assert.IsTrue(res2.Contains(res1[1]));
+            Assert.Equal(res1.Count, res2.Count);
+            Assert.True(res2.Contains(res1[0]));
+            Assert.True(res2.Contains(res1[1]));
 
         }
 
 
-        [Test]
+        [Fact]
         public void KeepListsAfterRollbackTest()
         {
             var m = GetModel();
@@ -1178,27 +1172,27 @@ namespace dotNetRDFStore.Test
             t1.stringTest.Add("Blub");
 
             var x = t1.ListValues(TestOntology.stringTest).ToList();
-            Assert.AreEqual(2, x.Count);
+            Assert.Equal(2, x.Count);
             t1.Commit();
 
             var t2 = m.GetResource<SingleMappingTestClass>(t1Uri);
 
             var x2 = t2.ListValues(TestOntology.stringTest).ToList();
 
-            Assert.AreEqual(x.Count, x2.Count);
-            Assert.IsTrue(x2.Contains(x[0]));
-            Assert.IsTrue(x2.Contains(x[1]));
+            Assert.Equal(x.Count, x2.Count);
+            Assert.True(x2.Contains(x[0]));
+            Assert.True(x2.Contains(x[1]));
 
         }
 
-        [Test]
+        [Fact]
         public void TestEquality()
         {
             var c1 = new Resource(new Uri("http://www.semanticdesktop.org/ontologies/2007/04/02/ncal#cancelledStatus"));
             var c2 = new Resource(new Uri("http://www.semanticdesktop.org/ontologies/2007/04/02/ncal#cancelledStatus"));
 
-            Assert.IsTrue(c1.Equals(c2));
-            Assert.IsFalse(c1 == c2);
+            Assert.True(c1.Equals(c2));
+            Assert.False(c1 == c2);
         }
     }
 

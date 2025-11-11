@@ -30,7 +30,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using NUnit.Framework;
+using Xunit;
+
 
 namespace Semiodesk.Trinity.Test.Virtuoso
 {
@@ -80,7 +81,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
             return store.GetModel(_model);
         }
 
-        [Test]
+        [Fact]
         public void TestAddingElements()
         {
             Assert.Inconclusive();
@@ -132,27 +133,27 @@ namespace Semiodesk.Trinity.Test.Virtuoso
             worker1.Join();
             worker2.Join();
 
-            Assert.AreEqual(50, list1.Count());
-            Assert.AreEqual(50, list2.Count());
+            Assert.Equal(50, list1.Count());
+            Assert.Equal(50, list2.Count());
 
             var model = _store.GetModel(_model);
 
             foreach (var res in list1)
             {
                 var actual = model.GetResource<SingleMappingTestClass>(res.Uri);
-                Assert.AreEqual(res.stringTest.Count(), actual.stringTest.Count());
-                Assert.AreEqual(res.stringTest[0], actual.stringTest[0]);
+                Assert.Equal(res.stringTest.Count(), actual.stringTest.Count());
+                Assert.Equal(res.stringTest[0], actual.stringTest[0]);
             }
 
             foreach (var res in list2)
             {
                 var actual = model.GetResource<SingleMappingTestClass>(res.Uri);
-                Assert.AreEqual(res.stringTest.Count(), actual.stringTest.Count());
-                Assert.AreEqual(res.stringTest[0], actual.stringTest[0]);
+                Assert.Equal(res.stringTest.Count(), actual.stringTest.Count());
+                Assert.Equal(res.stringTest[0], actual.stringTest[0]);
             }
         }
 
-        [Test]
+        [Fact]
         public void TestModifyElement()
         {
             Assert.Inconclusive();
@@ -225,13 +226,13 @@ namespace Semiodesk.Trinity.Test.Virtuoso
             
 
             var actualResource = model.GetResource<SingleMappingTestClass>(newResource.Uri);
-            Assert.IsFalse(actualResource.stringTest.Contains("dear"));
-            Assert.IsTrue(actualResource.stringTest.Contains("my"));
-            Assert.IsTrue(actualResource.stringTest.Contains("Thread2"));
+            Assert.False(actualResource.stringTest.Contains("dear"));
+            Assert.True(actualResource.stringTest.Contains("my"));
+            Assert.True(actualResource.stringTest.Contains("Thread2"));
 
         }
 
-        [Test]
+        [Fact]
         public void TestModifyAndAddElement()
         {
             Assert.Inconclusive();
@@ -301,7 +302,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
 
         }
 
-        [Test]
+        [Fact]
         public void TestCreateResourceMemberVariables()
         {
             Assert.Inconclusive();
@@ -346,7 +347,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
                     var r3 = model.GetResource<ResourceMappingTestClass>(new Uri("ex:r0"));
 
                     Assert.NotNull(r3.Resource);
-                    Assert.AreEqual(r3.Resource.IntegerValue, 1);
+                    Assert.Equal(r3.Resource.IntegerValue, 1);
 
                     store.Dispose();
                 }
@@ -370,7 +371,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
                         var r2 = model.GetResource<ResourceMappingTestClass>(new Uri("ex:r0"), tx);
 
                         Assert.NotNull(r2.Resource);
-                        Assert.AreEqual(r2.Resource.IntegerValue, 1);
+                        Assert.Equal(r2.Resource.IntegerValue, 1);
                     }
 
                     store.Dispose();
@@ -392,7 +393,7 @@ namespace Semiodesk.Trinity.Test.Virtuoso
 
             sync2.SignalAndWait();
 
-            Assert.IsFalse(faulted);
+            Assert.False(faulted);
         }
 
         protected void ModifyData(IModel m, Uri uri, ITransaction t)

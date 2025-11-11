@@ -1,7 +1,7 @@
 ﻿using Semiodesk.Trinity.Store.Virtuoso;
 using System.Reflection;
 using System.IO;
-using NUnit.Framework;
+
 
 namespace Semiodesk.Trinity.Test.Virtuoso
 {

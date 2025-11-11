@@ -87,8 +87,7 @@ namespace Semiodesk.Trinity.Store.Virtuoso
     /// You can use a null Uri or an empty String as a Uri to indicate that operations should affect the Default Graph.  Where the argument is only a Graph a null <see cref="IGraph.BaseUri">BaseUri</see> property indicates that the Graph affects the Default Graph
     /// </para>
     /// </remarks>
-    public class VirtuosoManager
-            : BaseAsyncSafeConnector, IUpdateableStorage
+    public class VirtuosoManager : BaseAsyncSafeConnector, IUpdateableStorage
     {
         /// <summary>
         /// Default Port for Virtuoso Servers

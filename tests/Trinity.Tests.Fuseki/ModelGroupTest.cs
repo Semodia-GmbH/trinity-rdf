@@ -25,14 +25,15 @@
 //
 // Copyright (c) Semiodesk GmbH 2015-2019
 
-using NUnit.Framework;
+
 using Semiodesk.Trinity.Ontologies;
 using System;
 using System.Linq;
+using Xunit;
 
 namespace Semiodesk.Trinity.Test.Fuseki
 {
-    [TestFixture]
+
     public class ModelGroupTest : SetupClass
     {
         protected IStore Store;
@@ -71,33 +72,33 @@ namespace Semiodesk.Trinity.Test.Fuseki
             Store.Dispose();
         }
 
-        [Test]
+        [Fact]
         public void ContainsResourceTest()
         {
             Uri uri = new Uri("http://example.com/testResource");
 
             IModelGroup group = Store.CreateModelGroup(Model.Uri, Model2.Uri);
 
-            Assert.IsFalse(group.ContainsResource(uri));
+            Assert.False(group.ContainsResource(uri));
 
             IResource resource = Model.CreateResource(uri);
             resource.AddProperty(rdf.type, nco.Contact);
             resource.Commit();
             
-            Assert.IsTrue(group.ContainsResource(uri));
+            Assert.True(group.ContainsResource(uri));
 
             Model.DeleteResource(resource);
 
-            Assert.IsFalse(group.ContainsResource(uri));
+            Assert.False(group.ContainsResource(uri));
 
             resource = Model2.CreateResource(uri);
             resource.AddProperty(rdf.type, nco.Contact);
             resource.Commit();
 
-            Assert.IsTrue(group.ContainsResource(uri));
+            Assert.True(group.ContainsResource(uri));
         }
 
-        [Test]
+        [Fact]
         public void DeleteResouceTest2()
         {
             var uri = new Uri("ex:Resource2");
@@ -106,14 +107,14 @@ namespace Semiodesk.Trinity.Test.Fuseki
             resource.AddProperty(rdf.type, nco.Contact);
             resource.Commit();
 
-            Assert.IsTrue(Model.ContainsResource(uri));
+            Assert.True(Model.ContainsResource(uri));
 
             Model.DeleteResource(resource);
 
-            Assert.IsFalse(Model.ContainsResource(uri));
+            Assert.False(Model.ContainsResource(uri));
         }
 
-        [Test]
+        [Fact]
         public void GetResourceTest()
         {
             Uri resourceUri = new Uri("http://example.com/testResource");
@@ -128,8 +129,8 @@ namespace Semiodesk.Trinity.Test.Fuseki
 
             IResource res = g.GetResource(resourceUri);
             Assert.IsNotNull(res);
-            Assert.IsTrue(res.IsReadOnly);
-            Assert.AreEqual(resourceUri, res.Uri);
+            Assert.True(res.IsReadOnly);
+            Assert.Equal(resourceUri, res.Uri);
             Assert.Contains(nco.Contact, res.ListValues(rdf.type).ToList());
 
 
@@ -139,14 +140,14 @@ namespace Semiodesk.Trinity.Test.Fuseki
 
             res = g.GetResource(resourceUri);
             Assert.IsNotNull(res);
-            Assert.AreEqual(1, res.ListValues(rdf.type).Count());
-            Assert.IsTrue(res.IsReadOnly);
-            Assert.AreEqual(resourceUri, res.Uri);
+            Assert.Equal(1, res.ListValues(rdf.type).Count());
+            Assert.True(res.IsReadOnly);
+            Assert.Equal(resourceUri, res.Uri);
             Assert.Contains(nco.Contact, res.ListValues(rdf.type).ToList());
 
         }
 
-        [Test]
+        [Fact]
         public void LazyLoadResourceTest()
         {
             IModel model = Model;
@@ -163,10 +164,10 @@ namespace Semiodesk.Trinity.Test.Fuseki
             t1.Commit();
 
             MappingTestClass p1 = modelGroup.GetResource<MappingTestClass>(testRes1);
-            //Assert.AreEqual(null, p1.uniqueResourceTest);
+            //Assert.Equal(null, p1.uniqueResourceTest);
 
             var v = p1.ListValues(TestOntology.uniqueResourceTest);
-            Assert.AreEqual(t2.Uri.OriginalString, (v.First() as IResource).Uri.OriginalString);
+            Assert.Equal(t2.Uri.OriginalString, (v.First() as IResource).Uri.OriginalString);
 
             model.DeleteResource(t1);
 
@@ -181,10 +182,10 @@ namespace Semiodesk.Trinity.Test.Fuseki
             t1.Commit();
 
             var tt1 = modelGroup.GetResource<MappingTestClass>(testRes1);
-            Assert.AreEqual(t2, tt1.uniqueResourceTest);
+            Assert.Equal(t2, tt1.uniqueResourceTest);
 
             IResource tr1 = modelGroup.GetResource(testRes1);
-            Assert.AreEqual(typeof(MappingTestClass), tr1.GetType());
+            Assert.Equal(typeof(MappingTestClass), tr1.GetType());
         }
     }
 }

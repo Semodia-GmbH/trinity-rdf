@@ -25,39 +25,36 @@
 //
 // Copyright (c) Semiodesk GmbH 2015-2019
 
-using NUnit.Framework;
+
 using Semiodesk.Trinity;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using Semiodesk.Trinity.Tests.dotnetrdf;
+using Xunit;
 
 namespace dotNetRDFStore.Test
 {
-    [TestFixture]
-    class ModelTest
+    public class ModelTest: IDisposable
     {
         IStore Store;
 
         IModel Model;
 
-        [SetUp]
-        public void SetUp()
+        public ModelTest()
         {
             Store = StoreFactory.CreateMemoryStore();
             Model = Store.CreateModel(new Uri("ex:Test"));
         }
-
-        [TearDown]
-        public void TearDown()
+        
+        public void Dispose()
         {
             Store.Dispose();
             Store = null;
         }
 
-        [Test]
+        [Fact]
         public void DeleteResourceTest()
         {
             var uri0 = new Uri("http://example.org/MyResource");
@@ -72,11 +69,11 @@ namespace dotNetRDFStore.Test
             model_resource.AddProperty(p0, DateTime.Now);
             model_resource.Commit();
 
-            Assert.IsTrue(Model.ContainsResource(uri0));
+            Assert.True(Model.ContainsResource(uri0));
 
             Model.DeleteResource(uri0);
 
-            Assert.IsFalse(Model.ContainsResource(uri0));
+            Assert.False(Model.ContainsResource(uri0));
 
 
             var r0 = Model.CreateResource(uri0);
@@ -89,22 +86,22 @@ namespace dotNetRDFStore.Test
             r1.AddProperty(p1, r0);
             r1.Commit();
 
-            Assert.IsTrue(Model.ContainsResource(r0));
-            Assert.IsTrue(Model.ContainsResource(r1));
+            Assert.True(Model.ContainsResource(r0));
+            Assert.True(Model.ContainsResource(r1));
 
             Model.DeleteResource(r0);
 
-            Assert.IsFalse(Model.ContainsResource(r0));
-            Assert.IsTrue(Model.ContainsResource(r1));
+            Assert.False(Model.ContainsResource(r0));
+            Assert.True(Model.ContainsResource(r1));
 
             // Update the resource from the model.
             r1 = Model.GetResource(uri1);
 
-            Assert.IsTrue(r1.HasProperty(p0, 123));
-            Assert.IsFalse(r1.HasProperty(p1, r0));
+            Assert.True(r1.HasProperty(p0, 123));
+            Assert.False(r1.HasProperty(p1, r0));
         }
 
-        [Test]
+        [Fact]
         public void DeleteResourcesTest()
         {
             var uri0 = new Uri("http://example.org/MyResource");
@@ -125,19 +122,19 @@ namespace dotNetRDFStore.Test
             r1.AddProperty(p1, new Resource(uri0));
             r1.Commit();
 
-            Assert.IsTrue(Model.ContainsResource(uri0));
-            Assert.IsTrue(Model.ContainsResource(uri1));
+            Assert.True(Model.ContainsResource(uri0));
+            Assert.True(Model.ContainsResource(uri1));
 
             r1 = Model.GetResource(uri1);
             var r0 = Model.GetResource(uri0);
 
             Model.DeleteResources(null, r0, r1);
 
-            Assert.IsFalse(Model.ContainsResource(uri0));
-            Assert.IsFalse(Model.ContainsResource(uri1));
+            Assert.False(Model.ContainsResource(uri0));
+            Assert.False(Model.ContainsResource(uri1));
         }
 
-        [Test]
+        [Fact]
         public void CreateResourceTest()
         {
             var literal = "var";
@@ -148,14 +145,14 @@ namespace dotNetRDFStore.Test
             res.Commit();
 
             var result = Model.GetResource(resourceUri);
-            Assert.AreEqual(resourceUri, result.Uri);
+            Assert.Equal(resourceUri, result.Uri);
             var properties = result.ListProperties().ToList();
-            Assert.AreEqual(1, properties.Count);
-            Assert.AreEqual(property, properties[0]);
-            Assert.AreEqual(literal, result.GetValue(property));
+            Assert.Single(properties);
+            Assert.Equal(property, properties[0]);
+            Assert.Equal(literal, result.GetValue(property));
         }
 
-        [Test]
+        [Fact]
         public void CreateResourceWithBlankIdTest()
         {
             var label = new Property(new UriRef("ex:label"));
@@ -168,12 +165,12 @@ namespace dotNetRDFStore.Test
             r1.AddProperty(label, "1");
             r1.Commit();
 
-            Assert.IsFalse(Model.IsEmpty);
+            Assert.False(Model.IsEmpty);
             Assert.Throws<ArgumentException>(() => Model.ContainsResource(r1.Uri));
             Assert.Throws<ArgumentException>(() => Model.GetResource(r1));
         }
 
-        [Test]
+        [Fact]
         public void ModifyResourceTest()
         {
             var literal = "var";
@@ -192,15 +189,15 @@ namespace dotNetRDFStore.Test
 
             result = Model.GetResource(resourceUri);
 
-            Assert.AreEqual(resourceUri, result.Uri);
+            Assert.Equal(resourceUri, result.Uri);
             var properties = result.ListProperties().ToList();
-            Assert.AreEqual(1, properties.Count);
-            Assert.AreEqual(property, properties[0]);
-            Assert.AreEqual(literal, result.GetValue(property));
+            Assert.Single(properties);
+            Assert.Equal(property, properties[0]);
+            Assert.Equal(literal, result.GetValue(property));
 
         }
 
-        [Test]
+        [Fact]
         public void RemoveResourceTest()
         {
             var literal = "var";
@@ -214,11 +211,11 @@ namespace dotNetRDFStore.Test
 
             Model.DeleteResource(result);
 
-            Assert.IsFalse(Model.ContainsResource(result));
+            Assert.False(Model.ContainsResource(result));
 
         }
 
-        [Test]
+        [Fact]
         public void GetResourceTest()
         {
             var literal = "var";
@@ -229,14 +226,14 @@ namespace dotNetRDFStore.Test
             res.Commit();
 
             var result = Model.GetResource(resourceUri);
-            Assert.AreEqual(resourceUri, result.Uri);
+            Assert.Equal(resourceUri, result.Uri);
             var properties = result.ListProperties().ToList();
-            Assert.AreEqual(1, properties.Count);
-            Assert.AreEqual(property, properties[0]);
-            Assert.AreEqual(literal, result.GetValue(property));
+            Assert.Single(properties);
+            Assert.Equal(property, properties[0]);
+            Assert.Equal(literal, result.GetValue(property));
         }
 
-        [Test]
+        [Fact]
         public void GetResourcesTest()
         {
             var resourceUri1 = new Uri("ex:test:resource1");
@@ -251,30 +248,30 @@ namespace dotNetRDFStore.Test
             res.Commit();
 
             var result = Model.GetResources(new[] { resourceUri1, resourceUri2 }, typeof(Resource)).ToList();
-            Assert.AreEqual(2, result.Count);
+            Assert.Equal(2, result.Count);
 
             var res1 = result[0] as IResource;
-            Assert.AreEqual(resourceUri1, res1.Uri);
+            Assert.Equal(resourceUri1, res1.Uri);
             var properties = res1.ListProperties().ToList();
-            Assert.AreEqual(1, properties.Count);
-            Assert.AreEqual(property, properties[0]);
-            Assert.AreEqual("lit1", res1.GetValue(property));
+            Assert.Single(properties);
+            Assert.Equal(property, properties[0]);
+            Assert.Equal("lit1", res1.GetValue(property));
 
             var res2 = result[1] as IResource;
-            Assert.AreEqual(resourceUri2, res2.Uri);
+            Assert.Equal(resourceUri2, res2.Uri);
             properties = res2.ListProperties().ToList();
-            Assert.AreEqual(1, properties.Count);
-            Assert.AreEqual(property, properties[0]);
-            Assert.AreEqual("lit2", res2.GetValue(property));
+            Assert.Single( properties);
+            Assert.Equal(property, properties[0]);
+            Assert.Equal("lit2", res2.GetValue(property));
 
         }
 
-        [Test]
+        [Fact]
         public void GetResourceFromJsonLD()
         {
-            var str = "{\"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\":[{\"@id\":\"http://schema.org/Organization\"},{}],\"http://www.w3.org/2000/01/rdf-schema#label\":\"\",\"http://schema.org/name\":[{\"@value\":\"My Project\",\"@language\":\"en\"}],\"http://schema.org/alternateName\":[],\"http://schema.org/description\":[{\"@value\":\"Hello\",\"@language\":\"en\"}],\"http://schema.org/image\":[],\"http://schema.org/thumbnail\":[],\"http://schema.org/sameAs\":[],\"http://www.w3.org/ns/prov#\":[],\"http://schema.org/identifier\":\"my-new-project\"}\"";
-            
-            
+            const string str = "{\"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\":[{\"@id\":\"http://schema.org/Organization\"},{}],\"http://www.w3.org/2000/01/rdf-schema#label\":\"\",\"http://schema.org/name\":[{\"@value\":\"My Project\",\"@language\":\"en\"}],\"http://schema.org/alternateName\":[],\"http://schema.org/description\":[{\"@value\":\"Hello\",\"@language\":\"en\"}],\"http://schema.org/image\":[],\"http://schema.org/thumbnail\":[],\"http://schema.org/sameAs\":[],\"http://www.w3.org/ns/prov#\":[],\"http://schema.org/identifier\":\"my-new-project\"}\"";
+
+
             using (var stream = new MemoryStream())
             {
                 var writer = new StreamWriter(stream);
@@ -291,7 +288,7 @@ namespace dotNetRDFStore.Test
             }
         }
 
-        [Test]
+        [Fact]
         public void GetResourceWithBlankIdTest()
         {
             Model.Clear();
@@ -305,7 +302,7 @@ namespace dotNetRDFStore.Test
             Assert.Throws<ArgumentException>(() => Model.GetResource<Resource>(x.Uri));
         }
 
-        [Test]
+        [Fact]
         public void GetResourceWithBlankIdPropertyTest()
         {
             Model.Clear();
@@ -328,20 +325,20 @@ namespace dotNetRDFStore.Test
 
             var resources = Model.GetResources<Resource>().ToArray();
 
-            Assert.AreEqual(2, resources.Length);
+            Assert.Equal(2, resources.Length);
 
             foreach (var r in resources)
             {
-                Assert.IsTrue(r.Uri.IsBlankId);
+                Assert.True(r.Uri.IsBlankId);
 
                 foreach(var x in r.ListValues(related).OfType<Resource>())
                 {
-                    Assert.IsTrue(x.Uri.IsBlankId);
+                    Assert.True(x.Uri.IsBlankId);
                 }
             }
         }
 
-        [Test]
+        [Fact]
         public void GetResourcesEmptyTest()
         {
             var resourceUri1 = new Uri("ex:test:resource1");
@@ -356,25 +353,25 @@ namespace dotNetRDFStore.Test
             res.Commit();
 
             var result = Model.GetResources(new Uri[] {}, typeof(Resource)).ToList();
-            Assert.AreEqual(2, result.Count);
+            Assert.Equal(2, result.Count);
 
             var res1 = result[0] as IResource;
-            Assert.AreEqual(resourceUri1, res1.Uri);
+            Assert.Equal(resourceUri1, res1.Uri);
             var properties = res1.ListProperties().ToList();
-            Assert.AreEqual(1, properties.Count);
-            Assert.AreEqual(property, properties[0]);
-            Assert.AreEqual("lit1", res1.GetValue(property));
+            Assert.Equal(1, properties.Count);
+            Assert.Equal(property, properties[0]);
+            Assert.Equal("lit1", res1.GetValue(property));
 
             var res2 = result[1] as IResource;
-            Assert.AreEqual(resourceUri2, res2.Uri);
+            Assert.Equal(resourceUri2, res2.Uri);
             properties = res2.ListProperties().ToList();
-            Assert.AreEqual(1, properties.Count);
-            Assert.AreEqual(property, properties[0]);
-            Assert.AreEqual("lit2", res2.GetValue(property));
+            Assert.Equal(1, properties.Count);
+            Assert.Equal(property, properties[0]);
+            Assert.Equal("lit2", res2.GetValue(property));
 
         }
 
-        [Test]
+        [Fact]
         public void UpdateResourceTest()
         {
             var property = new Property(new Uri("http://example.org/MyProperty"));
@@ -391,7 +388,7 @@ namespace dotNetRDFStore.Test
             r2.Model = Model;
             r2.Commit();
             var actual = Model.GetResource<Resource>(resourceUri);
-            Assert.AreEqual(r2, actual);
+            Assert.Equal(r2, actual);
 
 
             // Try to update resource without properties
@@ -400,10 +397,10 @@ namespace dotNetRDFStore.Test
             r3.Model = Model;
             r3.Commit();
             actual = Model.GetResource<Resource>(resourceUri);
-            Assert.AreEqual(r3, actual);
+            Assert.Equal(r3, actual);
         }
 
-        [Test]
+        [Fact]
         public void UpdateResourcesTest()
         {
             var intProperty = new Property(new Uri("http://example.org/int"));
@@ -430,7 +427,7 @@ namespace dotNetRDFStore.Test
             Assert.Contains(r3, actual);
             var r3Actual = actual.Where(x => x.Uri == r3Uri).FirstOrDefault();
             var r3ActualIntProp = (int)r3Actual.GetValue(intProperty);
-            Assert.AreEqual(333, r3ActualIntProp);
+            Assert.Equal(333, r3ActualIntProp);
 
             r1.RemoveProperty(intProperty, 123);
             r1.AddProperty(intProperty, 154);
@@ -447,11 +444,11 @@ namespace dotNetRDFStore.Test
             Assert.Contains(r3, actual);
             var r1Actual = actual.Where(x => x.Uri == r1Uri).FirstOrDefault();
             var r1ActualIntProp = (int)r1Actual.GetValue(intProperty);
-            Assert.AreEqual(154, r1ActualIntProp);
+            Assert.Equal(154, r1ActualIntProp);
 
         }
 
-        [Test]
+        [Fact]
         public void ContainsResourceTest()
         {
             var literal = "var";
@@ -462,10 +459,10 @@ namespace dotNetRDFStore.Test
             res.Commit();
 
             var result = Model.GetResource(resourceUri);
-            Assert.AreEqual(true, Model.ContainsResource(new UriRef("ex:test:resource")));
+            Assert.Equal(true, Model.ContainsResource(new UriRef("ex:test:resource")));
         }
 
-        [Test]
+        [Fact]
         public void AskQueryTest()
         {
             var literal = "var";
@@ -479,13 +476,13 @@ namespace dotNetRDFStore.Test
             var b = Model.ExecuteQuery(q);
         }
 
-        [Test]
+        [Fact]
         public void SparqlQueryTest()
         {
 
         }
 
-        [Test]
+        [Fact]
         public void ReadFromStringTest()
         {
             var turtle = @"@base <http://example.org/> .
@@ -505,12 +502,12 @@ namespace dotNetRDFStore.Test
 
             using( var s = GenerateStreamFromString(turtle))
             {
-                Assert.IsTrue(Model.Read(s, RdfSerializationFormat.Turtle, false));
+                Assert.True(Model.Read(s, RdfSerializationFormat.Turtle, false));
             }
 
             var r = Model.GetResource(new Uri("http://example.org/#green-goblin"));
             var name = r.GetValue(new Property(new Uri("http://xmlns.com/foaf/0.1/name"))) as string;
-            Assert.AreEqual("Green Goblin", name);
+            Assert.Equal("Green Goblin", name);
 
             var turtle2 = @"@base <http://example.org/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -521,12 +518,12 @@ namespace dotNetRDFStore.Test
 
             using (var s = GenerateStreamFromString(turtle2))
             {
-                Assert.IsTrue(Model.Read(s, RdfSerializationFormat.Turtle, true));
+                Assert.True(Model.Read(s, RdfSerializationFormat.Turtle, true));
             }
 
             r = Model.GetResource(new Uri("http://example.org/#green-goblin"));
             var age = (int) r.GetValue(new Property(new Uri("http://xmlns.com/foaf/0.1/age")));
-            Assert.AreEqual(27, age);
+            Assert.Equal(27, age);
 
             turtle = @"@base <http://example.org/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -545,15 +542,15 @@ namespace dotNetRDFStore.Test
 
             using (var s = GenerateStreamFromString(turtle))
             {
-                Assert.IsTrue(Model.Read(s, RdfSerializationFormat.Turtle, false));
+                Assert.True(Model.Read(s, RdfSerializationFormat.Turtle, false));
             }
 
             r = Model.GetResource(new Uri("http://example.org/#green-goblin"));
             name = r.GetValue(new Property(new Uri("http://xmlns.com/foaf/0.1/name"))) as string;
-            Assert.AreEqual("Green Gobo", name);
+            Assert.Equal("Green Gobo", name);
         }
 
-        [Test]
+        [Fact]
         public void ReadLocalizedFromStringTest()
         {
             var turtle = @"@base <http://example.org/> .
@@ -567,7 +564,7 @@ namespace dotNetRDFStore.Test
 
             using (var s = GenerateStreamFromString(turtle))
             {
-                Assert.IsTrue(Model.Read(s, RdfSerializationFormat.Turtle, false));
+                Assert.True(Model.Read(s, RdfSerializationFormat.Turtle, false));
             }
 
             var r = Model.GetResource(new Uri("http://example.org/#spiderman"));
@@ -586,7 +583,7 @@ namespace dotNetRDFStore.Test
             return stream;
         }
 
-        [Test]
+        [Fact]
         public void WriteTest()
         {
             Model.Clear();
@@ -610,7 +607,7 @@ namespace dotNetRDFStore.Test
             }
         }
 
-        [Test]
+        [Fact]
         public void WriteWithWriterTest()
         {
             Model.Clear();
@@ -641,19 +638,19 @@ namespace dotNetRDFStore.Test
                     {
                         var triple = line.Split(' ');
 
-                        Assert.AreEqual(r0.Uri.AbsoluteUri, triple[0]);
-                        Assert.AreEqual(p0.Uri.AbsoluteUri, triple[1]);
-                        Assert.IsTrue(triple[2].StartsWith(n.ToString()));
+                        Assert.Equal(r0.Uri.AbsoluteUri, triple[0]);
+                        Assert.Equal(p0.Uri.AbsoluteUri, triple[1]);
+                        Assert.True(triple[2].StartsWith(n.ToString()));
 
                         n++;
                     }
                 }
 
-                Assert.AreEqual(3, n);
+                Assert.Equal(3, n);
             }
         }
 
-        [Test]
+        [Fact]
         public void WriteWithBaseUriTest()
         {
             Model.Clear();
@@ -670,8 +667,8 @@ namespace dotNetRDFStore.Test
 
                 var result = Encoding.UTF8.GetString(stream.ToArray());
 
-                Assert.IsFalse(string.IsNullOrEmpty(result));
-                Assert.IsTrue(result.StartsWith("@base <http://example.org/>"));
+                Assert.False(string.IsNullOrEmpty(result));
+                Assert.StartsWith("@base <http://example.org/>", result);
             }
         }
     }

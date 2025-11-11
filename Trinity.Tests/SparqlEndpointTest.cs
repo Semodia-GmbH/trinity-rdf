@@ -27,36 +27,36 @@
 
 using System;
 using System.Linq;
-using NUnit.Framework;
+
+using Xunit;
 
 namespace Semiodesk.Trinity.Test
 {
-    [TestFixture]
+
     public class SparqlEndpointTest
     {
-        [Test]
+        [Fact(Skip = "Endpoint doesn't seem to exist anymore.")]
         public void TestDBPediaQuery()
         {
-            Assert.Inconclusive("Endpoint doesn't seem to exist anymore.");
             var store = StoreFactory.CreateSparqlEndpointStore(new Uri("http://live.dbpedia.org/sparql"));
             var model = store.GetModel(new Uri("http://dbpedia.org"));
 
             var query = new SparqlQuery(@"SELECT ?s ?p ?o WHERE { ?s ?p ?o . ?s <http://dbpedia.org/ontology/wikiPageID> @id . }");
             query.Bind("@id", 445980);
 
-            Assert.AreEqual(1, model.ExecuteQuery(query).GetResources().Count());
+            Assert.Single(model.ExecuteQuery(query).GetResources());
         }
 
-        [Test]
+        [Fact(Skip = "Endpoint doesn't seem to exist anymore.")]
         public void TestDBPediaGetResource()
         {
-            Assert.Inconclusive("Endpoint doesn't seem to exist anymore.");
+            
             var store = StoreFactory.CreateSparqlEndpointStore(new Uri("http://live.dbpedia.org/sparql"));
             var model = store.GetModel(new Uri("http://dbpedia.org"));
 
             var r = model.GetResource(new Uri("http://dbpedia.org/resource/Munich"));
 
-            Assert.Greater(r.ListProperties().Count(), 0);
+            Assert.True(r.ListProperties().Any());
         }
     }
 }

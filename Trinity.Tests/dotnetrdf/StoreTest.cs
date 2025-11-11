@@ -25,148 +25,143 @@
 //
 // Copyright (c) Semiodesk GmbH 2015-2019
 
-using NUnit.Framework;
+
 using Semiodesk.Trinity;
 using Semiodesk.Trinity.Ontologies;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Xunit;
 
 namespace dotNetRDFStore.Test
 {
-    [TestFixture]
-    class StoreTest : SetupClass
+    public class StoreTest : SetupClass, IDisposable
     {
-        IStore Store;
+        private IStore _store;
 
-        [SetUp]
-        public void SetUp()
+        public StoreTest()
         {
-            Store = StoreFactory.CreateStore("provider=dotnetrdf");
+            _store = StoreFactory.CreateStore("provider=dotnetrdf");
         }
 
-        [TearDown]
-        public void TearDown()
+        public void Dispose()
         {
-            if(Store != null)
-            {
-                Store.Dispose();
-                Store = null;
-            }
+            if (_store == null) return;
+            _store.Dispose();
+            _store = null;
         }
 
-        [Test]
+        [Fact]
         public void LoadOntologiesTest()
         {
-            Store.InitializeFromConfiguration();
+            _store.InitializeFromConfiguration();
 
-            var models0 = Store.ListModels().ToList();
+            var models0 = _store.ListModels().ToList();
 
             // Note: the NCO ontology contains a metadata graph.
-            Assert.AreEqual(8, models0.Count);
+            Assert.Equal(8, models0.Count);
         }
 
-        [Test]
+        [Fact]
         public void LoadOntologiesFromFileTest()
         {
             var configFile = Path.Combine(Environment.CurrentDirectory, "custom.config");
 
-            Store.InitializeFromConfiguration(configFile);
+            _store.InitializeFromConfiguration(configFile);
 
-            Assert.AreEqual(4, Store.ListModels().Count());
+            Assert.Equal(4, _store.ListModels().Count());
 
             configFile = Path.Combine(Environment.CurrentDirectory, "nonexistent.config");
 
             Assert.Throws<FileNotFoundException>(() =>
             {
-                Store.InitializeFromConfiguration(configFile);
+                _store.InitializeFromConfiguration(configFile);
             });
         }
 
-        [Test]
+        [Fact]
         public void LoadOntologiesFromFileWithoutStoreTest()
         {
             var configFile = Path.Combine(Environment.CurrentDirectory, "without_store.config");
 
-            Store.InitializeFromConfiguration(configFile);
+            _store.InitializeFromConfiguration(configFile);
 
-            Assert.AreEqual(4, Store.ListModels().Count());
+            Assert.Equal(4, _store.ListModels().Count());
         }
 
-        [Test]
+        [Fact]
         public void AddModelTest()
         {
-            var model = Store.CreateModel(new Uri("ex:Test"));
+            var model = _store.CreateModel(new Uri("ex:Test"));
 
-            Assert.IsNotNull(model);
+            Assert.NotNull(model);
         }
 
 #pragma warning disable CS0618 // Type or member is obsolete
-        [Test]
+        [Fact]
         public void ContainsModelTest()
         {
             var testModel = new Uri("ex:Test");
 
-            Assert.IsFalse(Store.ContainsModel(testModel));
+            Assert.False(_store.ContainsModel(testModel));
 
-            var model = Store.CreateModel(testModel);
+            var model = _store.CreateModel(testModel);
 
             var r = model.CreateResource(new Uri("ex:test:resource"));
             r.AddProperty(new Property(new Uri("ex:test:property")), "var");
             r.Commit();
 
-            Assert.IsTrue(Store.ContainsModel(testModel));
-            Assert.IsFalse(Store.ContainsModel(new Uri("ex:NoTest")));
+            Assert.True(_store.ContainsModel(testModel));
+            Assert.False(_store.ContainsModel(new Uri("ex:NoTest")));
         }
 #pragma warning restore CS0618 // Type or member is obsolete
 
-        [Test]
+        [Fact]
         public void GetModelTest()
         {
             var testModel = new Uri("ex:Test");
 
-            var model0 = Store.CreateModel(testModel);
+            var model0 = _store.CreateModel(testModel);
 
             var r = model0.CreateResource(new Uri("ex:test:resource"));
             r.AddProperty(new Property(new Uri("ex:test:property")), "var");
             r.Commit();
 
-            var model1 = Store.GetModel(testModel);
+            var model1 = _store.GetModel(testModel);
 
-            Assert.AreEqual(testModel, model1.Uri);
-            Assert.IsTrue(model1.ContainsResource(r));
+            Assert.Equal(testModel, model1.Uri);
+            Assert.True(model1.ContainsResource(r));
         }
 
-        [Test]
+        [Fact]
         public void RemoveModelTest()
         {
             var testModel = new Uri("ex:Test");
 
-            var model0 = Store.CreateModel(testModel);
+            var model0 = _store.CreateModel(testModel);
 
             var res = model0.CreateResource(new Uri("ex:test:resource"));
             res.AddProperty(new Property(new Uri("ex:test:property")), "var");
             res.Commit();
 
-            var model1 = Store.GetModel(testModel);
-            Assert.AreEqual(testModel, model1.Uri);
+            var model1 = _store.GetModel(testModel);
+            Assert.Equal(testModel, model1.Uri);
 
-            Store.RemoveModel(testModel);
+            _store.RemoveModel(testModel);
 
-            model1 = Store.GetModel(testModel);
+            model1 = _store.GetModel(testModel);
 
-            Assert.IsTrue(model1.IsEmpty);
+            Assert.True(model1.IsEmpty);
         }
 
-        [Test]
+        [Fact]
         public void ReadJsonLdContentTest()
         {
             var modelUri = new Uri("http://trinty-rdf.net/models/test/jsonld");
 
-            var model = Store.GetModel(modelUri);
+            var model = _store.GetModel(modelUri);
 
-            Assert.IsTrue(model.IsEmpty);
+            Assert.True(model.IsEmpty);
 
             var content = @"
             [
@@ -185,14 +180,14 @@ namespace dotNetRDFStore.Test
             ]
             ";
 
-            Store.Read(content, modelUri, RdfSerializationFormat.JsonLd, false);
+            _store.Read(content, modelUri, RdfSerializationFormat.JsonLd, false);
 
-            Assert.IsFalse(model.IsEmpty);
+            Assert.False(model.IsEmpty);
 
             var r = model.GetResource(new Uri("https://ontologies.semanticarts.com/gist/Message"));
 
-            Assert.IsNotNull(r);
-            Assert.AreEqual(r.GetValue(rdfs.label), "Message");
+            Assert.NotNull(r);
+            Assert.Equal(r.GetValue(rdfs.label), "Message");
         }
     }
 }

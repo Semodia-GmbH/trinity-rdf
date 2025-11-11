@@ -25,34 +25,34 @@
 //
 // Copyright (c) Semiodesk GmbH 2015-2019
 
-using NUnit.Framework;
+
 using Semiodesk.Trinity;
 using System;
+using Xunit;
 
 namespace dotNetRDFStore.Test
 {
-    [TestFixture]
-    class StoreHandleTest
+    public class StoreHandleTest
     {
-        [Test]
+        [Fact]
         public void TestMemoryStoreMethod()
         {
             var p = new Property(new Uri("ex:myProperty"));
 
-            var Store = StoreFactory.CreateMemoryStore();
-            var m = Store.CreateModel(new UriRef("semio:test"));
-            Assert.IsNotNull(m);
+            var store = StoreFactory.CreateMemoryStore();
+            var m = store.CreateModel(new UriRef("semio:test"));
+            Assert.NotNull(m);
             m.Clear();
-            Assert.IsTrue(m.IsEmpty);
+            Assert.True(m.IsEmpty);
             var x = m.CreateResource<Resource>();
             x.AddProperty(p, "uarg");
             x.Commit();
-            Assert.IsFalse(m.IsEmpty);
-            Store.Dispose();
+            Assert.False(m.IsEmpty);
+            store.Dispose();
 
         }
 
-        [Test]
+        [Fact]
         public void TestOpenClose()
         {
             var p = new Property(new Uri("ex:myProperty"));
