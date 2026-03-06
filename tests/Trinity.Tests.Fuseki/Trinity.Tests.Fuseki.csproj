@@ -25,10 +25,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Trinity.Fuseki\Trinity.Fuseki.csproj" />
-    <ProjectReference Include="..\..\Trinity.Tests\Trinity.Tests.csproj" />
-    <ProjectReference Include="..\..\Trinity.Virtuoso\Trinity.Virtuoso.csproj" />
-    <ProjectReference Include="..\..\Trinity\Trinity.csproj" />
+    <ProjectReference Include="..\..\src\Trinity.Fuseki\Trinity.Fuseki.csproj" />
+    <ProjectReference Include="..\..\src\Trinity.Virtuoso\Trinity.Virtuoso.csproj" />
+    <ProjectReference Include="..\..\src\Trinity\Trinity.csproj" />
+    <ProjectReference Include="..\Trinity.Tests\Trinity.Tests.csproj" />
   </ItemGroup>
 
   <ItemGroup>

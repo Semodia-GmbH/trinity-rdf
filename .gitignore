@@ -9,3 +9,6 @@ Documentation/log.txt
 *.user
 **/.vs/**
 **/.idea/**
+src/Build/
+
+tests/Build/
